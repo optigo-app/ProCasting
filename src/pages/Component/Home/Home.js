@@ -26,8 +26,8 @@ export default function Home() {
 
                     <div className='bothBtnDiv'>
                         <button className='homeNewTree' onClick={() => navigation('/createTree')}>New Tree</button>
-                        <button className='homeEditTree'>Edit </button>
-                    <button className='homeORBtn'>Print </button>
+                        <button className='homeEditTree'>Edit Tree</button>
+                    <button className='homeORBtn'>Print OR</button>
 
                     </div>
                 </div>
