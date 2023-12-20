@@ -107,18 +107,18 @@ export default function QRScanner() {
             <div style={{ display: 'flex', marginTop: '20px' }}>
                 <div className='createORMain'>
                     <QRCode value='Scan a QR code' style={{ height: '200px', width: '200px' }} />
-                    <div style={{display:'flex', marginTop: '20px' }}>
+                    <div style={{ display: 'flex', marginTop: '20px' }}>
                         <input type='text' style={{ border: inputError && '1px solid red' }} className='enterBrachItemBox' value={inputValue}
                             onChange={handleInputChange} />
                         <button style={{ height: '45px', width: '50px', fontSize: '20px', fontWeight: 600, cursor: 'pointer' }} onClick={handleGoButtonClick}>
                             Go
                         </button>
                     </div>
-                    <button className='showInfoBtn'>Show Info</button>
-                    {/* printQRbtn */}
-                    <button className='showInfoBtn'  onClick={() => navigation('/addFlask')}>print OR</button>
-                    <button className='showInfoBtn'  onClick={() => navigation('/addFlask')}>Show list</button>
-                    <button className='showInfoBtn'  onClick={() => navigation('/addFlask')}>uppload tree image</button>
+                    <div>
+                    <button className='uploadImageBtn' onClick={() => navigation('/addFlask')}>uppload tree image</button>
+
+                    </div>
+
                 </div>
                 <div className='allScaneDataMain'>
                     <p className='totalItemText'>{totalValues} Item Added</p>
@@ -133,8 +133,12 @@ export default function QRScanner() {
                 </div>
             </div>
 
-
-            <div style={{ position: 'absolute', bottom: '30px' }}>
+            <div className='bottomBtnDivMain'>
+                <button className='showInfoBtn'>Show Info</button>
+                <button className='showInfoBtn' onClick={() => navigation('/addFlask')}>print OR</button>
+                <button className='showInfoBtn' onClick={() => navigation('/addFlask')}>Show list</button>
+            </div>
+            <div style={{ marginBottom: '30px' ,marginTop: '20px' }}>
                 <p className='homeNoteTitle'>Add Sp. Remark</p>
                 <p className='homeNoteDesc'>Note*:<b>User Wired or Wireless Barcode/QR scanner,Not Use TAB Camera</b></p>
             </div>
