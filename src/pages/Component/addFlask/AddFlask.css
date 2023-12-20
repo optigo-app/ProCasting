@@ -1,0 +1,43 @@
+
+
+.addDeatilMain{
+    display: flex;
+    margin-left: 50px;
+    margin-block: 20px;
+}
+.addFlaskTitle{
+    background-color: #eceded;
+    height: 40px;
+    width: 130px;
+    font-size: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0px;
+}
+.addflaskInput{
+
+    background-color: #dde9f1;
+    border: none;
+    height: 40px;
+    width: 130px;
+    margin-left: 20px;
+}
+
+.addSaveBtn{
+
+    height: 50px;
+    width: 120px;
+    border: none;
+    background-color: darkgrey;
+    font-size: 20px;
+}
+
+.addSaveNewBtn{
+    height: 50px;
+    width: 150px;
+    border: none;
+    margin-left: 20px;
+    background-color: darkgrey;
+    font-size: 20px;
+}

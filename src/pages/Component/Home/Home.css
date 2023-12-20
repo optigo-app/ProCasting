@@ -1,0 +1,87 @@
+.Header {
+    background-color: #d9d9d8;
+    height: 100px;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.mainTitle {
+
+    margin: 0px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 50px;
+    background-color: lightyellow;
+    width: 100%;
+    font-size: 20px;
+}
+.logoImg{
+    width: 30%;
+}
+
+.headerShoeListBtn {
+    background-color: #eceded;
+    border: none;
+    height: 50px;
+    width: 150px;
+    font-size: 18px;
+    font-weight: 500;
+    cursor: pointer;
+    margin-right: 30px;
+}
+
+.homeORBtn {
+    height: 60px;
+    width: 140px;
+}
+
+.homeQRbtnDiv {
+    margin-block: 100px;
+    display: flex;
+    justify-content: end;
+    margin-right: 10%;
+}
+
+.bothBtnDiv {
+    display: flex;
+    justify-content: center;
+}
+
+.homeNewTree {
+    height: 40px;
+    width: 120px;
+    background-color: #eceded;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    margin-inline: 5%;
+}
+
+.homeEditTree {
+    height: 40px;
+    width: 120px;
+    background-color: #eceded;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    margin-inline: 5%;
+
+}
+
+.homeNoteTitle {
+    color: #6257e3;
+    font-size: 30px;
+    margin: 0px 10px;
+    font-weight: 500;
+    text-decoration: underline;
+    
+}
+
+.homeNoteDesc {
+    background-color: #ffde59;
+    height: 30px;
+    font-size: 22px;
+    margin: 0px;
+    padding: 0px 10px;
+}

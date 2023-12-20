@@ -1,0 +1,105 @@
+.headerTwoListBtn {
+    background-color: #eceded;
+    border: none;
+    height: 50px;
+    width: 150px;
+    font-size: 18px;
+    font-weight: 500;
+    cursor: pointer;
+    margin-inline: 40px;
+}
+
+.infoTextTitle {
+    font-size: 15px;
+    margin-block: 15px;
+    width: 90px;
+    text-align: left;
+
+}
+
+.infoTextInput {
+    height: 35px;
+    width: 60%;
+    border: none;
+    background-color: #d9d9d8;
+    margin-right: 20px;
+}
+
+.enterBrachItemBox {
+    height: 35px;
+    width: 100px;
+    border: none;
+    background-color: #d9d9d8;
+}
+
+
+.createInfoMain {
+    display: flex;
+    align-items: center;
+    width: 50%
+}
+
+.allScaneDataMain{
+    width: 70%;
+    margin-top: 2%;
+}
+
+.allScanDataUl{
+    display: flex;
+    list-style: none;
+    width: fit-content;
+    background-color: #00FF00;
+    height: 40px;
+    align-items: center;
+    justify-content: center;
+}
+.totalItemText{
+    font-size: 25px;
+    background-color: #eceded;
+    padding-inline: 130px; 
+    padding-block: 15px;
+    height: 50px;
+    width: 40%;
+    display: flex;
+    align-items: center;
+}
+
+.uploadTreeBtn{
+    height: 55px;
+    width: 150px;
+    background-color: #eceded;
+    border: 1px solid;
+    font-size: 15px;
+    cursor: pointer;
+}
+.printQRbtn{
+    height: 55px;
+    width: 150px;
+    background-color: #eceded;
+    border: 1px solid;
+    font-size: 20px;
+    margin-top: 30px;
+    cursor: pointer;
+}
+.allDataCreteDiv{
+    width: 90%;
+}
+.uploadBtnMain{
+    display: flex;
+    flex-direction: column;
+    width: 25%;
+    margin-top: 20px;
+}
+
+.showInfoBtn{
+
+    background-color: #add8e6;
+    border: none;
+    height: 40px;
+    width: 150px;
+    border-radius: 20px;
+    font-size: 18px;
+    font-weight: 500;
+    margin-top: 50px;
+    cursor: pointer;
+}

@@ -1,0 +1,114 @@
+.mainTitleIn {
+    margin: 0px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 50px;
+    background-color: #00ddff;
+    width: 180px;
+    font-size: 20px;
+
+}
+
+.mainTitleBarCode{
+    margin: 0px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 50px;
+    background-color: #ffde59;
+    width: fit-content;
+    padding-inline: 10px;
+    font-size: 20px;
+    margin-bottom: 25px;
+}
+
+.investTopBox1{
+    /* border: 1px solid; */
+    width: 30%;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    margin-top: 30px;
+    /* style={{ display: 'flex', alignItems: 'center', marginTop: '30px', width: '26%', flexDirection: 'column' }} */
+}
+.investTopBox2{
+    width: 30%;
+    border: 1px solid;
+    margin-top: 30px;
+    margin-left: 50px;
+    /* style={{ marginLeft: '30px', display: 'flex', alignItems: 'center', flexDirection: 'column' }} */
+}
+.investTreeCount{
+    background-color: #eceded;
+    text-align: center;
+    font-size: 22px;
+    font-weight: 700;
+    padding-block: 15px;
+    margin: 0px;
+    border-radius: 20px;
+}
+
+.investPowder{
+    background-color: #eceded;
+    height: 100px;
+    border-radius: 10px;
+    letter-spacing: 1px;
+    text-decoration: underline;
+    display: flex;
+    align-items: center;
+    margin: 0px;
+    padding-inline: 5px;
+    font-size: 50px;
+    font-weight: 700;
+}
+
+.investReqPowder{
+    background-color: #eceded;
+    height: 60px;
+    width: 250px;
+    padding-inline: 20px;
+    border-radius: 10px;
+    letter-spacing: 1px;
+    text-decoration: underline;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0px;
+    font-size: 25px;
+    font-weight: 700;
+}
+
+.investDestilInputTitle{
+    font-size: 22px;
+    margin: 0px;
+    display: flex;
+    align-items: left;
+    width: 150px;
+}
+.investDestilInput{
+
+    background-color: #d9d9d8;
+    height: 45px;
+    width: 200px;
+    border: none;
+}
+.investAddGlassBtn{
+
+    height: 40px;
+    width: 150px;
+
+}
+
+.investStartBtn{
+    background-color: #ffde59;
+    height: 50px;
+    width: 100px;
+    border-radius: 15px;
+    margin-top: 20px;
+}
+
+.investTableRow{
+    border-bottom: 1px solid black;
+    padding: 10px;
+}

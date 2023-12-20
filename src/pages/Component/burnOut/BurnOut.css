@@ -1,0 +1,50 @@
+
+
+
+.BurnTopBox1{
+    width: 30%;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    margin-top: 30px;
+}
+.burnOutIssueBtn{
+    height: 60px;
+    width: 150px;
+    font-size: 22px;
+    margin-top: 30px;
+}
+
+.burnCountFlask{
+    height: 80px;
+    width: 80px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0px;
+    background-color:  #eceded;
+}
+
+.brunFurnaceId{
+    background-color:  #eceded;
+    height: 50px;
+    width: 35%;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.BurnTableRow{
+    padding: 15px;
+    border-bottom: 1px solid;
+    font-size: 20px;
+}
+
+.burnTdata{
+    padding: 15px;
+    font-weight: 400;
+    border-bottom: 1px solid;
+    font-size: 20px;
+
+}
