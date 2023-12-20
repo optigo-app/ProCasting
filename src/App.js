@@ -9,6 +9,7 @@ import BurnOut from './pages/Component/burnOut/BurnOut';
 import UnlockAlloying from './pages/Component/unlockAllow/UnlockAlloying';
 import BatchListing from './pages/Component/batchListing/BatchListing';
 import BatchListingGrid from './pages/Component/batchListingGrid/BatchListingGrid';
+import ImageWebCam from './pages/Component/imageTag/ImageWebCam';
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
         <Route path='/unlock' element={<UnlockAlloying />} />
         <Route path='/batchListing' element={<BatchListing />} />
         <Route path='/batchListingGrid' element={<BatchListingGrid />} />
+        <Route path='/imagewebcam' element={<ImageWebCam />} />
       </Routes>
     </BrowserRouter>
 
