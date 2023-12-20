@@ -16,7 +16,7 @@ export default function Home() {
 
     return (
         <div >
-            <p className='mainTitle' >PROCASTING CREATE NEW BATCH</p>
+            <p className='mainTitle' >PROCASTING CREATE-NEW BATCH</p>
             <div>
                 <div style={{ display: 'flex', justifyContent: 'center', marginTop: '50px' }}>
                     <img src={Logo} className='logoImg' />
