@@ -1,41 +1,47 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import './Home.css'
 import { useNavigate } from 'react-router-dom'
 import Logo from '../../assets/oraillogo.png'
+import Note from '../../assets/note.jpg'
 
 export default function Home() {
 
     const navigation = useNavigate();
+    useEffect(() => {
+        document.body.style.backgroundColor = 'lightblue';
+        return () => {
+            document.body.style.backgroundColor = '';
+        };
+    }, []);
+
     return (
-        <div>
+        <div >
+            <p className='mainTitle' >PROCASTING CREATE NEW BATCH</p>
             <div>
-                <p className='mainTitle' >PROCASTING CREATE NEW BATCH</p>
-                <div style={{display : 'flex' , justifyContent : 'center'}}>
+                <div style={{ display: 'flex', justifyContent: 'center', marginTop: '50px' }}>
                     <img src={Logo} className='logoImg' />
                 </div>
-                {/* <div className='Header'>
-
-                    <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
-                        <button className='headerShoeListBtn'>Show List</button>
+                <div className='bothBtnDiv'>
+                    <div className='NoteMain'>
+                        <img src={Note} className='Noteimg' onClick={() => navigation('/createTree')}/>
+                        <p className='NoteImgTitle'>NEW THREE</p>
+                        {/* <button className='homeNewTree' >New Tree</button> */}
                     </div>
-                </div> */}
 
-                <div>
-                    {/* <div className='homeQRbtnDiv'>
-                </div> */}
-
-                    <div className='bothBtnDiv'>
-                        <button className='homeNewTree' onClick={() => navigation('/createTree')}>New Tree</button>
-                        <button className='homeEditTree'>Edit Tree</button>
-                    <button className='homeORBtn'>Print OR</button>
-
+                    <div className='NoteMain'>
+                        <img src={Note} className='Noteimg' />
+                        <p className='NoteImgTitle'>Edit THREE</p>
+                        {/* <button className='homeNewTree' onClick={() => navigation('/createTree')}>New Tree</button> */}
                     </div>
+                    <div className='NoteMain'>
+                        <img src={Note} className='Noteimg' />
+                        <p className='NoteImgTitle'>SHOW LIST</p>
+                        {/* <button className='homeNewTree' onClick={() => navigation('/createTree')}>New Tree</button> */}
+  
+                    </div>
+                    {/* <button className='homeEditTree'>Edit Tree</button>
+                    <button className='headerShoeListBtn'>Show List</button> */}
                 </div>
-
-                {/* <div style={{position: 'absolute' ,bottom: '30px'}}>
-                <p className='homeNoteTitle'>Add Sp. Remark</p>
-                <p className='homeNoteDesc'>Note*:<b>User Wired or Wireless Barcode/QR scanner,Not Use TAB Camera</b></p>
-            </div> */}
             </div>
         </div>
     )
