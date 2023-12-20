@@ -22,12 +22,13 @@ export default function Home() {
 
                 <div>
                     {/* <div className='homeQRbtnDiv'>
-                    <button className='homeORBtn'>Print OR</button>
                 </div> */}
 
                     <div className='bothBtnDiv'>
                         <button className='homeNewTree' onClick={() => navigation('/createTree')}>New Tree</button>
                         <button className='homeEditTree'>Edit Tree</button>
+                    <button className='homeORBtn'>Print OR</button>
+
                     </div>
                 </div>
 
