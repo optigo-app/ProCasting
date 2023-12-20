@@ -84,6 +84,30 @@
     font-size: 22px;
     margin: 10px 0px;
 }
+.uploadImageBtn{
+    /* #d9d9d8 */
+   
+}
+.bottomBtnDivMain{
+    display: flex;
+    justify-content: space-around;
+}
+
+.showInfoBtn{
+    background-color:  #d9d9d8;
+    border: none;
+    height: 40px;
+    width: 150px;
+    font-size: 20px;
+    font-weight: 500;
+    cursor: pointer;
+    margin: 15px;
+}
+
+.bottomBtnDivMain{
+    background-color: #eceded;
+}
+
 
 .uploadTreeBtn{
     height: 55px;
@@ -110,17 +134,6 @@
     margin-top: 20px;
 }
 
-.showInfoBtn{
-    background-color: #add8e6;
-    border: none;
-    height: 40px;
-    width: 150px;
-    border-radius: 20px;
-    font-size: 18px;
-    font-weight: 500;
-    margin-top: 20px;
-    cursor: pointer;
-}
 
 .css-nxo287-MuiInputBase-input-MuiOutlinedInput-input{
     height: 20px!important;
