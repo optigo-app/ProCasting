@@ -1,12 +1,4 @@
-.Header {
-    background-color: #d9d9d8;
-    height: 100px;
-    display: flex;
-    justify-content: flex-end;
-}
-
 .mainTitle {
-
     margin: 0px;
     display: flex;
     align-items: center;
@@ -15,38 +7,34 @@
     background-color: lightyellow;
     width: 100%;
     font-size: 20px;
+    font-weight: 600;
 }
 .logoImg{
     width: 30%;
 }
 
-.headerShoeListBtn {
-    background-color: #eceded;
-    border: none;
-    height: 50px;
-    width: 150px;
-    font-size: 18px;
-    font-weight: 500;
-    cursor: pointer;
-    margin-right: 30px;
-}
-
-.homeORBtn {
-    height: 60px;
-    width: 140px;
-}
-
-.homeQRbtnDiv {
-    margin-block: 100px;
+.NoteMain{
     display: flex;
-    justify-content: end;
-    margin-right: 10%;
+    flex-direction: column;
+    align-items: center;
+}
+.Noteimg{
+    width: 70%;
+}
+.NoteImgTitle{
+    font-size: 22px;
+    font-weight: 500;
+    margin: 0px;
 }
 
 .bothBtnDiv {
+    position: absolute;
+    bottom: 20%;
     display: flex;
-    justify-content: center;
+    background-color: white;
 }
+
+
 
 .homeNewTree {
     height: 40px;
