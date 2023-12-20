@@ -27,6 +27,7 @@ export default function Home() {
                         <p className='NoteImgTitle'>NEW THREE</p>
                         {/* <button className='homeNewTree' >New Tree</button> */}
                     </div>
+
                     <div className='NoteMain'>
                         <img src={Note} className='Noteimg' />
                         <p className='NoteImgTitle'>Edit THREE</p>
@@ -36,6 +37,7 @@ export default function Home() {
                         <img src={Note} className='Noteimg' />
                         <p className='NoteImgTitle'>SHOW LIST</p>
                         {/* <button className='homeNewTree' onClick={() => navigation('/createTree')}>New Tree</button> */}
+  
                     </div>
                     {/* <button className='homeEditTree'>Edit Tree</button>
                     <button className='headerShoeListBtn'>Show List</button> */}
