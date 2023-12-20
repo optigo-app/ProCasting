@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import QRCode from 'qrcode.react';
 import { QrReader } from 'react-qr-reader';
 import './CreateTree.css'
@@ -10,6 +10,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { makeStyles } from '@mui/styles';
 import { TextField } from '@mui/material';
+import profile from '../../assets/profile.webp'
 
 const useStyles = makeStyles({
     datePickerRoot: {
@@ -64,11 +65,12 @@ export default function QRScanner() {
         setEnteredValues(enteredValues.filter((_, index) => index !== indexToRemove));
     };
 
+
     return (
 
         <div>
             {/* <button className='headerTwoListBtn' onClick={() => navigation('/addFlask')}>New Tree</button> */}
-            <p className='mainTitle' >PROCASTING CREATE NEW BATCH</p>
+            <p className='mainTitle' >PROCASTING CREATE-NEW BATCH</p>
             <div style={{ display: 'flex', marginTop: '30px' }}>
                 <div className='allDataCreteDiv'>
                     <div style={{ display: 'flex' }}>
@@ -104,6 +106,7 @@ export default function QRScanner() {
                     </div>
                 </div>
             </div>
+          
             <div style={{ display: 'flex', marginTop: '20px' }}>
                 <div className='createORMain'>
                     <QRCode value='Scan a QR code' style={{ height: '200px', width: '200px' }} />
@@ -115,7 +118,9 @@ export default function QRScanner() {
                         </button>
                     </div>
                     <div>
-                    <button className='uploadImageBtn' onClick={() => navigation('/addFlask')}>uppload tree image</button>
+                        <img src={profile} className='uplodedImage' />
+                        {/* onClick={() => navigation('/addFlask')} */}
+                        <button className='uploadImageBtn' >uppload tree image</button>
 
                     </div>
 
@@ -138,7 +143,7 @@ export default function QRScanner() {
                 <button className='showInfoBtn' onClick={() => navigation('/addFlask')}>print OR</button>
                 <button className='showInfoBtn' onClick={() => navigation('/addFlask')}>Show list</button>
             </div>
-            <div style={{ marginBottom: '30px' ,marginTop: '20px' }}>
+            <div style={{ marginBottom: '30px', marginTop: '20px' }}>
                 <p className='homeNoteTitle'>Add Sp. Remark</p>
                 <p className='homeNoteDesc'>Note*:<b>User Wired or Wireless Barcode/QR scanner,Not Use TAB Camera</b></p>
             </div>
