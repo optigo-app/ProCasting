@@ -5,31 +5,38 @@
     margin-left: 50px;
     margin-block: 20px;
 }
-.addFlaskTitle{
-    background-color: #eceded;
-    height: 40px;
-    width: 130px;
-    font-size: 20px;
+.addFLaskMain{
     display: flex;
-    justify-content: center;
-    align-items: center;
-    margin: 0px;
 }
-.addflaskInput{
+.addFlaskQRMAin{
+    display: flex;
+    flex-direction: column;
+    width: 30%;
+    margin: 30px;
+}
+.addFlaskDeatilMain{
+    margin-top: 20px;
+}
 
+.addflaskInput{
     background-color: #dde9f1;
     border: none;
     height: 40px;
     width: 130px;
-    margin-left: 20px;
+    font-size: 20px;
+    text-align: center;
 }
-
-.addSaveBtn{
-
-    height: 50px;
-    width: 120px;
+.addflaskInputID{
+    background-color: #dde9f1;
     border: none;
-    background-color: darkgrey;
+    height: 40px;
+    width: 130px;
+    font-size: 20px;
+    text-align: center;
+    /* padding-left: 10px;
+    padding-top: 5px; */
+}
+.addflaskInputID::placeholder{
     font-size: 20px;
 }
 
@@ -38,6 +45,8 @@
     width: 150px;
     border: none;
     margin-left: 20px;
-    background-color: darkgrey;
+    background-color: #675ce6;
     font-size: 20px;
+    color: white;
+    cursor: pointer;
 }
