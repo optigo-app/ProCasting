@@ -17,3 +17,56 @@
 .grid-btn:active{
     box-shadow: 0px 1px 0px #dbdbdb;
 }
+
+.grid_head{
+    display:flex;
+    gap:12px;
+}
+
+
+
+.menu{
+    display: none;
+}
+
+.grid_head_container{
+    /* display: flex; */
+    background-color:#f1f1f1;
+    padding: 12px;
+    /* gap:15px; */
+    /* align-items: center; */
+    /* justify-content:center, */
+}
+
+.menu_responsive{
+    display: flex;
+    justify-content: center;
+    gap:12px;
+    align-items: center;
+}
+
+@media screen and (max-width:1327px) {
+    .date{
+        display: none;
+    }
+    
+    .select_metaltype{
+        display: none;
+    } 
+
+    .menu{
+        display: block;
+        margin-right: 120px;
+    }
+
+    .menu_responsive{
+        display:flex;
+        gap:12px;
+        flex-direction:row-reverse;
+    }
+
+    .grid_head_container{
+        display: flex;
+        justify-content: space-between;
+    }
+}

@@ -1,35 +1,41 @@
-import React from "react";
+import React, { useCallback, useState } from "react";
 import "./BatchListingGrid.css";
 import { DataGrid } from "@mui/x-data-grid";
+import SearchIcon from '@mui/icons-material/Search';
+import MenuRoundedIcon from '@mui/icons-material/MenuRounded';
+import { Divider, Drawer } from "@mui/material";
 
 const BatchListingGrid = () => {
+
+  const [menuFlag, setMenuFlag] = useState(false)
+
   const columns = [
-    { field: "sr", headerName: "Sr#", width: 90 },
-    { field: "date", headerName: "Date", width: 150 },
-    { field: "batch", headerName: "Batch#", width: 150 },
+    { field: "sr", headerName: "Sr#", width: 100 },
+    { field: "date", headerName: "Date", width: 130 },
+    { field: "batch", headerName: "Batch#", width: 130 },
     {
       field: "employee",
       headerName: "Employee",
-      width: 110,
+      width: 130,
     },
-    { field: "treewt", headerName: "Tree Wt", width: 150 },
+    { field: "treewt", headerName: "Tree Wt", width: 130 },
     {
       field: "departmentbatchno",
       headerName: "Department batch no#",
       width: 150,
     },
-    { field: "metaltype", headerName: "Metal Type", width: 150 },
-    { field: "metalcolor", headerName: "Metal Color", width: 150 },
+    { field: "metaltype", headerName: "Metal Type", width: 130 },
+    { field: "metalcolor", headerName: "Metal Color", width: 130 },
     { field: "serialjobs", headerName: "serial Jobs", width: 150 },
     { field: "status", headerName: "Status", width: 150 },
-    { field: "issue", headerName: "Issue", width: 150 },
-    { field: "return", headerName: "Return", width: 150 },
-    { field: "powderweight", headerName: "Powder Weight", width: 150 },
-    { field: "metalwt", headerName: "Metal Wt(pure)", width: 150 },
-    { field: "alloywt", headerName: "Alloy Wt(pure)", width: 150 },
-    { field: "flask", headerName: "Flask", width: 150 },
-    { field: "labelprint", headerName: "Label Print", width: 150 },
-    { field: "view", headerName: "View", width: 150 },
+    { field: "issue", headerName: "Issue", width: 130 },
+    { field: "return", headerName: "Return", width: 130 },
+    { field: "powderweight", headerName: "Powder Weight", width: 120 },
+    { field: "metalwt", headerName: "Metal Wt(pure)", width: 130 },
+    { field: "alloywt", headerName: "Alloy Wt(pure)", width: 130 },
+    { field: "flask", headerName: "Flask", width: 100 },
+    { field: "labelprint", headerName: "Label Print", width: 100 },
+    { field: "view", headerName: "View", width: 100 },
   ];
 
   const rows = [
@@ -203,23 +209,109 @@ const BatchListingGrid = () => {
     },
   ];
 
-  return (
+  const GridHeadDate = useCallback(() => (
     <>
       <div>
-        <div
+        <label>Date: &nbsp;</label>
+        <input
+          type="date"
           style={{
-            backgroundColor: "#f1f1f1",
-            padding: "12px",
-            display: "flex",
-            gap: "12px",
+            border: "1px solid #e2e2e2",
+            outline: "none",
+            width: "120px",
+            height: "30px",
+            borderRadius: "8px",
           }}
-        >
-          <button className="grid-btn">
-            <span style={{ fontSize: "18px" }}>+</span> Add
-          </button>
-          <button className="grid-btn">All</button>
+        />
+      </div>
+      <div>
+        <label>To: &nbsp;</label>
+        <input
+          type="date"
+          style={{
+            border: "1px solid #e2e2e2",
+            outline: "none",
+            width: "120px",
+            height: "30px",
+            borderRadius: "8px",
+          }}
+        />
+      </div>
+    </>
+  ), []);
+  const GridHeadSelect = useCallback(() => (
+    <>
+      <div>
+          <label>Metal Type</label>
+          </div>
+
+          <div>
+          <select style={{width:'150px',padding:'4px',backgroundColor:'#f0f0f0',border:'1px solid #b8b8b8',borderRadius:'6px'}}>
+            <option style={{}}>All Type</option>
+          </select>
+          </div>
+
+          <div>
+          <label>Status</label>
+          </div>
+
+          <div>
+          <select style={{width:'150px',padding:'4px',backgroundColor:'#f0f0f0',border:'1px solid #b8b8b8',borderRadius:'6px'}}>
+            <option style={{}}>All Type</option>
+          </select>
+          </div>
+    </>
+  ), []);
+
+  return (
+    <>
+      <div className="grid_head_container">
+        <div className="grid_head menu">
+          <MenuRoundedIcon onClick={() => setMenuFlag(true)} />
+        </div>
+
+        <div className="menu_responsive">
+          <div className="grid_head btn_group">
+            <button className="grid-btn">
+              <span style={{ fontSize: "18px" }}>+</span> Add
+            </button>
+            <button className="grid-btn">All</button>
+          </div>
+
+          <div className="grid_head date">{GridHeadDate()}</div>
+
+          <div className="grid_head_search">
+            <div
+              style={{
+                backgroundColor: "#f9f9f9",
+                border: "1px solid #e2e2e2",
+                borderRadius: "24px",
+                display: "flex",
+              }}
+            >
+              <div style={{ marginTop: "4px", marginLeft: "8px" }}>
+                <SearchIcon />
+              </div>
+              <input
+                type="text"
+                placeholder="Search..."
+                style={{
+                  backgroundColor: "#f9f9f9",
+                  outline: "none",
+                  border: "none",
+                  height: "27px",
+                  width: "280px",
+                  borderRadius: "24px",
+                  paddingInlineStart: "12px",
+                }}
+              />
+            </div>
+          </div>
+
+          <div className="grid_head select_metaltype">{GridHeadSelect()}</div>
         </div>
       </div>
+
       <div
         style={{
           display: "flex",
@@ -240,6 +332,18 @@ const BatchListingGrid = () => {
           />
         </div>
       </div>
+      <Drawer anchor="left" open={menuFlag} onClose={() => setMenuFlag(false)}>
+        <div style={{paddingLeft:'30px'}}>
+          <h1>
+            Filter
+          </h1>
+        </div>
+        <Divider/>
+        <div style={{padding:'30px',display:'flex',flexDirection:'column',gap:'20px'}}>
+          <div style={{display:'flex',gap:'12px'}}>{GridHeadDate()}</div>
+          <div style={{display:'flex',gap:'12px',flexDirection:'column'}}>{GridHeadSelect()}</div>
+        </div>
+      </Drawer>
     </>
   );
 };
