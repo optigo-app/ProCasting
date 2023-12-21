@@ -57,19 +57,3 @@
 
 }
 
-.homeNoteTitle {
-    color: #6257e3;
-    font-size: 30px;
-    margin: 0px 10px;
-    font-weight: 500;
-    text-decoration: underline;
-    
-}
-
-.homeNoteDesc {
-    background-color: #ffde59;
-    height: 30px;
-    font-size: 22px;
-    margin: 0px;
-    padding: 0px 10px;
-}

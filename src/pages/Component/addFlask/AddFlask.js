@@ -37,6 +37,15 @@ export default function AddFlask() {
         setInputErrorMax(false)
 
     }
+
+    const handleKeyDown = (event) => {
+        if (event.key === 'Enter') {
+          event.preventDefault();
+          handleGoButtonClick();
+        }
+      };
+
+
     console.log(enteredValues);
 
     return (
@@ -47,7 +56,7 @@ export default function AddFlask() {
                     <QRCode value='Scan a QR code' style={{ height: '200px', width: '200px' }} />
                     <div style={{ display: 'flex', marginTop: '20px' }}>
                         <input type='text' style={{ border: inputError && '1px solid red' }} className='enterBrachItemBox' value={inputValue}
-                            onChange={handleInputChange} />
+                            onChange={handleInputChange} onKeyDown={handleKeyDown}/>
                         <button style={{ height: '45px', width: '50px', fontSize: '20px', fontWeight: 600, cursor: 'pointer' }} onClick={handleGoButtonClick}>
                             Go
                         </button>
