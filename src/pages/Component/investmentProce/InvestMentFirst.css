@@ -1,15 +1,12 @@
-.mainTitleIn {
-    margin: 0px;
+
+
+.investTopBox1{
+    width: 30%;
     display: flex;
     align-items: center;
-    justify-content: center;
-    height: 50px;
-    background-color: #00ddff;
-    width: 180px;
-    font-size: 20px;
-
+    flex-direction: column;
+    margin-top: 20px;
 }
-
 .mainTitleBarCode{
     margin: 0px;
     display: flex;
@@ -23,15 +20,6 @@
     margin-bottom: 25px;
 }
 
-.investTopBox1{
-    /* border: 1px solid; */
-    width: 30%;
-    display: flex;
-    align-items: center;
-    flex-direction: column;
-    margin-top: 30px;
-    /* style={{ display: 'flex', alignItems: 'center', marginTop: '30px', width: '26%', flexDirection: 'column' }} */
-}
 .investTopBox2{
     width: 30%;
     border: 1px solid;
@@ -86,12 +74,19 @@
     align-items: left;
     width: 150px;
 }
+.investDestilInputTitleNew{
+    font-size: 22px;
+    margin: 0px;
+    display: flex;
+    width: 100px;
+}
 .investDestilInput{
 
     background-color: #d9d9d8;
     height: 45px;
     width: 200px;
     border: none;
+    font-size: 20px;
 }
 .investAddGlassBtn{
 
@@ -111,4 +106,33 @@
 .investTableRow{
     border-bottom: 1px solid black;
     padding: 10px;
+}
+
+
+.allScanInvestdataMain{
+    display: flex;
+    align-items: center;
+}
+.allInvestScanData{
+    display: flex;
+    list-style: none;
+    width: 100px;
+    background-color: #cef6ce;
+    height: 40px;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #a6d785;
+    border-radius: 5px;
+    font-size: 22px;
+    margin: 10px 0px;
+}
+
+.DrawerImg{
+    width: 100%;
+    height: 100%;
+}
+
+.css-uyjz3f-MuiPaper-root-MuiDrawer-paper {
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px !important;
+    width: 35%;
 }

@@ -20,14 +20,14 @@ export default function BurnOut() {
     };
     return (
         <div>
-            <p className='mainTitleIn' >Burnout Process</p>
+            <p className='mainTitle'>PROCASTING-BURNOUT PROCESS</p>
             <div style={{ display: 'flex' }}>
                 <div className='BurnTopBox1'>
-                    <QRCode value='Scan a QR code' />
-                    <div style={{ marginTop: '20px' }}>
+                    <QRCode value='Scan a QR code' style={{ height: '200px', width: '200px' }}/>
+                    <div style={{display:'flex', marginTop: '20px' }}>
                         <input type='text' className='enterBrachItemBox' value={inputValue}
                             onChange={handleInputChange} />
-                        <button style={{ height: '35px', cursor: 'pointer' }} onClick={handleGoButtonClick}>
+                        <button style={{ height: '47px', width: '50px', fontSize: '20px', fontWeight: 600, cursor: 'pointer' }} onClick={handleGoButtonClick}>
                             Go
                         </button>
                     </div>
