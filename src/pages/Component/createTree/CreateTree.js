@@ -70,7 +70,7 @@ export default function QRScanner() {
 
         <div>
             {/* <button className='headerTwoListBtn' onClick={() => navigation('/addFlask')}>New Tree</button> */}
-            <p className='mainTitle' >PROCASTING CREATE-NEW BATCH</p>
+            <p className='mainTitle' >PROCASTING-CREATE NEW BATCH</p>
             <div style={{ display: 'flex', marginTop: '30px' }}>
                 <div className='allDataCreteDiv'>
                     <div style={{ display: 'flex' }}>
