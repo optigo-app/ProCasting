@@ -51,7 +51,7 @@ const ImageWebCam = () => {
         
       />
       <div style={{display:'flex',justifyContent:'center'}}>
-        <div style={{display:'flex',gap:'12px'}}>
+        <div style={{display:'flex',gap:'12px',margin:'20px 0px'}}>
           <button
             onClick={() => {
               if (camera.current) {
@@ -80,7 +80,8 @@ const ImageWebCam = () => {
           </button>
         </div>
       </div>
-    </div>}
+    </div>
+    }
     {
         cameraError && 
         <div >
