@@ -1,0 +1,19 @@
+.customHeaderCell {
+    background-color: #ffde59; /* Change this to your desired color */
+    color: black; /* Change this to your desired text color */
+    font-weight: bold; /* Additional styles if needed */
+    padding: 8px; /* Additional styles if needed */
+  }
+
+.grid-btn{
+    border:1px solid rgba(0,0,0,0.12);  
+    border-radius:5px;
+    padding:5px 12px;
+    cursor:pointer;
+    box-shadow: 2px 4px 3px #dbdbdb;
+    width:64px
+}
+
+.grid-btn:active{
+    box-shadow: 0px 1px 0px #dbdbdb;
+}

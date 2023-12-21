@@ -9,8 +9,11 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { makeStyles } from '@mui/styles';
-import { TextField } from '@mui/material';
+import { Dialog, TextField } from '@mui/material';
 import profile from '../../assets/profile.webp'
+import { useRecoilState, useRecoilValue } from 'recoil';
+import { CurrentCamFlag, CurrentImageState } from '../../recoil/Recoil';
+import ImageWebCam from '../imageTag/ImageWebCam';
 
 const useStyles = makeStyles({
     datePickerRoot: {
@@ -40,8 +43,11 @@ export default function QRScanner() {
     const [inputValue, setInputValue] = useState(undefined);
     const [enteredValues, setEnteredValues] = useState([]);
     const [inputError, setInputError] = useState(false)
+    const [camFlag, setCamFlag] = useRecoilState(CurrentCamFlag)
     const navigation = useNavigate();
     const classes = useStyles();
+
+    const CurrentImageValue=useRecoilValue(CurrentImageState);
 
 
     const handleInputChange = (event) => {
@@ -67,7 +73,7 @@ export default function QRScanner() {
 
 
     return (
-
+        <>
         <div>
             {/* <button className='headerTwoListBtn' onClick={() => navigation('/addFlask')}>New Tree</button> */}
             <p className='mainTitle' >PROCASTING CREATE-NEW BATCH</p>
@@ -117,17 +123,17 @@ export default function QRScanner() {
                             Go
                         </button>
                     </div>
-                    <div>
-                        <img src={profile} className='uplodedImage' />
+                    <div style={{display:'flex',flexDirection:'column',textAlign:'center',gap:'20px'}}>
+                        <img src={CurrentImageValue} className='uplodedImage' />
                         {/* onClick={() => navigation('/addFlask')} */}
-                        <button className='uploadImageBtn' >uppload tree image</button>
+                        <button className='uploadImageBtn'onClick={()=>setCamFlag(true)} >uppload tree image</button>
 
                     </div>
 
                 </div>
                 <div className='allScaneDataMain'>
                     <p className='totalItemText'>{totalValues} Item Added</p>
-                    <div style={{ height: '540px', overflow: 'scroll', display: 'flex', flexDirection: 'column' }}>
+                    <div style={{ height: '540px', overflow: 'auto', display: 'flex', flexDirection: 'column' }}>
                         {enteredValues.map((value, index) => (
                             <div className='allScandataMain' >
                                 <p className='allScanData' key={index}>{value}</p>
@@ -148,5 +154,10 @@ export default function QRScanner() {
                 <p className='homeNoteDesc'>Note*:<b>User Wired or Wireless Barcode/QR scanner,Not Use TAB Camera</b></p>
             </div>
         </div>
+        <Dialog open={camFlag} fullWidth={"sm"}>
+            <ImageWebCam/>
+        </Dialog>
+        </>
+
     );
 }
