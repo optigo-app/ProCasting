@@ -21,7 +21,10 @@ export default function InvestMentFirst() {
     const [blueImg, setBlueImg] = useState(false);
     const [orangeImg, setOrangImg] = useState(false);
     const [defaultImg, setDefaultImg] = useState(false);
-    
+    const [weight, setWeight] = useState(false);
+    const [TDS, setTDS] = useState(undefined);
+    const [phValue, setPhValue] = useState(undefined);
+    const [showTimmerBtn, setShowTimmerBtn] = useState(false);
 
     const navigation = useNavigate();
 
@@ -74,7 +77,7 @@ export default function InvestMentFirst() {
             setOrangImg(true)
         } else if (enteredValues[0] === 'F9') {
             setOrangImg(true)
-        }else{
+        } else {
             setDefaultImg(true)
         }
 
@@ -94,9 +97,31 @@ export default function InvestMentFirst() {
         setTimeout(handleDelayedFunction, totalTi);
     };
 
-        const handleRefresh = () => {
-          window.location.reload(); // This will refresh the page
-        };
+    const handleRefresh = () => {
+        window.location.reload();
+    };
+
+    const handleKeyDown = (event) => {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            handleGoButtonClick();
+        }
+    };
+
+
+    const saveDataHandle = () => {
+
+        if (TDS === undefined || TDS === '') {
+            alert('Enetr TDS')
+        } else if (phValue === undefined || phValue === '') {
+            alert('Enetr phValue')
+        } else {
+            setShowTimmerBtn(true)
+            setTDS('')
+            setPhValue('')
+        }
+    }
+
     return (
         <div>
             <Dialog
@@ -147,26 +172,26 @@ export default function InvestMentFirst() {
             </Drawer>
             <div>
                 <p className='mainTitle'>PROCASTING-INVESTMENT PROCESS</p>
-                <div style={{height : '50px'}}>
+                <div style={{ height: '50px' }}>
 
-                {greenImg  && <button onClick={() => setOpenYourBagDrawer(true)} style={{float : 'right' , height : '50px' , width: '120px'}}>Open Image</button>} 
-                 { blueImg && <button onClick={() => setOpenYourBagDrawer(true)} style={{float : 'right' , height : '50px' , width: '120px'}}>Open Image</button>}
-                 {orangeImg  && <button onClick={() => setOpenYourBagDrawer(true)} style={{float : 'right' , height : '50px' , width: '120px'}}>Open Image</button>}
+                    {greenImg && <button onClick={() => setOpenYourBagDrawer(true)} style={{ float: 'right', height: '50px', width: '120px' }}>Open Image</button>}
+                    {blueImg && <button onClick={() => setOpenYourBagDrawer(true)} style={{ float: 'right', height: '50px', width: '120px' }}>Open Image</button>}
+                    {orangeImg && <button onClick={() => setOpenYourBagDrawer(true)} style={{ float: 'right', height: '50px', width: '120px' }}>Open Image</button>}
                 </div>
                 <div style={{ display: 'flex' }}>
                     <div className='investTopBox1'>
                         <QRCode value='Scan a QR code' style={{ height: '200px', width: '200px' }} />
                         <div style={{ display: 'flex', marginTop: '20px' }}>
-                            <input type='text' style={{ border: inputError && '1px solid red' }} className='enterBrachItemBox' value={inputValue}
+                            <input type='text' onKeyDown={handleKeyDown} style={{ border: inputError && '1px solid red' }} className='enterBrachItemBox' value={inputValue}
                                 onChange={handleInputChange} />
-                            <button style={{ height: '45px', width: '50px', fontSize: '20px', fontWeight: 600, cursor: 'pointer' }} onClick={handleGoButtonClick}>
+                            <button style={{ height: '47px', width: '50px', fontSize: '20px', fontWeight: 600, cursor: 'pointer' }} onClick={handleGoButtonClick}>
                                 Go
                             </button>
                         </div>
 
-                         <button style={{marginTop : '20px' , cursor : 'pointer' , height : '35px' , width : '100px'}} onClick={handleRefresh}>Clear All</button>
+                        <button style={{ marginTop: '20px', cursor: 'pointer', height: '35px', width: '100px' }} onClick={handleRefresh}>Clear All</button>
                     </div>
-                    <div style={{ width: '30%', display: 'flex', alignItems: 'center', flexDirection: 'column' }}>
+                    <div style={{ width: '30%', overflow: 'auto', height: '350px', display: 'flex', alignItems: 'center', flexDirection: 'column' }}>
                         {enteredValues.map((value, index) => (
                             <div className='allScanInvestdataMain' >
                                 <p className='allInvestScanData' key={index}>{value}</p>
@@ -174,23 +199,21 @@ export default function InvestMentFirst() {
                         ))}
                     </div>
                     <div>
-                        <div>
-                            <div style={{ display: 'flex', marginTop: '15px' }}>
-                                <p className='investDestilInputTitleNew'>weight:</p>
-                                <input type='text' value={'3000'} className='investDestilInput' />
-                            </div>
-                            <div style={{ display: 'flex', marginTop: '15px' }}>
-                                <p className='investDestilInputTitleNew'>TDS:</p>
-                                <input type='text' className='investDestilInput' />
-                            </div>
-                            <div style={{ display: 'flex', marginTop: '15px' }}>
-                                <p className='investDestilInputTitleNew'>PHvalue:</p>
-                                <input type='text' className='investDestilInput' />
-                            </div>
+                        <div style={{ display: 'flex', marginTop: '15px' }}>
+                            <p className='investDestilInputTitleNew'>weight:</p>
+                            <input type='text' value={greenImg && '3000' || blueImg && '3000' || orangeImg && '3000' || weight && '' || defaultImg && ''} className='investDestilInput' />
+                        </div>
+                        <div style={{ display: 'flex', marginTop: '15px' }}>
+                            <p className='investDestilInputTitleNew'>TDS:</p>
+                            <input type='text' className='investDestilInput' value={TDS} onChange={(e) => setTDS(e.target.value)} />
+                        </div>
+                        <div style={{ display: 'flex', marginTop: '15px' }}>
+                            <p className='investDestilInputTitleNew'>PHvalue:</p>
+                            <input type='text' className='investDestilInput' value={phValue} onChange={(e) => setPhValue(e.target.value)} />
+                        </div>
 
-                            <div style={{ display: 'flex', flexDirection: 'column', marginTop: '15px' }}>
-                                <button className='investAddGlassBtn'>Save</button>
-                            </div>
+                        <div style={{ display: 'flex', flexDirection: 'column', marginTop: '15px' }}>
+                            <button className='investAddGlassBtn' onClick={saveDataHandle}>Save</button>
                         </div>
                     </div>
 
@@ -236,24 +259,33 @@ export default function InvestMentFirst() {
                         <button className='investStartBtn' onClick={() => navigation('/burnOut')}>START</button>
                     </div>
                 </div> */}
+                <div style={{ display: 'flex', flexWrap: 'wrap' }}>
+                    {enteredValues.map((value, index) => (
+                        <table key={index} style={{ backgroundColor: greenImg && '#b1d8b7' || blueImg && '#a396c8' || orangeImg && 'orange' || defaultImg && '#add8e6', margin: '20px' }}>
+                            <tr>
+                                <th className='investTableRow'>Batch No:{index === 0 && 'AB'}{index === 1 && 'BC'}{index === 2 && 'CD'} </th>
+                            </tr>
+                            <tr>
+                                <th className='investTableRow'>78 Jobs </th>
+                            </tr>
+                            <tr>
+                                <th className='investTableRow'>150 Grams </th>
+                            </tr>
+                            <tr>
+                                <th className='investTableRow'>{greenImg && 'Wax Setting' || blueImg && 'Regular' || orangeImg && 'RPT'}</th>
+                            </tr>
+                            <tr>
+                                <th className='investTableRow'>Flask ID</th>
+                            </tr>
+                            {showTimmerBtn &&
+                                <div>
+                                    <button style={{ height: '40px', width: '120px' }}>Start Time</button>
+                                </div>
+                            }
+                        </table>
+                    ))}
+                </div>
 
-                <table style={{ backgroundColor: greenImg && '#b1d8b7' || blueImg && '#a396c8' || orangeImg && 'orange' || defaultImg && '#add8e6' , margin: '20px' }}>
-                    <tr>
-                        <th className='investTableRow'>Batch No:AB </th>
-                    </tr>
-                    <tr>
-                        <th className='investTableRow'>78 Jobs </th>
-                    </tr>
-                    <tr>
-                        <th className='investTableRow'>150 Grams </th>
-                    </tr>
-                    <tr>
-                        <th className='investTableRow'>Wax Setting</th>
-                    </tr>
-                    <tr>
-                        <th className='investTableRow'>Flask ID</th>
-                    </tr>
-                </table>
             </div>
         </div>
     )

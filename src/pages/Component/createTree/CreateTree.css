@@ -12,27 +12,66 @@
 .allDataCreteDiv{
     width: 100%;
 }
+
 .infoTextInput {
     height: 40px;
-    width: 33.33%;
+    width: 20%;
     border: none;
     background-color: #d9d9d8;
-    margin: 10px;
+    margin: 2px;
     padding-left: 20px;
     padding-top: 5px;
-    font-size: 22px;
+    font-size: 14px;
 }
 .infoTextInput::placeholder {
-    font-size: 20px!important;
+    font-size: 15px!important;
     margin: 10px!important;
     font-weight: 600;
 }
+.infoTextInputBatch{
+    height: 40px;
+    width: 10%;
+    border: none;
+    background-color: #d9d9d8;
+    margin: 2px;
+    padding-left: 20px;
+    padding-top: 5px;
+    font-size: 14px;
+}
+.infoTextInputBatch::placeholder {
+    font-size: 15px!important;
+    margin: 5px!important;
+    font-weight: 600;
+    color: #a2a2a2;
+}
+.infoTextInputWight{
+    height: 40px;
+    width: 12%;
+    border: none;
+    background-color: #d9d9d8;
+    margin: 2px;
+    padding-left: 20px;
+    padding-top: 5px;
+    font-size: 14px;
+}
+.infoTextInputWight::placeholder {
+    font-size: 15px!important;
+    margin: 10px!important;
+    font-weight: 600;
+    color: #a2a2a2;
+
+}
+
+
+
 .selecGold{
     height: 49px;
     width: 100%;
     padding-inline: 10px;
-    font-size: 17px;
-    font-weight: 700;
+    font-size: 15px;
+    font-weight: 500;
+    border-color: #c4c4c4;
+    color: #a2a2a2;
 }
 .selecGoldOption{
     font-size: 13px;
@@ -46,23 +85,22 @@
 .enterBrachItemBox {
     height: 45px;
     width: 150px;
-    font-size: 25px;
+    font-size: 18px;
     border: none;
     background-color: #d9d9d8;
 }
 
 .allScaneDataMain{
-    width: 70%;
+    width: 25%;
     margin-top: 3%;
 }
 
 .totalItemText{
-    font-size: 30px;
+    font-size: 20px;
     background-color: #eceded;
-    padding-inline: 100px; 
+    padding-inline: 50px; 
     padding-block: 10px;
     height: 30px;
-    width: 40%;
     display: flex;
     align-items: center;
     margin: 0px;
@@ -82,7 +120,7 @@
     border: 2px solid #a6d785;
     border-radius: 5px;
     font-size: 22px;
-    margin: 10px 0px;
+    margin: 7px 0px;
 }
 .uploadImageBtn{
     /* #d9d9d8 */
@@ -90,6 +128,9 @@
    width: 200px;
    font-size: 20px;
    font-weight: 500;
+}
+.uplodedImageMain{
+    width: 30%;
 }
 .uplodedImage{
     width:100%;
@@ -141,14 +182,34 @@
     margin-top: 20px;
 }
 
+.homeNoteTitle {
+    color: #6257e3;
+    font-size: 30px;
+    margin: 0px 10px;
+    font-weight: 500;
+    cursor: pointer;
+    text-decoration: underline;
+    
+}
 
+.homeNoteDesc {
+    background-color: #ffde59;
+    height: 30px;
+    font-size: 22px;
+    margin: 0px;
+    padding: 0px 10px;
+}
+.addReamrkTextBox{
+    height: 80px;
+    width: 500px;
+}
 .css-nxo287-MuiInputBase-input-MuiOutlinedInput-input{
-    height: 20px!important;
+    height: 15px!important;
     width: 70%!important;
-    font-size: 22px!important;
+    font-size: 15px!important;
 }
 .css-1d3z3hw-MuiOutlinedInput-notchedOutline{
-    height: 55px!important;
+    height: 50px!important;
     width: 90%!important;
 }
 .css-o9k5xi-MuiInputBase-root-MuiOutlinedInput-root{
@@ -156,4 +217,8 @@
 }
 .makeStyles-datePickerRoot-64{
     margin-top: 0px!important;
+}
+.makeStyles-datePickerRoot-13{
+    margin-top: 0px!important;
+
 }

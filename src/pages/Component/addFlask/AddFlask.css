@@ -43,10 +43,10 @@
 .addSaveNewBtn{
     height: 50px;
     width: 150px;
-    border: none;
+    /* border: none; */
     margin-left: 20px;
-    background-color: #675ce6;
+    /* background-color: #675ce6; */
     font-size: 20px;
-    color: white;
+    /* color: white; */
     cursor: pointer;
 }
