@@ -22,14 +22,11 @@
 
 
 .burnOutIssueBtn{
-    height: 60px;
+    height: 55px;
     width: fit-content;
     padding-inline: 30px;
-    border-radius: 30px;
     font-size: 22px;
     margin-top: 30px;
-    background-color: #c7e1f8;
-    border: none;
     cursor: pointer;
 }
 

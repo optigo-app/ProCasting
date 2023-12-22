@@ -1,18 +1,17 @@
 import QRCode from 'qrcode.react'
 import React, { useEffect, useState } from 'react'
 import './BurnOut.css'
-import { useNavigate } from 'react-router-dom';
-import { Dialog, DialogContentText, DialogTitle, Drawer } from '@mui/material';
-
+import { Dialog, DialogTitle, Drawer } from '@mui/material';
 import greenImges from '../../assets/green.png'
 import blueImges from '../../assets/blue.png'
 import orangeImges from '../../assets/orange.png'
 import { IoMdClose } from "react-icons/io";
 import Barcode from 'react-barcode';
-
 import Button from '@mui/material/Button';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
+import BarcodeScanner from 'react-barcode-reader';
+import scaneCodeImage from '../../assets/scanBarcode.gif'
+import idle from '../../assets/idle.gif'
+
 
 export default function BurnOut() {
 
@@ -26,13 +25,21 @@ export default function BurnOut() {
     const [inputError, setInputError] = useState(false)
     const [openYourBagDrawer, setOpenYourBagDrawer] = useState(false);
     const [flashCode, setFlashCode] = useState('');
-    const containerStyle = {
-        width: '170px',
-        display: 'inline-block',
-        overflow: 'hidden',
-        alignItems: 'center'
-    };
     const [open, setOpen] = useState(false);
+    const [isImageVisible, setIsImageVisible] = useState(true);
+
+    const handleScan = (data) => {
+        setEnteredValues([...enteredValues, data]);
+    };
+
+    const handleError = (error) => {
+        console.error('Error while scanning:', error);
+    };
+
+    const toggleImageVisibility = () => {
+        setIsImageVisible(!isImageVisible);
+    };
+
 
     const handleClickOpen = () => {
         setOpen(true);
@@ -42,10 +49,6 @@ export default function BurnOut() {
         setOpen(false);
         window.location.reload();
     };
-
-    const barcodeValue = '123456789012345678901234';
-
-    const navigation = useNavigate();
 
 
     useEffect(() => {
@@ -123,6 +126,11 @@ export default function BurnOut() {
 
     return (
         <div>
+            <BarcodeScanner
+                onScan={handleScan}
+                onError={handleError}
+                facingMode="environment"
+            />
             <Dialog
                 open={open}
                 // onClose={handleClose}
@@ -165,17 +173,15 @@ export default function BurnOut() {
             </div>
             <div style={{ display: 'flex' }}>
                 <div className='BurnTopBox1'>
-                    <div style={{ width: '60%', display: 'flex', justifyContent: 'center' }}>
-                        <div style={containerStyle}>
-                            <Barcode
-                                value={barcodeValue}
-                                width={2}
-                                height={100}
-                                fontSize={16}
-                                displayValue={false}
-                            />
+                   
+                <div onClick={toggleImageVisibility} style={{ width: 'fit-content', marginLeft: '20px' }}>
+                            {isImageVisible ? <div>
+                                <img src={scaneCodeImage} className='createImageQrCode' />
+                            </div> :
+                                <div>
+                                    <img src={idle} />
+                                </div>}
                         </div>
-                    </div>
                     <div style={{ display: 'flex', marginTop: '5px' }}>
                         <input type='text' onKeyDown={handleKeyDown} style={{ border: inputError && '1px solid red' }} className='enterBrachItemBox' value={inputValue}
                             onChange={handleInputChange} />

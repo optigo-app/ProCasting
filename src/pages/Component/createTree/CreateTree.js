@@ -58,11 +58,9 @@ export default function QRScanner() {
 
     const CurrentImageValue = useRecoilValue(CurrentImageState);
 
-    const [scannedCode, setScannedCode] = useState('');
 
     const handleScan = (data) => {
         setEnteredValues([...enteredValues, data]);
-        setScannedCode((prev) => [...prev , data]);
     };
 
     const handleError = (error) => {
@@ -142,10 +140,8 @@ export default function QRScanner() {
                 <BarcodeScanner
                     onScan={handleScan}
                     onError={handleError}
-                    facingMode="environment" // Use the device's rear camera (optional)
+                    facingMode="environment"
                 />
-                <p>Scanned Barcode: {scannedCode}</p>
-
                 <p className='mainTitle' >PROCASTING-CREATE NEW BATCH</p>
                 <div style={{ display: 'flex', marginTop: '30px' }}>
                     <div className='allDataCreteDiv'>
@@ -191,18 +187,6 @@ export default function QRScanner() {
                                     <img src={idle} />
                                 </div>}
                         </div>
-
-                        {/* <div style={{ width: '60%', display: 'flex', justifyContent: 'center' }}>
-                            <div style={containerStyle}>
-                                <Barcode
-                                    value={barcodeValue}
-                                    width={2}
-                                    height={100}
-                                    fontSize={16}
-                                    displayValue={false}
-                                />
-                            </div>
-                        </div> */}
                         <div style={{ display: 'flex', marginTop: '10px' }}>
                             <input type='text' style={{ border: inputError && '1px solid red' }} className='enterBrachItemBox' value={inputValue}
                                 onChange={handleInputChange} onKeyDown={handleKeyDown} />
@@ -233,7 +217,7 @@ export default function QRScanner() {
                 <div className='bottomBtnDivMain'>
                     <button className='showInfoBtn' onClick={handleMoreInfoShow}>Show Info</button>
                     <button className='showInfoBtn' onClick={() => navigation('/printQr')}>print OR</button>
-                    <button className='showInfoBtn' onClick={() => navigation('/addFlask')}>Show list</button>
+                    <button className='showInfoBtn' onClick={() => navigation('/batchListingGrid')}>Show list</button>
                     <button className='showInfoBtn' onClick={() => navigation('/addFlask')}>Save & New</button>
                 </div>
                 <div style={{ marginTop: '10px' }}>
