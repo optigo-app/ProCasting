@@ -93,17 +93,21 @@
 .allScaneDataMain{
     width: 35%;
     margin-top: 3%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .totalItemText{
     font-size: 20px;
     background-color: #eceded;
-    padding-inline: 50px; 
+    padding-inline: 80px; 
     padding-block: 10px;
     height: 30px;
     display: flex;
     align-items: center;
     margin: 0px;
+    width: fit-content;
 }
 .allScandataMain{
     display: flex;

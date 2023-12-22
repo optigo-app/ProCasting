@@ -27,7 +27,7 @@ export default function InvestMentFirst() {
     const [TDS, setTDS] = useState(undefined);
     const [phValue, setPhValue] = useState(undefined);
     const [showTimmerBtn, setShowTimmerBtn] = useState(false);
-
+    const [selectedLabels , setSelectedLabels] = useState([]);
     const navigation = useNavigate();
 
     const handleClickOpen = () => {
