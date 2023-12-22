@@ -250,6 +250,10 @@ const BatchListingGrid = () => {
           <div>
           <select style={{width:'150px',padding:'4px',backgroundColor:'#f0f0f0',border:'1px solid #b8b8b8',borderRadius:'6px'}}>
             <option style={{}}>All Type</option>
+            <option style={{}}>Gold 14K WHITE</option>
+            <option style={{}}>Gold 14K YELLOW</option>
+            <option style={{}}>Gold 18K WHITE</option>
+            <option style={{}}>Gold 18K YELLOW</option>
           </select>
           </div>
 
@@ -260,6 +264,10 @@ const BatchListingGrid = () => {
           <div>
           <select style={{width:'150px',padding:'4px',backgroundColor:'#f0f0f0',border:'1px solid #b8b8b8',borderRadius:'6px'}}>
             <option style={{}}>All Type</option>
+            <option style={{}}>Investment Process</option>
+            <option style={{}}>Burnout Process</option>
+            <option style={{}}>Alloying</option>
+            <option style={{}}>casting Completed</option>
           </select>
           </div>
     </>
@@ -268,22 +276,23 @@ const BatchListingGrid = () => {
   return (
     <>
       <div className="grid_head_container">
-        <div className="grid_head menu" style={{display: 'flex'}}>
+        <div className="grid_head menu" >
           <MenuRoundedIcon onClick={() => setMenuFlag(true)} />
 
-          <div style={{display : 'flex' ,alignItems: 'stretch'}}>
+          {/* <div style={{display : 'flex' ,alignItems: 'stretch'}}>
             <p style={{margin : '0px 5px',cursor:'pointer', fontSize: '14px',textDecoration: 'underline', color: 'blue'}} onClick={() => navigation('/investmentFirst')}>INVESTMENT PROCESS</p>
             <p style={{margin : '0px 5px',cursor:'pointer', fontSize: '14px',textDecoration: 'underline', color: 'blue'}} onClick={() => navigation('/burnOut')}>BURNOUT</p>
             <p style={{margin : '0px 5px',cursor:'pointer', fontSize: '14px',textDecoration: 'underline', color: 'blue'}} onClick={() => navigation('/unlock')}>UNLOCK ALLOYING</p>
-          </div>
+          </div> */}
         </div>
 
         <div className="menu_responsive">
           <div className="grid_head btn_group">
-            <button className="grid-btn">
-              <span style={{ fontSize: "18px" }}>+</span> Add
+            <button className="grid-btn" onClick={()=>navigation('/investmentFirst')}>
+              INVESTMENT PROCESS
             </button>
-            <button className="grid-btn">All</button>
+            <button className="grid-btn" onClick={() => navigation('/burnOut')}>BURNOUT</button>
+            <button className="grid-btn" onClick={() => navigation('/unlock')}>UNLOCK ALLOYING</button>
           </div>
 
           <div className="grid_head date">{GridHeadDate()}</div>
