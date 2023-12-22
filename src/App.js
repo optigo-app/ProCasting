@@ -21,7 +21,7 @@ function App() {
         <Route path='/investmentFirst' element={<InvestMentFirst />} />
         <Route path='/burnOut' element={<BurnOut />} />
         <Route path='/unlock' element={<UnlockAlloying />} />
-        <Route path='/batchListing' element={<BatchListing />} />
+        <Route path='/batchListing' element={<BatchListing />} /> 
         <Route path='/batchListingGrid' element={<BatchListingGrid />} />
         <Route path='/imagewebcam' element={<ImageWebCam />} />
       </Routes>

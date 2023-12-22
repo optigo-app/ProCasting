@@ -20,6 +20,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import RemoveCircleRoundedIcon from '@mui/icons-material/RemoveCircleRounded';
+import Barcode from 'react-barcode';
 
 const useStyles = makeStyles({
     datePickerRoot: {
@@ -60,11 +61,11 @@ export default function QRScanner() {
     const [open, setOpen] = useState(false);
 
     const handleClickOpen = () => {
-      setOpen(true);
+        setOpen(true);
     };
-  
+
     const handleClose = () => {
-      setOpen(false);
+        setOpen(false);
     };
 
 
@@ -96,6 +97,14 @@ export default function QRScanner() {
         }
     };
 
+    const containerStyle = {
+        width: '170px',
+        display: 'inline-block',
+        overflow: 'hidden',
+        alignItems: 'center'
+    };
+
+    const barcodeValue = '123456789012345678901234';
     return (
         <>
             <Dialog
@@ -109,12 +118,12 @@ export default function QRScanner() {
                 </DialogTitle>
                 <DialogContent>
                     <DialogContentText id="alert-dialog-description">
-                        <textarea type='text' placeholder='Enter Remark' className='addReamrkTextBox'/>
+                        <textarea type='text' placeholder='Enter Remark' className='addReamrkTextBox' />
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleClose}>ADD</Button>
-                 
+
                 </DialogActions>
             </Dialog>
             <div>
@@ -158,8 +167,19 @@ export default function QRScanner() {
 
                 <div style={{ display: 'flex', marginTop: '20px',justifyContent:'space-between',flexWrap:'wrap'}} className='body_container'>
                     <div className= {'createORMain'} >
-                        <QRCode value='Scan a QR code' style={{ height: '200px', width: '200px' }} />
-                        <div style={{ display: 'flex', marginTop: '20px' }}>
+                        {/* <Barcode value={barcodeValue} displayValue={false} width={0.7} height={100} /> */}
+                        <div style={{ width: '60%', display: 'flex', justifyContent: 'center' }}>
+                            <div style={containerStyle}>
+                                <Barcode
+                                    value={barcodeValue}
+                                    width={2}
+                                    height={100}
+                                    fontSize={16}
+                                    displayValue={false}
+                                />
+                            </div>
+                        </div>
+                        <div style={{ display: 'flex', marginTop: '10px' }}>
                             <input type='text' style={{ border: inputError && '1px solid red' }} className='enterBrachItemBox' value={inputValue}
                                 onChange={handleInputChange} onKeyDown={handleKeyDown} />
                             <button style={{ height: '100%', width: '50px', fontSize: '20px', fontWeight: 600, cursor: 'pointer' }} onClick={handleGoButtonClick}>
@@ -172,7 +192,7 @@ export default function QRScanner() {
                     </div>
                     <div className='allScaneDataMain'>
                         <p className='totalItemText'>{totalValues} Item Added</p>
-                        <div style={{ height: '380px', alignItems: 'center', overflow: 'auto', display: 'flex', flexDirection: 'column' }}>
+                        <div style={{ height: '360px', alignItems: 'center', overflow: 'auto', display: 'flex', flexDirection: 'column' }}>
                             {enteredValues.map((value, index) => (
                                 <div className='allScandataMain' >
                                     <p className='allScanData' key={index}>{value}</p>

@@ -8,6 +8,7 @@ import blueImges from '../../assets/blue.png'
 import orangeImges from '../../assets/orange.png'
 import { IoMdClose } from "react-icons/io";
 import Countdown from "react-countdown";
+import Barcode from 'react-barcode';
 
 
 export default function InvestMentFirst() {
@@ -26,11 +27,6 @@ export default function InvestMentFirst() {
     const [TDS, setTDS] = useState(undefined);
     const [phValue, setPhValue] = useState(undefined);
     const [showTimmerBtn, setShowTimmerBtn] = useState(false);
-    const [Timer, setTimer] = useState(false);
-    const [timerIndex, setTimerIndex] = useState();
-    const [selectedLabels, setSelectedLabels] = useState([]);
-
-    console.log("indexxxx",timerIndex);
 
     const navigation = useNavigate();
 

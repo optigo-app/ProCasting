@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import './AddFlask.css'
 import QRCode from 'qrcode.react'
 import { useNavigate } from 'react-router-dom';
+import Barcode from 'react-barcode';
 
 export default function AddFlask() {
 
@@ -10,6 +11,13 @@ export default function AddFlask() {
     const [inputError, setInputError] = useState(false)
     const [inputErrorMax, setInputErrorMax] = useState(false)
     const navigation = useNavigate();
+    const containerStyle = {
+        width: '170px',
+        display: 'inline-block',
+        overflow: 'hidden',
+        alignItems: 'center'
+    };
+    const barcodeValue = '123456789012345678901234';
 
     const handleInputChange = (event) => {
         setInputValue(event.target.value);
@@ -40,10 +48,10 @@ export default function AddFlask() {
 
     const handleKeyDown = (event) => {
         if (event.key === 'Enter') {
-          event.preventDefault();
-          handleGoButtonClick();
+            event.preventDefault();
+            handleGoButtonClick();
         }
-      };
+    };
 
 
     console.log(enteredValues);
@@ -53,10 +61,20 @@ export default function AddFlask() {
             <p className='mainTitle' >PROCASTING-TREE BIND WITH FLASK</p>
             <div className='addFLaskMain'>
                 <div className='addFlaskQRMAin' >
-                    <QRCode value='Scan a QR code' style={{ height: '200px', width: '200px' }} />
-                    <div style={{ display: 'flex', marginTop: '20px' }}>
+                    <div style={{ width: '60%', display: 'flex', justifyContent: 'center' }}>
+                        <div style={containerStyle}>
+                            <Barcode
+                                value={barcodeValue}
+                                width={2}
+                                height={100}
+                                fontSize={16}
+                                displayValue={false}
+                            />
+                        </div>
+                    </div>
+                    <div style={{ display: 'flex', marginTop: '5px' }}>
                         <input type='text' style={{ border: inputError && '1px solid red' }} className='enterBrachItemBox' value={inputValue}
-                            onChange={handleInputChange} onKeyDown={handleKeyDown}/>
+                            onChange={handleInputChange} onKeyDown={handleKeyDown} />
                         <button style={{ height: '45px', width: '50px', fontSize: '20px', fontWeight: 600, cursor: 'pointer' }} onClick={handleGoButtonClick}>
                             Go
                         </button>
