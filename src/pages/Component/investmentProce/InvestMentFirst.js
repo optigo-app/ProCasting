@@ -13,366 +13,390 @@ import Barcode from 'react-barcode';
 
 export default function InvestMentFirst() {
 
-    const [inputValue, setInputValue] = useState('');
-    const [enteredValues, setEnteredValues] = useState([]);
-    const [open, setOpen] = useState(false);
-    const [timeOut, setTiemOut] = useState(undefined);
-    const [inputError, setInputError] = useState(false)
-    const [openYourBagDrawer, setOpenYourBagDrawer] = useState(false);
-    const [greenImg, setGreeImg] = useState(false);
-    const [blueImg, setBlueImg] = useState(false);
-    const [orangeImg, setOrangImg] = useState(false);
-    const [defaultImg, setDefaultImg] = useState(false);
-    const [weight, setWeight] = useState(false);
-    const [TDS, setTDS] = useState(undefined);
-    const [phValue, setPhValue] = useState(undefined);
-    const [showTimmerBtn, setShowTimmerBtn] = useState(false);
-    const [selectedLabels , setSelectedLabels] = useState([]);
-    const navigation = useNavigate();
+  const [inputValue, setInputValue] = useState('');
+  const [enteredValues, setEnteredValues] = useState([]);
+  const [open, setOpen] = useState(false);
+  const [timeOut, setTiemOut] = useState(undefined);
+  const [inputError, setInputError] = useState(false)
+  const [openYourBagDrawer, setOpenYourBagDrawer] = useState(false);
+  const [greenImg, setGreeImg] = useState(false);
+  const [blueImg, setBlueImg] = useState(false);
+  const [orangeImg, setOrangImg] = useState(false);
+  const [defaultImg, setDefaultImg] = useState(false);
+  const [weight, setWeight] = useState(false);
+  const [TDS, setTDS] = useState(undefined);
+  const [phValue, setPhValue] = useState(undefined);
+  const [showTimmerBtn, setShowTimmerBtn] = useState(false);
+  const [selectedLabels, setSelectedLabels] = useState([]);
+  const navigation = useNavigate();
+  const containerStyle = {
+    width: '170px',
+    display: 'inline-block',
+    overflow: 'hidden',
+    alignItems: 'center'
+  };
 
-    const handleClickOpen = () => {
-        setOpen(true);
-    };
+  const barcodeValue = '123456789012345678901234';
 
-    const handleClose = () => {
-        setOpen(false);
-    };
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
 
-    const handleInputChange = (event) => {
-        setInputValue(event.target.value);
-    };
+  const handleClose = () => {
+    setOpen(false);
+  };
 
-    const handleGoButtonClick = () => {
-        if (inputValue === '' || inputValue === undefined) {
-            setInputError(true)
-        } else {
-            setInputError(false)
-            setEnteredValues([...enteredValues, inputValue]);
-            setInputValue('');
-        }
+  const handleInputChange = (event) => {
+    setInputValue(event.target.value);
+  };
 
-
-
-    };
-    useEffect(() => {
-
-        if (enteredValues[0] === 'F1') {
-            // setOpenYourBagDrawer(true)
-            setGreeImg(true)
-        } else if (enteredValues[0] === 'F2') {
-            setGreeImg(true)
-
-        } else if (enteredValues[0] === 'F3') {
-            setGreeImg(true)
-
-        } else if (enteredValues[0] === 'F4') {
-            setBlueImg(true)
-        } else if (enteredValues[0] === 'F5') {
-            setBlueImg(true)
-
-        } else if (enteredValues[0] === 'F6') {
-            setBlueImg(true)
-
-        } else if (enteredValues[0] === 'F7') {
-            setOrangImg(true)
-        } else if (enteredValues[0] === 'F8') {
-            setOrangImg(true)
-        } else if (enteredValues[0] === 'F9') {
-            setOrangImg(true)
-        } else {
-            setDefaultImg(true)
-        }
-
-    }, [enteredValues])
-
-
-    const [enteredTime, setEnteredTime] = useState('');
-    const handleInputChangen = (e) => {
-        setEnteredTime(e.target.value);
-    };
-    const handleDelayedFunction = () => {
-        setTiemOut(true);
-    };
-    const handleDoneClick = () => {
-        setTiemOut(false)
-        let totalTi = enteredTime * 60000
-        setTimeout(handleDelayedFunction, totalTi);
-    };
-
-    const handleRefresh = () => {
-        window.location.reload();
-    };
-
-    const handleKeyDown = (event) => {
-        if (event.key === 'Enter') {
-            event.preventDefault();
-            handleGoButtonClick();
-        }
-    };
-
-
-    const saveDataHandle = () => {
-
-        if (TDS === undefined || TDS === '') {
-            alert('Enetr TDS')
-        } else if (phValue === undefined || phValue === '') {
-            alert('Enetr phValue')
-        } else {
-            setShowTimmerBtn(true)
-            setTDS('')
-            setPhValue('')
-        }
+  const handleGoButtonClick = () => {
+    if (inputValue === '' || inputValue === undefined) {
+      setInputError(true)
+    } else {
+      setInputError(false)
+      setEnteredValues([...enteredValues, inputValue]);
+      setInputValue('');
     }
 
-    
+  };
 
-    const Completionist = () => {
-        
-            const d = new Date();
-            let hour = d.getHours().toString().length === 1 ? `0${d.getHours()}` : d.getHours();
-            let min =d.getMinutes().toString().length === 1 ?`0${d.getMinutes()}` : d.getMinutes();
-            let sec=d.getSeconds().toString().length === 1 ? `0${d.getSeconds()}` : d.getSeconds() 
 
-            return `${hour}:${min}:${sec}`;
-        
+  useEffect(() => {
+
+    if (enteredValues[0] === 'F1') {
+      // setOpenYourBagDrawer(true)
+      setGreeImg(true)
+    } else if (enteredValues[0] === 'F2') {
+      setGreeImg(true)
+
+    } else if (enteredValues[0] === 'F3') {
+      setGreeImg(true)
+
+    } else if (enteredValues[0] === 'F4') {
+      setBlueImg(true)
+    } else if (enteredValues[0] === 'F5') {
+      setBlueImg(true)
+
+    } else if (enteredValues[0] === 'F6') {
+      setBlueImg(true)
+
+    } else if (enteredValues[0] === 'F7') {
+      setOrangImg(true)
+    } else if (enteredValues[0] === 'F8') {
+      setOrangImg(true)
+    } else if (enteredValues[0] === 'F9') {
+      setOrangImg(true)
+    } else {
+      setDefaultImg(true)
     }
 
-    const renderer = ({ hours, minutes, seconds, completed }) => {
+  }, [enteredValues])
 
-        console.log("timeParam",minutes.toString().length,seconds.toString().length);
-        if (completed) {
-         
-          return <Completionist />;
-        } else {
-      
-          return (
-            <span>
-              {minutes.toString().length===1?`0${minutes}`:minutes}:{seconds.toString().length===1?`0${seconds}`:seconds}
-            </span>
-          );
-        }
-      };
+  useEffect(() => {
 
-      const handleClick = (label) => {
-        if (selectedLabels.includes(label)) {
-          setSelectedLabels(
-            selectedLabels.filter((selected) => selected !== label)
-          );
-        } else {
-          setSelectedLabels([...selectedLabels, label]);
-        }
-      };
+    if (enteredValues.length === 1) {
+      setOpenYourBagDrawer(true)
+    }
 
-    return (
-      <div>
-        <Dialog
-          open={open}
-          onClose={handleClose}
-          aria-labelledby="alert-dialog-title"
-          aria-describedby="alert-dialog-description"
-        >
-          <div>
-            <p style={{ fontSize: "25px", margin: "20px", fontWeight: 500 }}>
-              Enter The Time..
-            </p>
-            <div style={{ display: "flex", flexDirection: "column" }}>
-              <input
-                type="number"
-                placeholder="Enetr Time.."
-                style={{
-                  height: "50px",
-                  width: "250px",
-                  marginInline: "30px",
-                }}
-                value={enteredTime}
-                onChange={handleInputChangen}
-              />
-              <button
-                style={{
-                  height: "50px",
-                  margin: "30px 20px",
-                }}
-                onClick={() => {
-                  handleDoneClick();
-                  handleClose();
-                }}
-              >
-                Done
-              </button>
-            </div>
-          </div>
-        </Dialog>
+  }, [enteredValues])
 
-        <Drawer
-          open={openYourBagDrawer}
-          // onClose={() => {
-          //     setOpenYourBagDrawer(false);
-          // }}
-          anchor="right"
-          elevation={0}
-          className="searchCustomDrawer"
-          sx={{
-            "& .MuiBackdrop-root": { backgroundColor: "transparent" },
-            zIndex: 111,
-          }}
-        >
-          <div>
-            <div>
-              <IoMdClose
-                style={{
-                  height: "40px",
-                  color: "red",
-                  width: "40px",
-                  cursor: "pointer",
-                }}
-                onClick={() => setOpenYourBagDrawer(false)}
-              />
-            </div>
-            <img
-              src={
-                (greenImg && greenImges) ||
-                (blueImg && blueImges) ||
-                (orangeImg && orangeImges)
-              }
-              className="DrawerImg"
-            />
-          </div>
-        </Drawer>
+  const [enteredTime, setEnteredTime] = useState('');
+  const handleInputChangen = (e) => {
+    setEnteredTime(e.target.value);
+  };
+  const handleDelayedFunction = () => {
+    setTiemOut(true);
+  };
+  const handleDoneClick = () => {
+    setTiemOut(false)
+    let totalTi = enteredTime * 60000
+    setTimeout(handleDelayedFunction, totalTi);
+  };
+
+  const handleRefresh = () => {
+    window.location.reload();
+  };
+
+  const handleKeyDown = (event) => {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      handleGoButtonClick();
+    }
+  };
+
+
+  const saveDataHandle = () => {
+
+    if (TDS === undefined || TDS === '') {
+      alert('Enetr TDS')
+    } else if (phValue === undefined || phValue === '') {
+      alert('Enetr phValue')
+    } else {
+      setShowTimmerBtn(true)
+      setTDS('')
+      setPhValue('')
+    }
+  }
+
+
+
+  const Completionist = () => {
+
+    const d = new Date();
+    let hour = d.getHours().toString().length === 1 ? `0${d.getHours()}` : d.getHours();
+    let min = d.getMinutes().toString().length === 1 ? `0${d.getMinutes()}` : d.getMinutes();
+    let sec = d.getSeconds().toString().length === 1 ? `0${d.getSeconds()}` : d.getSeconds()
+
+    return `${hour}:${min}:${sec}`;
+
+  }
+
+  const renderer = ({ hours, minutes, seconds, completed }) => {
+
+    console.log("timeParam", minutes.toString().length, seconds.toString().length);
+    if (completed) {
+
+      return <Completionist />;
+    } else {
+
+      return (
+        <span>
+          {minutes.toString().length === 1 ? `0${minutes}` : minutes}:{seconds.toString().length === 1 ? `0${seconds}` : seconds}
+        </span>
+      );
+    }
+  };
+
+  const handleClick = (label) => {
+    if (selectedLabels.includes(label)) {
+      setSelectedLabels(
+        selectedLabels.filter((selected) => selected !== label)
+      );
+    } else {
+      setSelectedLabels([...selectedLabels, label]);
+    }
+  };
+
+
+
+  return (
+    <div>
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
         <div>
-          <p className="mainTitle">PROCASTING-INVESTMENT PROCESS</p>
-          <div style={{ height: "50px" }}>
-            {greenImg && (
-              <button
-                onClick={() => setOpenYourBagDrawer(true)}
-                style={{ float: "right", height: "50px", width: "120px" }}
-              >
-                Open Image
-              </button>
-            )}
-            {blueImg && (
-              <button
-                onClick={() => setOpenYourBagDrawer(true)}
-                style={{ float: "right", height: "50px", width: "120px" }}
-              >
-                Open Image
-              </button>
-            )}
-            {orangeImg && (
-              <button
-                onClick={() => setOpenYourBagDrawer(true)}
-                style={{ float: "right", height: "50px", width: "120px" }}
-              >
-                Open Image
-              </button>
-            )}
-          </div>
-          <div style={{ display: "flex" }}>
-            <div className="investTopBox1">
-              <QRCode
-                value="Scan a QR code"
-                style={{ height: "200px", width: "200px" }}
-              />
-              <div style={{ display: "flex", marginTop: "20px" }}>
-                <input
-                  type="text"
-                  onKeyDown={handleKeyDown}
-                  style={{ border: inputError && "1px solid red" }}
-                  className="enterBrachItemBox"
-                  value={inputValue}
-                  onChange={handleInputChange}
-                />
-                <button
-                  style={{
-                    height: "47px",
-                    width: "50px",
-                    fontSize: "20px",
-                    fontWeight: 600,
-                    cursor: "pointer",
-                  }}
-                  onClick={handleGoButtonClick}
-                >
-                  Go
-                </button>
-              </div>
-
-              <button
-                style={{
-                  marginTop: "20px",
-                  cursor: "pointer",
-                  height: "35px",
-                  width: "100px",
-                }}
-                onClick={handleRefresh}
-              >
-                Clear All
-              </button>
-            </div>
-            <div
+          <p style={{ fontSize: "25px", margin: "20px", fontWeight: 500 }}>
+            Enter The Time..
+          </p>
+          <div style={{ display: "flex", flexDirection: "column" }}>
+            <input
+              type="number"
+              placeholder="Enetr Time.."
               style={{
-                width: "30%",
-                overflow: "auto",
-                height: "350px",
-                display: "flex",
-                alignItems: "center",
-                flexDirection: "column",
+                height: "50px",
+                width: "250px",
+                marginInline: "30px",
+              }}
+              value={enteredTime}
+              onChange={handleInputChangen}
+            />
+            <button
+              style={{
+                height: "50px",
+                margin: "30px 20px",
+              }}
+              onClick={() => {
+                handleDoneClick();
+                handleClose();
               }}
             >
-              {enteredValues.map((value, index) => (
-                <div className="allScanInvestdataMain">
-                  <p className="allInvestScanData" key={index}>
-                    {value}
-                  </p>
-                </div>
-              ))}
-            </div>
-            <div>
-              <div style={{ display: "flex", marginTop: "15px" }}>
-                <p className="investDestilInputTitleNew">weight:</p>
-                <input
-                  type="text"
-                  value={
-                    (greenImg && "3000") ||
-                    (blueImg && "3000") ||
-                    (orangeImg && "3000") ||
-                    (weight && "") ||
-                    (defaultImg && "")
-                  }
-                  className="investDestilInput"
-                />
-              </div>
-              <div style={{ display: "flex", marginTop: "15px" }}>
-                <p className="investDestilInputTitleNew">TDS:</p>
-                <input
-                  type="text"
-                  className="investDestilInput"
-                  value={TDS}
-                  onChange={(e) => setTDS(e.target.value)}
-                />
-              </div>
-              <div style={{ display: "flex", marginTop: "15px" }}>
-                <p className="investDestilInputTitleNew">PHvalue:</p>
-                <input
-                  type="text"
-                  className="investDestilInput"
-                  value={phValue}
-                  onChange={(e) => setPhValue(e.target.value)}
-                />
-              </div>
+              Done
+            </button>
+          </div>
+        </div>
+      </Dialog>
 
-              <div
+      <Drawer
+        open={openYourBagDrawer}
+        // onClose={() => {
+        //     setOpenYourBagDrawer(false);
+        // }}
+        anchor="right"
+        elevation={0}
+        className="searchCustomDrawer"
+        sx={{
+          "& .MuiBackdrop-root": { backgroundColor: "transparent" },
+          zIndex: 111,
+        }}
+      >
+        <div>
+          <div>
+            <IoMdClose
+              style={{
+                height: "40px",
+                color: "red",
+                width: "40px",
+                cursor: "pointer",
+              }}
+              onClick={() => setOpenYourBagDrawer(false)}
+            />
+          </div>
+          <img
+            src={
+              (greenImg && greenImges) ||
+              (blueImg && blueImges) ||
+              (orangeImg && orangeImges)
+            }
+            className="DrawerImg"
+          />
+        </div>
+      </Drawer>
+      <div>
+        <p className="mainTitle">PROCASTING-INVESTMENT PROCESS</p>
+        <div style={{ height: "50px" }}>
+          {greenImg && (
+            <button
+              onClick={() => setOpenYourBagDrawer(true)}
+              style={{ float: "right", height: "50px", width: "120px" }}
+            >
+              Open Image
+            </button>
+          )}
+          {blueImg && (
+            <button
+              onClick={() => setOpenYourBagDrawer(true)}
+              style={{ float: "right", height: "50px", width: "120px" }}
+            >
+              Open Image
+            </button>
+          )}
+          {orangeImg && (
+            <button
+              onClick={() => setOpenYourBagDrawer(true)}
+              style={{ float: "right", height: "50px", width: "120px" }}
+            >
+              Open Image
+            </button>
+          )}
+        </div>
+        <div style={{ display: "flex" }}>
+          <div className="investTopBox1">
+            <div style={{ width: '60%', display: 'flex', justifyContent: 'center' }}>
+              <div style={containerStyle}>
+                <Barcode
+                  value={barcodeValue}
+                  width={2}
+                  height={100}
+                  fontSize={16}
+                  displayValue={false}
+                />
+              </div>
+            </div>
+            <div style={{ display: "flex", marginTop: "5px" }}>
+              <input
+                type="text"
+                onKeyDown={handleKeyDown}
+                style={{ border: inputError && "1px solid red" }}
+                className="enterBrachItemBox"
+                value={inputValue}
+                onChange={handleInputChange}
+              />
+              <button
                 style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  marginTop: "15px",
+                  height: "47px",
+                  width: "50px",
+                  fontSize: "20px",
+                  fontWeight: 600,
+                  cursor: "pointer",
                 }}
+                onClick={handleGoButtonClick}
               >
-                <button className="investAddGlassBtn" onClick={saveDataHandle}>
-                  Save
-                </button>
-              </div>
+                Go
+              </button>
             </div>
 
-            {/* <div className='investTopBox2' >
+            <button
+              style={{
+                marginTop: "20px",
+                cursor: "pointer",
+                height: "35px",
+                width: "100px",
+              }}
+              onClick={handleRefresh}
+            >
+              Clear All
+            </button>
+          </div>
+          <div
+            style={{
+              width: "30%",
+              overflow: "auto",
+              height: "350px",
+              display: "flex",
+              alignItems: "center",
+              flexDirection: "column",
+            }}
+          >
+            {enteredValues.map((value, index) => (
+              <div className="allScanInvestdataMain">
+                <p className="allInvestScanData" key={index}>
+                  {value}
+                </p>
+              </div>
+            ))}
+          </div>
+          <div>
+            <div style={{ display: "flex", marginTop: "15px" }}>
+              <p className="investDestilInputTitleNew">weight:</p>
+              <input
+                type="text"
+                value={
+                  (greenImg && "3000") ||
+                  (blueImg && "3000") ||
+                  (orangeImg && "3000") ||
+                  (weight && "") ||
+                  (defaultImg && "")
+                }
+                className="investDestilInput"
+              />
+            </div>
+            <div style={{ display: "flex", marginTop: "15px" }}>
+              <p className="investDestilInputTitleNew">TDS:</p>
+              <input
+                type="text"
+                className="investDestilInput"
+                value={TDS}
+                onChange={(e) => setTDS(e.target.value)}
+              />
+            </div>
+            <div style={{ display: "flex", marginTop: "15px" }}>
+              <p className="investDestilInputTitleNew">PHvalue:</p>
+              <input
+                type="text"
+                className="investDestilInput"
+                value={phValue}
+                onChange={(e) => setPhValue(e.target.value)}
+              />
+            </div>
+
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                marginTop: "15px",
+              }}
+            >
+              <button className="investAddGlassBtn" onClick={saveDataHandle}>
+                Save
+              </button>
+            </div>
+          </div>
+
+          {/* <div className='investTopBox2' >
                         <p className='investTreeCount'>(5)Tree Count</p>
                         <div>
                             <p style={{ margin: '0px', fontSize: '25px', marginTop: '30px', textAlign: 'center' }}>Req Powder weight</p>
@@ -382,9 +406,9 @@ export default function InvestMentFirst() {
                             <p className='investReqPowder'>3000 gm</p>
                         </div>
                     </div> */}
-          </div>
+        </div>
 
-          {/* <div>
+        {/* <div>
                     <div style={{ display: 'flex', marginTop: '15px' }}>
                         <p className='investDestilInputTitle'>Flash Code:</p>
                         <input type='text' className='investDestilInput' />
@@ -414,46 +438,46 @@ export default function InvestMentFirst() {
                         <button className='investStartBtn' onClick={() => navigation('/burnOut')}>START</button>
                     </div>
                 </div> */}
-          <div style={{ display: "flex", flexWrap: "wrap" }}>
-            {enteredValues.map((value, index) => (
-              <table
-                key={index}
-                style={{
-                  backgroundColor:
-                    (greenImg && "#b1d8b7") ||
-                    (blueImg && "#a396c8") ||
-                    (orangeImg && "orange") ||
-                    (defaultImg && "#add8e6"),
-                  margin: "20px",
-                }}
-              >
-                <tr>
-                  <th className="investTableRow">
-                    Batch No:{index === 0 && "AB"}
-                    {index === 1 && "BC"}
-                    {index === 2 && "CD"}{" "}
-                  </th>
-                </tr>
-                <tr>
-                  <th className="investTableRow">78 Jobs </th>
-                </tr>
-                <tr>
-                  <th className="investTableRow">150 Grams </th>
-                </tr>
-                <tr>
-                  <th className="investTableRow">
-                    {(greenImg && "Wax Setting") ||
-                      (blueImg && "Regular") ||
-                      (orangeImg && "RPT")}
-                  </th>
-                </tr>
-                <tr>
-                  <th className="investTableRow">Flask ID</th>
-                </tr>
-                {showTimmerBtn && (
-                  <div>
-                    {!selectedLabels.includes(index) &&
-                    ( 
+        <div style={{ display: "flex", flexWrap: "wrap" }}>
+          {enteredValues.map((value, index) => (
+            <table
+              key={index}
+              style={{
+                backgroundColor:
+                  (greenImg && "#b1d8b7") ||
+                  (blueImg && "#a396c8") ||
+                  (orangeImg && "orange") ||
+                  (defaultImg && "#add8e6"),
+                margin: "20px",
+              }}
+            >
+              <tr>
+                <th className="investTableRow">
+                  Batch No:{index === 0 && "AB"}
+                  {index === 1 && "BC"}
+                  {index === 2 && "CD"}{" "}
+                </th>
+              </tr>
+              <tr>
+                <th className="investTableRow">78 Jobs </th>
+              </tr>
+              <tr>
+                <th className="investTableRow">150 Grams </th>
+              </tr>
+              <tr>
+                <th className="investTableRow">
+                  {(greenImg && "Wax Setting") ||
+                    (blueImg && "Regular") ||
+                    (orangeImg && "RPT")}
+                </th>
+              </tr>
+              <tr>
+                <th className="investTableRow">Flask ID</th>
+              </tr>
+              {showTimmerBtn && (
+                <div>
+                  {!selectedLabels.includes(index) &&
+                    (
                       <button
                         style={{ height: "40px", width: "120px" }}
                         // onClick={() =>{ 
@@ -465,17 +489,17 @@ export default function InvestMentFirst() {
                         Start Time
                       </button>
                     )}
-                    {selectedLabels.includes(index) &&(
-                        <div style={{ height: "30px",textAlign:'center',fontSize:'18px',fontWeight:'bold'}}>
-                        <Countdown date={Date.now() + 420000} renderer={renderer} />
-                      </div>
-                    )}
-                  </div>
-                )}
-              </table>
-            ))}
-          </div>
+                  {selectedLabels.includes(index) && (
+                    <div style={{ height: "30px", textAlign: 'center', fontSize: '18px', fontWeight: 'bold' }}>
+                      <Countdown date={Date.now() + 420000} renderer={renderer} />
+                    </div>
+                  )}
+                </div>
+              )}
+            </table>
+          ))}
         </div>
       </div>
-    );
+    </div>
+  );
 }

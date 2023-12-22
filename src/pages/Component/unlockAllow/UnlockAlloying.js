@@ -4,12 +4,21 @@ import QRCode from 'qrcode.react';
 import { useNavigate } from 'react-router-dom';
 import Barcode from 'react-barcode';
 
+import { Dialog, DialogContentText, DialogTitle, Drawer } from '@mui/material';
+
+import Button from '@mui/material/Button';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+
 export default function UnlockAlloying() {
 
 
     const [inputValue, setInputValue] = useState('');
     const [enteredValues, setEnteredValues] = useState([]);
     const [inputError, setInputError] = useState(false)
+    const [flashCode, setFlashCode] = useState('');
+
+
     const containerStyle = {
         width: '170px',
         display: 'inline-block',
@@ -19,9 +28,20 @@ export default function UnlockAlloying() {
 
     const barcodeValue = '123456789012345678901234';
     const navigation = useNavigate();
+    const [open, setOpen] = useState(false);
 
+    const handleClickOpen = () => {
+        setOpen(true);
+    };
+
+    const handleClose = () => {
+        setOpen(false);
+        window.location.reload();
+    };
+    
     const handleInputChange = (event) => {
         setInputValue(event.target.value);
+        setFlashCode(event.target.value);
     };
 
     const handleGoButtonClick = () => {
@@ -44,6 +64,24 @@ export default function UnlockAlloying() {
 
     return (
         <div>
+            <Dialog
+                open={open}
+                onClose={handleClose}
+                aria-labelledby="alert-dialog-title"
+                aria-describedby="alert-dialog-description"
+            >
+                <DialogTitle id="alert-dialog-title">
+                    {"UNLOCK SUCCESSFULLY"}
+                </DialogTitle>
+                <DialogContent>
+                    <DialogContentText id="alert-dialog-description">
+                    </DialogContentText>
+                </DialogContent>
+                <div style={{display : 'flex' , justifyContent:'center'}}>
+                    <Button onClick={handleClose} style={{margin: '-20px 0px 20px'}}>DONE</Button>
+
+                </div>
+            </Dialog>
             <p className='mainTitle' >PROCASTING-ALLOYING UNLOCK PROCESS</p>
             <div style={{ display: 'flex' }}>
                 <div className='UnlockTopBox1'>
@@ -73,11 +111,11 @@ export default function UnlockAlloying() {
                 <div style={{ marginTop: '10px' }}>
                     <div style={{ display: 'flex', marginTop: '15px' }}>
                         <p className='investDestilInputTitle'>Flash Code:</p>
-                        <input type='text' className='investDestilInput' value={'E0025'} />
+                        <input type='text' className='investDestilInput' value={flashCode}/>
                     </div>
                     <div style={{ display: 'flex', marginTop: '15px' }}>
                         <p className='investDestilInputTitle'>Batch No:</p>
-                        <input type='text' className='investDestilInput' value={'100E'} />
+                        <input type='text' className='investDestilInput' value={enteredValues.length === 0 ? '' : enteredValues.length === 1 ? 'AB' : enteredValues.length === 2 ? 'BC' : 'CD'} />
                     </div>
                     {/* <div style={{ display: 'flex', marginTop: '15px' }}>
                         <p className='investDestilInputTitle'>Employee:</p>
@@ -89,7 +127,7 @@ export default function UnlockAlloying() {
                     </div> */}
                     <div style={{ display: 'flex', marginTop: '15px' }}>
                         <p className='investDestilInputTitle'>Department:</p>
-                        <input type='text' value={'ALLOYING'} className='investDestilInput' />
+                        <input type='text' value={enteredValues.length === 0 ? '' : 'ALLOYING'} className='investDestilInput' />
                         {/* <select className='investDestilInput'>
                             <option>Department1</option>
                             <option>Department2</option>
@@ -98,7 +136,8 @@ export default function UnlockAlloying() {
                         </select> */}
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'center' }}>
-                        <button className='burnOutIssueBtn' onClick={() => navigation('/batchListing')}>Unlock and Issue</button>
+                        <button className='burnOutIssueBtn' onClick={handleClickOpen}>Unlock and Issue</button>
+                        {/* <button className='burnOutIssueBtn' onClick={() => navigation('/batchListing')}>Unlock and Issue</button> */}
                     </div>
                 </div>
 
