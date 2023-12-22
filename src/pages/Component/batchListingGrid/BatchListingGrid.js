@@ -4,10 +4,12 @@ import { DataGrid } from "@mui/x-data-grid";
 import SearchIcon from '@mui/icons-material/Search';
 import MenuRoundedIcon from '@mui/icons-material/MenuRounded';
 import { Divider, Drawer } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 const BatchListingGrid = () => {
 
   const [menuFlag, setMenuFlag] = useState(false)
+  const navigation = useNavigate();
 
   const columns = [
     { field: "sr", headerName: "Sr#", width: 100 },
@@ -266,8 +268,14 @@ const BatchListingGrid = () => {
   return (
     <>
       <div className="grid_head_container">
-        <div className="grid_head menu">
+        <div className="grid_head menu" style={{display: 'flex'}}>
           <MenuRoundedIcon onClick={() => setMenuFlag(true)} />
+
+          <div style={{display : 'flex' ,alignItems: 'stretch'}}>
+            <p style={{margin : '0px 5px',cursor:'pointer', fontSize: '14px',textDecoration: 'underline', color: 'blue'}} onClick={() => navigation('/investmentFirst')}>INVESTMENT PROCESS</p>
+            <p style={{margin : '0px 5px',cursor:'pointer', fontSize: '14px',textDecoration: 'underline', color: 'blue'}} onClick={() => navigation('/burnOut')}>BURNOUT</p>
+            <p style={{margin : '0px 5px',cursor:'pointer', fontSize: '14px',textDecoration: 'underline', color: 'blue'}} onClick={() => navigation('/unlock')}>UNLOCK ALLOYING</p>
+          </div>
         </div>
 
         <div className="menu_responsive">

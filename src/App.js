@@ -10,6 +10,7 @@ import UnlockAlloying from './pages/Component/unlockAllow/UnlockAlloying';
 import BatchListing from './pages/Component/batchListing/BatchListing';
 import BatchListingGrid from './pages/Component/batchListingGrid/BatchListingGrid';
 import ImageWebCam from './pages/Component/imageTag/ImageWebCam';
+import PrintQr from './pages/Component/printQr/PrintQr';
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
         <Route path='/batchListing' element={<BatchListing />} /> 
         <Route path='/batchListingGrid' element={<BatchListingGrid />} />
         <Route path='/imagewebcam' element={<ImageWebCam />} />
+        <Route path='/printQr' element={<PrintQr />} />
       </Routes>
     </BrowserRouter>
 

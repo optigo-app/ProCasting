@@ -23,30 +23,24 @@ export default function Home() {
                 </div>
                 <div className='bothBtnDiv'>
                     <div className='NoteMain'>
-                        <img src={Note} className='Noteimg' onClick={() => navigation('/createTree')}/>
+                        <img src={Note} className='Noteimg' onClick={() => navigation('/createTree')} />
                         <p className='NoteImgTitle'>NEW TREE</p>
                     </div>
 
                     <div className='NoteMain'>
-                        <img src={Note} className='Noteimg' />
+                        <img src={Note} className='Noteimg' onClick={() => navigation('/createTree')} />
                         <p className='NoteImgTitle'>EDIT TREE</p>
-                        {/* <button className='homeNewTree' onClick={() => navigation('/createTree')}>New Tree</button> */}
-                    </div>
-                    <div className='NoteMain'>
-                        <img src={Note} className='Noteimg' onClick={() => navigation('/addFlask')}/>
-                        <p className='NoteImgTitle'>BIND FLASK</p>
-                        {/* <button className='homeNewTree' onClick={() => navigation('/createTree')}>New Tree</button> */}
-  
                     </div>
 
                     <div className='NoteMain'>
-                        <img src={Note} className='Noteimg' />
-                        <p className='NoteImgTitle'>SHOW LIST</p>
-                        {/* <button className='homeNewTree' onClick={() => navigation('/createTree')}>New Tree</button> */}
-  
+                        <img src={Note} className='Noteimg' onClick={() => navigation('/addFlask')} />
+                        <p className='NoteImgTitle'>BIND FLASK</p>
                     </div>
-                    {/* <button className='homeEditTree'>Edit Tree</button>
-                    <button className='headerShoeListBtn'>Show List</button> */}
+
+                    <div className='NoteMain'>
+                        <img src={Note} className='Noteimg' onClick={() => navigation('/batchListingGrid')} />
+                        <p className='NoteImgTitle'>SHOW LIST</p>
+                    </div>
                 </div>
             </div>
         </div>
