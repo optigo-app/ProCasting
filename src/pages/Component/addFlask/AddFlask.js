@@ -3,6 +3,9 @@ import './AddFlask.css'
 import QRCode from 'qrcode.react'
 import { useNavigate } from 'react-router-dom';
 import Barcode from 'react-barcode';
+import BarcodeScanner from 'react-barcode-reader';
+import scaneCodeImage from '../../assets/scanBarcode.gif'
+import idle from '../../assets/idle.gif'
 
 export default function AddFlask() {
 
@@ -10,14 +13,20 @@ export default function AddFlask() {
     const [enteredValues, setEnteredValues] = useState([]);
     const [inputError, setInputError] = useState(false)
     const [inputErrorMax, setInputErrorMax] = useState(false)
-    const navigation = useNavigate();
-    const containerStyle = {
-        width: '170px',
-        display: 'inline-block',
-        overflow: 'hidden',
-        alignItems: 'center'
+
+    const [isImageVisible, setIsImageVisible] = useState(true);
+
+    const handleScan = (data) => {
+        setEnteredValues([...enteredValues, data]);
     };
-    const barcodeValue = '123456789012345678901234';
+
+    const handleError = (error) => {
+        console.error('Error while scanning:', error);
+    };
+
+    const toggleImageVisibility = () => {
+        setIsImageVisible(!isImageVisible);
+    };
 
     const handleInputChange = (event) => {
         setInputValue(event.target.value);
@@ -58,19 +67,21 @@ export default function AddFlask() {
 
     return (
         <div>
+            <BarcodeScanner
+                onScan={handleScan}
+                onError={handleError}
+                facingMode="environment"
+            />
             <p className='mainTitle' >PROCASTING-TREE BIND WITH FLASK</p>
             <div className='addFLaskMain'>
                 <div className='addFlaskQRMAin' >
-                    <div style={{ width: '60%', display: 'flex', justifyContent: 'center' }}>
-                        <div style={containerStyle}>
-                            <Barcode
-                                value={barcodeValue}
-                                width={2}
-                                height={100}
-                                fontSize={16}
-                                displayValue={false}
-                            />
-                        </div>
+                    <div onClick={toggleImageVisibility} style={{ width: 'fit-content', marginLeft: '30px' }}>
+                        {isImageVisible ? <div>
+                            <img src={scaneCodeImage} className='createImageQrCode' />
+                        </div> :
+                            <div>
+                                <img src={idle} />
+                            </div>}
                     </div>
                     <div style={{ display: 'flex', marginTop: '5px' }}>
                         <input type='text' style={{ border: inputError && '1px solid red' }} className='enterBrachItemBox' value={inputValue}
@@ -86,7 +97,7 @@ export default function AddFlask() {
                     <div className='addDeatilMain'>
                         {/* <p className='addFlaskTitle'>Flask ID</p> */}
                         <input type='text' placeholder='Flask ID' value={enteredValues[0]?.length ? enteredValues[0] : ''} className='addflaskInputID' />
-                        <input type='text' placeholder='Flask ID' value={enteredValues[1]?.length ? enteredValues[1] : ''} className='addflaskInputID' style={{ marginLeft: '20px' }} />
+                        <input type='text' placeholder='Tree ID' value={enteredValues[1]?.length ? enteredValues[1] : ''} className='addflaskInputID' style={{ marginLeft: '20px' }} />
                     </div>
                     <div className='addDeatilMain'>
                         <input type='text' className='addflaskInput' value={enteredValues[0]?.length ? '2.8' : ''} />

@@ -58,11 +58,9 @@ export default function QRScanner() {
 
     const CurrentImageValue = useRecoilValue(CurrentImageState);
 
-    const [scannedCode, setScannedCode] = useState('');
 
     const handleScan = (data) => {
         setEnteredValues([...enteredValues, data]);
-        setScannedCode((prev) => [...prev , data]);
     };
 
     const handleError = (error) => {
@@ -119,57 +117,40 @@ export default function QRScanner() {
         setEnteredValues([...enteredValues, ...newData]);
     }
     return (
-      <>
-        <Dialog
-          open={open}
-          onClose={handleClose}
-          aria-labelledby="alert-dialog-title"
-          aria-describedby="alert-dialog-description"
-        >
-          <DialogTitle id="alert-dialog-title">{"ADD THE REMARK"}</DialogTitle>
-          <DialogContent>
-            <DialogContentText id="alert-dialog-description">
-              <textarea
-                type="text"
-                placeholder="Enter Remark"
-                className="addReamrkTextBox"
-              />
-            </DialogContentText>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={handleClose}>ADD</Button>
-          </DialogActions>
-        </Dialog>
-        <div>
-          <BarcodeScanner
-            onScan={handleScan}
-            onError={handleError}
-            facingMode="environment" // Use the device's rear camera (optional)
-          />
-          <p>Scanned Barcode: {scannedCode}</p>
-
-          <p className="mainTitle">PROCASTING-CREATE NEW BATCH</p>
-          <div style={{ display: "flex", marginTop: "30px" }}>
-            <div className="allDataCreteDiv">
-              <div style={{ display: "flex",justifyContent:'center',alignItems:'center',gap:'5px'}}>
-                <input
-                  type="text"
-                  placeholder="Batch"
-                  className="infoTextInputBatch"
+        <>
+            <Dialog
+                open={open}
+                onClose={handleClose}
+                aria-labelledby="alert-dialog-title"
+                aria-describedby="alert-dialog-description"
+            >
+                <DialogTitle id="alert-dialog-title">
+                    {"ADD THE REMARK"}
+                </DialogTitle>
+                <DialogContent>
+                    <DialogContentText id="alert-dialog-description">
+                        <textarea type='text' placeholder='Enter Remark' className='addReamrkTextBox' />
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleClose}>ADD</Button>
+                </DialogActions>
+            </Dialog>
+            <div>
+                <BarcodeScanner
+                    onScan={handleScan}
+                    onError={handleError}
+                    facingMode="environment"
                 />
-                <input
-                  type="text"
-                  placeholder="Enter Weight"
-                  className="infoTextInputWight"
-                />
-                <input
-                  type="text"
-                  placeholder="Eneter Assign To"
-                  value={"E0025(ANDERSON PATRICK)"}
-                  className="infoTextInput"
-                />
-               
-                  {/* <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <p className='mainTitle' >PROCASTING-CREATE NEW BATCH</p>
+                <div style={{ display: 'flex', marginTop: '30px' }}>
+                    <div className='allDataCreteDiv'>
+                        <div style={{ display: 'flex' }}>
+                            <input type='text' placeholder='Batch' className='infoTextInputBatch' />
+                            <input type='text' placeholder='Enter Weight' className='infoTextInputWight' />
+                            <input type='text' placeholder='Eneter Assign To' value={'E0025(ANDERSON PATRICK)'} className='infoTextInput' />
+                            <div style={{ width: '25%' }}>
+                                <LocalizationProvider dateAdapter={AdapterDayjs}>
                                     <DatePicker
                                         className={classes.datePickerRoot}
                                         renderInput={(params) => (
@@ -208,105 +189,42 @@ export default function QRScanner() {
             </div>
           </div>
 
-          <div
-            style={{
-              display: "flex",
-              marginTop: "20px",
-              justifyContent: "space-between",
-              flexWrap: "wrap",
-            }}
-            className="body_container"
-          >
-            <div className={"createORMain"}>
-              <div
-                onClick={toggleImageVisibility}
-                style={{ width: "fit-content", marginLeft: "30px" }}
-              >
-                {isImageVisible ? (
-                  <div>
-                    <img src={scaneCodeImage} className="createImageQrCode" />
-                  </div>
-                ) : (
-                  <div>
-                    <img src={idle} />
-                  </div>
-                )}
-              </div>
-
-              {/* <div style={{ width: '60%', display: 'flex', justifyContent: 'center' }}>
-                            <div style={containerStyle}>
-                                <Barcode
-                                    value={barcodeValue}
-                                    width={2}
-                                    height={100}
-                                    fontSize={16}
-                                    displayValue={false}
-                                />
-                            </div>
-                        </div> */}
-              <div style={{ display: "flex", marginTop: "10px" }}>
-                <input
-                  type="text"
-                  style={{ border: inputError && "1px solid red" }}
-                  className="enterBrachItemBox"
-                  value={inputValue}
-                  onChange={handleInputChange}
-                  onKeyDown={handleKeyDown}
-                />
-                <button
-                  style={{
-                    height: "100%",
-                    width: "50px",
-                    fontSize: "20px",
-                    fontWeight: 600,
-                    cursor: "pointer",
-                  }}
-                  onClick={handleGoButtonClick}
-                >
-                  Go
-                </button>
-              </div>
-              <div style={{ marginTop: "30px" }}>
-                <button
-                  className="uploadImageBtn"
-                  onClick={() => setCamFlag(true)}
-                >
-                  uppload tree image
-                </button>
-              </div>
-            </div>
-            <div className="allScaneDataMain">
-              <p className="totalItemText">{totalValues} Item Added</p>
-              <div
-                style={{
-                  height: "360px",
-                  alignItems: "center",
-                  overflow: "auto",
-                  display: "flex",
-                  flexDirection: "column",
-                }}
-              >
-                {enteredValues.map((value, index) => (
-                  <div className="allScandataMain">
-                    <p className="allScanData" key={index}>
-                      {value}
-                    </p>
-                    <RemoveCircleRoundedIcon
-                      style={{
-                        color: "#FF0000",
-                        cursor: "pointer",
-                        fontSize: "30px",
-                      }}
-                      onClick={() => handleRemoveItem(index)}
-                    />
-                  </div>
-                ))}
-              </div>
-            </div>
-            <div className="uplodedImageMain">
-              <img src={CurrentImageValue} className="uplodedImage" />
-            </div>
-          </div>
+                <div style={{ display: 'flex', marginTop: '20px', justifyContent: 'space-between', flexWrap: 'wrap' }} className='body_container'>
+                    <div className={'createORMain'} >
+                        <div onClick={toggleImageVisibility} style={{ width: 'fit-content', marginLeft: '30px' }}>
+                            {isImageVisible ? <div>
+                                <img src={scaneCodeImage} className='createImageQrCode' />
+                            </div> :
+                                <div>
+                                    <img src={idle} />
+                                </div>}
+                        </div>
+                        <div style={{ display: 'flex', marginTop: '10px' }}>
+                            <input type='text' style={{ border: inputError && '1px solid red' }} className='enterBrachItemBox' value={inputValue}
+                                onChange={handleInputChange} onKeyDown={handleKeyDown} />
+                            <button style={{ height: '100%', width: '50px', fontSize: '20px', fontWeight: 600, cursor: 'pointer' }} onClick={handleGoButtonClick}>
+                                Go
+                            </button>
+                        </div>
+                        <div style={{ marginTop: '30px' }}>
+                            <button className='uploadImageBtn' onClick={() => setCamFlag(true)} >uppload tree image</button>
+                        </div>
+                    </div>
+                    <div className='allScaneDataMain'>
+                        <p className='totalItemText'>{totalValues} Item Added</p>
+                        <div style={{ height: '360px', alignItems: 'center', overflow: 'auto', display: 'flex', flexDirection: 'column' }}>
+                            {enteredValues.map((value, index) => (
+                                <div className='allScandataMain' >
+                                    <p className='allScanData' key={index}>{value}</p>
+                                    <RemoveCircleRoundedIcon style={{ color: '#FF0000', cursor: 'pointer', fontSize: '30px' }} onClick={() => handleRemoveItem(index)} />
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                    <div className='uplodedImageMain' >
+                        <img src={CurrentImageValue} className='uplodedImage' />
+                    </div>
+                </div>
 
           <div className="bottomBtnDivMain">
             <button className="showInfoBtn" onClick={handleMoreInfoShow}>

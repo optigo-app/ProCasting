@@ -16,7 +16,7 @@ export default function Home() {
 
     return (
         <div >
-            <p className='mainTitle' >PROCASTING CREATE-NEW BATCH</p>
+            <p className='mainTitle'>PROCASTING</p>
             <div>
                 <div style={{ display: 'flex', justifyContent: 'center', marginTop: '50px' }}>
                     <img src={Logo} className='logoImg' />
@@ -40,6 +40,11 @@ export default function Home() {
                     <div className='NoteMain'>
                         <img src={Note} className='Noteimg' onClick={() => navigation('/batchListingGrid')} />
                         <p className='NoteImgTitle'>SHOW LIST</p>
+                    </div>
+
+                    <div className='NoteMain'>
+                        <img src={Note} className='Noteimg' onClick={() => navigation('/batchListing')} />
+                        <p className='NoteImgTitle'>DASHBOARD</p>
                     </div>
                 </div>
             </div>

@@ -8,7 +8,10 @@ import blueImges from '../../assets/blue.png'
 import orangeImges from '../../assets/orange.png'
 import { IoMdClose } from "react-icons/io";
 import Countdown from "react-countdown";
-import Barcode from 'react-barcode';
+
+import BarcodeScanner from 'react-barcode-reader';
+import scaneCodeImage from '../../assets/scanBarcode.gif'
+import idle from '../../assets/idle.gif'
 
 
 export default function InvestMentFirst() {
@@ -28,20 +31,24 @@ export default function InvestMentFirst() {
   const [phValue, setPhValue] = useState(undefined);
   const [showTimmerBtn, setShowTimmerBtn] = useState(false);
   const [selectedLabels, setSelectedLabels] = useState([]);
+  const [isImageVisible, setIsImageVisible] = useState(true);
   const [enteredTime, setEnteredTime] = useState('');
-  const navigation = useNavigate();
-  const containerStyle = {
-    width: '170px',
-    display: 'inline-block',
-    overflow: 'hidden',
-    alignItems: 'center'
+
+  const handleScan = (data) => {
+    setEnteredValues([...enteredValues, data]);
+  };
+
+  const handleError = (error) => {
+    console.error('Error while scanning:', error);
   };
 
   const[eviIndex,setEviIndex]=useState([]);
 
     console.log("eviIndex",eviIndex);
 
-  const barcodeValue = '123456789012345678901234';
+  const toggleImageVisibility = () => {
+    setIsImageVisible(!isImageVisible);
+  };
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -197,6 +204,11 @@ export default function InvestMentFirst() {
 
   return (
     <div>
+      <BarcodeScanner
+        onScan={handleScan}
+        onError={handleError}
+        facingMode="environment"
+      />
       <Dialog
         open={open}
         onClose={handleClose}
@@ -300,16 +312,13 @@ export default function InvestMentFirst() {
         </div>
         <div style={{ display: "flex" }}>
           <div className="investTopBox1">
-            <div style={{ width: '60%', display: 'flex', justifyContent: 'center' }}>
-              <div style={containerStyle}>
-                <Barcode
-                  value={barcodeValue}
-                  width={2}
-                  height={100}
-                  fontSize={16}
-                  displayValue={false}
-                />
-              </div>
+            <div onClick={toggleImageVisibility} style={{ width: 'fit-content', marginLeft: '30px' }}>
+              {isImageVisible ? <div>
+                <img src={scaneCodeImage} className='createImageQrCode' />
+              </div> :
+                <div>
+                  <img src={idle} />
+                </div>}
             </div>
             <div style={{ display: "flex", marginTop: "5px" }}>
               <input

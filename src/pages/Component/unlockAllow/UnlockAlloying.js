@@ -9,6 +9,9 @@ import { Dialog, DialogContentText, DialogTitle, Drawer } from '@mui/material';
 import Button from '@mui/material/Button';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
+import BarcodeScanner from 'react-barcode-reader';
+import scaneCodeImage from '../../assets/scanBarcode.gif'
+import idle from '../../assets/idle.gif'
 
 export default function UnlockAlloying() {
 
@@ -17,18 +20,21 @@ export default function UnlockAlloying() {
     const [enteredValues, setEnteredValues] = useState([]);
     const [inputError, setInputError] = useState(false)
     const [flashCode, setFlashCode] = useState('');
+    const [open, setOpen] = useState(false);
+    const [isImageVisible, setIsImageVisible] = useState(true);
 
-
-    const containerStyle = {
-        width: '170px',
-        display: 'inline-block',
-        overflow: 'hidden',
-        alignItems: 'center'
+    const handleScan = (data) => {
+        setEnteredValues([...enteredValues, data]);
     };
 
-    const barcodeValue = '123456789012345678901234';
-    const navigation = useNavigate();
-    const [open, setOpen] = useState(false);
+    const handleError = (error) => {
+        console.error('Error while scanning:', error);
+    };
+
+    const toggleImageVisibility = () => {
+        setIsImageVisible(!isImageVisible);
+    };
+
 
     const handleClickOpen = () => {
         setOpen(true);
@@ -38,7 +44,7 @@ export default function UnlockAlloying() {
         setOpen(false);
         window.location.reload();
     };
-    
+
     const handleInputChange = (event) => {
         setInputValue(event.target.value);
         setFlashCode(event.target.value);
@@ -64,6 +70,11 @@ export default function UnlockAlloying() {
 
     return (
         <div>
+            <BarcodeScanner
+                onScan={handleScan}
+                onError={handleError}
+                facingMode="environment"
+            />
             <Dialog
                 open={open}
                 onClose={handleClose}
@@ -77,24 +88,21 @@ export default function UnlockAlloying() {
                     <DialogContentText id="alert-dialog-description">
                     </DialogContentText>
                 </DialogContent>
-                <div style={{display : 'flex' , justifyContent:'center'}}>
-                    <Button onClick={handleClose} style={{margin: '-20px 0px 20px'}}>DONE</Button>
+                <div style={{ display: 'flex', justifyContent: 'center' }}>
+                    <Button onClick={handleClose} style={{ margin: '-20px 0px 20px' }}>DONE</Button>
 
                 </div>
             </Dialog>
             <p className='mainTitle' >PROCASTING-ALLOYING UNLOCK PROCESS</p>
             <div style={{ display: 'flex' }}>
                 <div className='UnlockTopBox1'>
-                    <div style={{ width: '60%', display: 'flex', justifyContent: 'center' }}>
-                        <div style={containerStyle}>
-                            <Barcode
-                                value={barcodeValue}
-                                width={2}
-                                height={100}
-                                fontSize={16}
-                                displayValue={false}
-                            />
-                        </div>
+                    <div onClick={toggleImageVisibility} style={{ width: 'fit-content', marginLeft: '20px' }}>
+                        {isImageVisible ? <div>
+                            <img src={scaneCodeImage} className='createImageQrCode' />
+                        </div> :
+                            <div>
+                                <img src={idle} />
+                            </div>}
                     </div>
                     <div style={{ display: 'flex', marginTop: '5px' }}>
                         <input type='text' style={{ border: inputError && '1px solid red' }} className='enterBrachItemBox' value={inputValue}
@@ -111,7 +119,7 @@ export default function UnlockAlloying() {
                 <div style={{ marginTop: '10px' }}>
                     <div style={{ display: 'flex', marginTop: '15px' }}>
                         <p className='investDestilInputTitle'>Flash Code:</p>
-                        <input type='text' className='investDestilInput' value={flashCode}/>
+                        <input type='text' className='investDestilInput' value={flashCode} />
                     </div>
                     <div style={{ display: 'flex', marginTop: '15px' }}>
                         <p className='investDestilInputTitle'>Batch No:</p>
