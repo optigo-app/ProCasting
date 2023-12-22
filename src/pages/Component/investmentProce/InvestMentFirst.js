@@ -28,6 +28,7 @@ export default function InvestMentFirst() {
   const [phValue, setPhValue] = useState(undefined);
   const [showTimmerBtn, setShowTimmerBtn] = useState(false);
   const [selectedLabels, setSelectedLabels] = useState([]);
+  const [enteredTime, setEnteredTime] = useState('');
   const navigation = useNavigate();
   const containerStyle = {
     width: '170px',
@@ -35,6 +36,10 @@ export default function InvestMentFirst() {
     overflow: 'hidden',
     alignItems: 'center'
   };
+
+  const[eviIndex,setEviIndex]=useState([]);
+
+    console.log("eviIndex",eviIndex);
 
   const barcodeValue = '123456789012345678901234';
 
@@ -50,58 +55,58 @@ export default function InvestMentFirst() {
     setInputValue(event.target.value);
   };
 
-  const handleGoButtonClick = () => {
-    if (inputValue === '' || inputValue === undefined) {
-      setInputError(true)
-    } else {
-      setInputError(false)
-      setEnteredValues([...enteredValues, inputValue]);
-      setInputValue('');
-    }
+    const handleGoButtonClick = () => {
+        if (inputValue === '' || inputValue === undefined) {
+            setInputError(true)
+        } else {
+            setInputError(false)
+            setEnteredValues([...enteredValues, {label:inputValue}]);
+            setInputValue('');
+        }
 
   };
 
 
   useEffect(() => {
 
-    if (enteredValues[0] === 'F1') {
-      // setOpenYourBagDrawer(true)
-      setGreeImg(true)
-    } else if (enteredValues[0] === 'F2') {
-      setGreeImg(true)
+        if (enteredValues[0]?.label === 'F1') {
+            // setOpenYourBagDrawer(true)
+            setGreeImg(true)
+        } else if (enteredValues[0]?.label === 'F2') {
+            setGreeImg(true)
 
-    } else if (enteredValues[0] === 'F3') {
-      setGreeImg(true)
+        } else if (enteredValues[0]?.label === 'F3') {
+            setGreeImg(true)
 
-    } else if (enteredValues[0] === 'F4') {
-      setBlueImg(true)
-    } else if (enteredValues[0] === 'F5') {
-      setBlueImg(true)
+        } else if (enteredValues[0]?.label === 'F4') {
+            setBlueImg(true)
+        } else if (enteredValues[0]?.label === 'F5') {
+            setBlueImg(true)
 
-    } else if (enteredValues[0] === 'F6') {
-      setBlueImg(true)
+        } else if (enteredValues[0]?.label === 'F6') {
+            setBlueImg(true)
 
-    } else if (enteredValues[0] === 'F7') {
-      setOrangImg(true)
-    } else if (enteredValues[0] === 'F8') {
-      setOrangImg(true)
-    } else if (enteredValues[0] === 'F9') {
-      setOrangImg(true)
-    } else {
-      setDefaultImg(true)
-    }
+        } else if (enteredValues[0]?.label === 'F7') {
+            setOrangImg(true)
+        } else if (enteredValues[0]?.label === 'F8') {
+            setOrangImg(true)
+        } else if (enteredValues[0]?.label === 'F9') {
+            setOrangImg(true)
+        } else {
+            setDefaultImg(true)
+        }
 
   }, [enteredValues])
 
   useEffect(() => {
 
-    if (enteredValues.length === 1) {
+    if (enteredValues?.length === 1) {
       setOpenYourBagDrawer(true)
     }
 
   }, [enteredValues])
 
-  const [enteredTime, setEnteredTime] = useState('');
+
   const handleInputChangen = (e) => {
     setEnteredTime(e.target.value);
   };
@@ -128,16 +133,26 @@ export default function InvestMentFirst() {
 
   const saveDataHandle = () => {
 
-    if (TDS === undefined || TDS === '') {
-      alert('Enetr TDS')
-    } else if (phValue === undefined || phValue === '') {
-      alert('Enetr phValue')
-    } else {
-      setShowTimmerBtn(true)
-      setTDS('')
-      setPhValue('')
+        if (TDS === undefined || TDS === '') {
+            alert('Enetr TDS')
+        } else if (phValue === undefined || phValue === '') {
+            alert('Enetr phValue')
+        } else {
+            const updateData= enteredValues?.map((ev,i)=>{
+                if(!ev["btncom"]){
+                    ev["btncom"]=(
+                        <button onClick={() => handleStartTime(i)} >Start Time</button>
+                      );
+                }
+                return ev
+            })
+            setEnteredValues(updateData)
+            console.log("enteredValues",enteredValues);
+            setShowTimmerBtn(true)
+            setTDS('')
+            setPhValue('')
+        }
     }
-  }
 
 
 
@@ -152,31 +167,31 @@ export default function InvestMentFirst() {
 
   }
 
-  const renderer = ({ hours, minutes, seconds, completed }) => {
 
-    console.log("timeParam", minutes.toString().length, seconds.toString().length);
-    if (completed) {
+    const handleStartTime = (evi) =>{
+        setEviIndex((pre)=>[...pre,evi])
 
-      return <Completionist />;
-    } else {
+        const renderer = ({ hours, minutes, seconds, completed }) => {
+            if (completed) {
+              return <Completionist />;
+            } else {
+              return (
+                <span>
+                  {minutes}:{seconds}
+                </span>
+              );
+            }
+          };
 
-      return (
-        <span>
-          {minutes.toString().length === 1 ? `0${minutes}` : minutes}:{seconds.toString().length === 1 ? `0${seconds}` : seconds}
-        </span>
-      );
+          const updatedData = enteredValues.map((d,index) => {
+            if (!d.timer && evi === index) {
+              d.timer = <Countdown date={Date.now() + 30000} renderer={renderer} />;
+            }
+            return d;
+          });
+      
+          setEnteredValues(updatedData);
     }
-  };
-
-  const handleClick = (label) => {
-    if (selectedLabels.includes(label)) {
-      setSelectedLabels(
-        selectedLabels.filter((selected) => selected !== label)
-      );
-    } else {
-      setSelectedLabels([...selectedLabels, label]);
-    }
-  };
 
 
 
@@ -341,10 +356,10 @@ export default function InvestMentFirst() {
               flexDirection: "column",
             }}
           >
-            {enteredValues.map((value, index) => (
+            {enteredValues?.map((value, index) => (
               <div className="allScanInvestdataMain">
                 <p className="allInvestScanData" key={index}>
-                  {value}
+                  {value?.label}
                 </p>
               </div>
             ))}
@@ -438,68 +453,52 @@ export default function InvestMentFirst() {
                         <button className='investStartBtn' onClick={() => navigation('/burnOut')}>START</button>
                     </div>
                 </div> */}
-        <div style={{ display: "flex", flexWrap: "wrap" }}>
-          {enteredValues.map((value, index) => (
-            <table
-              key={index}
-              style={{
-                backgroundColor:
-                  (greenImg && "#b1d8b7") ||
-                  (blueImg && "#a396c8") ||
-                  (orangeImg && "orange") ||
-                  (defaultImg && "#add8e6"),
-                margin: "20px",
-              }}
-            >
-              <tr>
-                <th className="investTableRow">
-                  Batch No:{index === 0 && "AB"}
-                  {index === 1 && "BC"}
-                  {index === 2 && "CD"}{" "}
-                </th>
-              </tr>
-              <tr>
-                <th className="investTableRow">78 Jobs </th>
-              </tr>
-              <tr>
-                <th className="investTableRow">150 Grams </th>
-              </tr>
-              <tr>
-                <th className="investTableRow">
-                  {(greenImg && "Wax Setting") ||
-                    (blueImg && "Regular") ||
-                    (orangeImg && "RPT")}
-                </th>
-              </tr>
-              <tr>
-                <th className="investTableRow">Flask ID</th>
-              </tr>
-              {showTimmerBtn && (
-                <div>
-                  {!selectedLabels.includes(index) &&
-                    (
-                      <button
-                        style={{ height: "40px", width: "120px" }}
-                        // onClick={() =>{ 
-                        //     setTimer(true)
-                        //     setTimerIndex(index)
-                        // }}
-                        onClick={() => handleClick(index)}
-                      >
-                        Start Time
-                      </button>
-                    )}
-                  {selectedLabels.includes(index) && (
-                    <div style={{ height: "30px", textAlign: 'center', fontSize: '18px', fontWeight: 'bold' }}>
-                      <Countdown date={Date.now() + 420000} renderer={renderer} />
-                    </div>
-                  )}
-                </div>
-              )}
-            </table>
-          ))}
+          <div style={{ display: "flex", flexWrap: "wrap" }}>
+            {enteredValues?.map((value, index) => (
+              <table
+                key={index}
+                style={{
+                  backgroundColor:
+                    (greenImg && "#b1d8b7") ||
+                    (blueImg && "#a396c8") ||
+                    (orangeImg && "orange") ||
+                    (defaultImg && "#add8e6"),
+                  margin: "20px",
+                }}
+              >
+                <tr>
+                  <th className="investTableRow">
+                    Batch No:{index === 0 && "AB"}
+                    {index === 1 && "BC"}
+                    {index === 2 && "CD"}{" "}
+                  </th>
+                </tr>
+                <tr>
+                  <th className="investTableRow">78 Jobs </th>
+                </tr>
+                <tr>
+                  <th className="investTableRow">150 Grams </th>
+                </tr>
+                <tr>
+                  <th className="investTableRow">
+                    {(greenImg && "Wax Setting") ||
+                      (blueImg && "Regular") ||
+                      (orangeImg && "RPT")}
+                  </th>
+                </tr>
+                <tr>
+                  <th className="investTableRow">{value?.label}</th>
+                </tr>
+                <tr>
+                  <th className='btncom' style={{display: eviIndex?.includes(index) ? "none":'block'}}>{value?.btncom}</th>
+                </tr>
+                <tr>
+                  <th style={{color:'red'}}>{value?.timer}</th>
+                </tr>
+              </table>
+            ))}
+          </div>
         </div>
       </div>
-    </div>
-  );
+    );
 }
