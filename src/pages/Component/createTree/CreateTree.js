@@ -19,6 +19,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
+import RemoveCircleRoundedIcon from '@mui/icons-material/RemoveCircleRounded';
 
 const useStyles = makeStyles({
     datePickerRoot: {
@@ -53,6 +54,8 @@ export default function QRScanner() {
     const classes = useStyles();
 
     const CurrentImageValue = useRecoilValue(CurrentImageState);
+
+    console.log("CurrentImageValue",CurrentImageValue.length);
 
     const [open, setOpen] = useState(false);
 
@@ -153,20 +156,19 @@ export default function QRScanner() {
                     </div>
                 </div>
 
-                <div style={{ display: 'flex', marginTop: '20px' }}>
-                    <div className='createORMain'>
+                <div style={{ display: 'flex', marginTop: '20px',justifyContent:'space-between',flexWrap:'wrap'}} className='body_container'>
+                    <div className= {'createORMain'} >
                         <QRCode value='Scan a QR code' style={{ height: '200px', width: '200px' }} />
                         <div style={{ display: 'flex', marginTop: '20px' }}>
                             <input type='text' style={{ border: inputError && '1px solid red' }} className='enterBrachItemBox' value={inputValue}
                                 onChange={handleInputChange} onKeyDown={handleKeyDown} />
-                            <button style={{ height: '45px', width: '50px', fontSize: '20px', fontWeight: 600, cursor: 'pointer' }} onClick={handleGoButtonClick}>
+                            <button style={{ height: '100%', width: '50px', fontSize: '20px', fontWeight: 600, cursor: 'pointer' }} onClick={handleGoButtonClick}>
                                 Go
                             </button>
                         </div>
                         <div style={{ marginTop: '30px' }}>
                             <button className='uploadImageBtn' onClick={() => setCamFlag(true)} >uppload tree image</button>
                         </div>
-
                     </div>
                     <div className='allScaneDataMain'>
                         <p className='totalItemText'>{totalValues} Item Added</p>
@@ -174,12 +176,12 @@ export default function QRScanner() {
                             {enteredValues.map((value, index) => (
                                 <div className='allScandataMain' >
                                     <p className='allScanData' key={index}>{value}</p>
-                                    <IoMdClose style={{ height: '40px', color: 'red', width: '40px', cursor: 'pointer' }} onClick={() => handleRemoveItem(index)} />
+                                    <RemoveCircleRoundedIcon style={{ color: '#FF0000', cursor: 'pointer',fontSize:'30px'}} onClick={() => handleRemoveItem(index)} />
                                 </div>
                             ))}
                         </div>
                     </div>
-                    <div className='uplodedImageMain'>
+                    <div className='uplodedImageMain' >
                         <img src={CurrentImageValue} className='uplodedImage' />
                     </div>
                 </div>
