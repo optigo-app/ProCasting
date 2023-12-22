@@ -79,8 +79,8 @@
 .createORMain{
     display: flex;
     flex-direction: column;
-    margin: 30px;
-    width: 30%;
+    margin: 30px 0px 0px 30px;
+    width: 27%;
 }
 .enterBrachItemBox {
     height: 45px;
@@ -91,7 +91,7 @@
 }
 
 .allScaneDataMain{
-    width: 25%;
+    width: 35%;
     margin-top: 3%;
 }
 
@@ -108,6 +108,7 @@
 .allScandataMain{
     display: flex;
     align-items: center;
+    gap:10px
 }
 .allScanData{
     display: flex;
@@ -121,6 +122,7 @@
     border-radius: 5px;
     font-size: 22px;
     margin: 7px 0px;
+   
 }
 .uploadImageBtn{
     /* #d9d9d8 */
@@ -131,9 +133,10 @@
 }
 .uplodedImageMain{
     width: 30%;
+    text-align: center;
 }
 .uplodedImage{
-    width:100%;
+    width:200px;
     margin-top: 30px;
 }
 .bottomBtnDivMain{
@@ -222,3 +225,42 @@
     margin-top: 0px!important;
 
 }
+
+.body_container{
+    display:flex; 
+    margin-top:20px;
+    justify-content:space-between;
+}
+
+
+
+@media screen and (max-width:720px) {
+    .body_container{
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    .createORMain{
+        width:100%;
+        order: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin:0px;
+    }
+
+    .allScaneDataMain{
+        width: 100%;
+        order: 3;
+    }
+
+    .uplodedImageMain{
+        width:100%;
+        order:2;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+}
+
+
