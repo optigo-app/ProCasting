@@ -24,15 +24,21 @@ export default function Home() {
                 <div className='bothBtnDiv'>
                     <div className='NoteMain'>
                         <img src={Note} className='Noteimg' onClick={() => navigation('/createTree')}/>
-                        <p className='NoteImgTitle'>NEW THREE</p>
-                        {/* <button className='homeNewTree' >New Tree</button> */}
+                        <p className='NoteImgTitle'>NEW TREE</p>
                     </div>
 
                     <div className='NoteMain'>
                         <img src={Note} className='Noteimg' />
-                        <p className='NoteImgTitle'>Edit THREE</p>
+                        <p className='NoteImgTitle'>EDIT TREE</p>
                         {/* <button className='homeNewTree' onClick={() => navigation('/createTree')}>New Tree</button> */}
                     </div>
+                    <div className='NoteMain'>
+                        <img src={Note} className='Noteimg' onClick={() => navigation('/addFlask')}/>
+                        <p className='NoteImgTitle'>BIND FLASK</p>
+                        {/* <button className='homeNewTree' onClick={() => navigation('/createTree')}>New Tree</button> */}
+  
+                    </div>
+
                     <div className='NoteMain'>
                         <img src={Note} className='Noteimg' />
                         <p className='NoteImgTitle'>SHOW LIST</p>

@@ -7,6 +7,7 @@ import greenImges from '../../assets/green.png'
 import blueImges from '../../assets/blue.png'
 import orangeImges from '../../assets/orange.png'
 import { IoMdClose } from "react-icons/io";
+import Barcode from 'react-barcode';
 
 
 export default function InvestMentFirst() {
@@ -25,7 +26,14 @@ export default function InvestMentFirst() {
     const [TDS, setTDS] = useState(undefined);
     const [phValue, setPhValue] = useState(undefined);
     const [showTimmerBtn, setShowTimmerBtn] = useState(false);
+    const containerStyle = {
+        width: '170px',
+        display: 'inline-block',
+        overflow: 'hidden',
+        alignItems: 'center'
+    };
 
+    const barcodeValue = '123456789012345678901234';
     const navigation = useNavigate();
 
     const handleClickOpen = () => {
@@ -180,7 +188,17 @@ export default function InvestMentFirst() {
                 </div>
                 <div style={{ display: 'flex' }}>
                     <div className='investTopBox1'>
-                        <QRCode value='Scan a QR code' style={{ height: '200px', width: '200px' }} />
+                        <div style={{ width: '60%', display: 'flex', justifyContent: 'center' }}>
+                            <div style={containerStyle}>
+                                <Barcode
+                                    value={barcodeValue}
+                                    width={2}
+                                    height={100}
+                                    fontSize={16}
+                                    displayValue={false}
+                                />
+                            </div>
+                        </div>
                         <div style={{ display: 'flex', marginTop: '20px' }}>
                             <input type='text' onKeyDown={handleKeyDown} style={{ border: inputError && '1px solid red' }} className='enterBrachItemBox' value={inputValue}
                                 onChange={handleInputChange} />

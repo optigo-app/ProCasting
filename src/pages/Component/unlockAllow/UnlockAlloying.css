@@ -1,18 +1,5 @@
-.mainAlloyingTitleIn {
-    margin: 0px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 50px;
-    background-color: #00ddff;
-    width: 250px;
-    font-size: 20px;
-
-}
-
-
 .UnlockTopBox1{
-    width: 30%;
+    width: 50%;
     display: flex;
     align-items: center;
     flex-direction: column;

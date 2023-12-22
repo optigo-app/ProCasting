@@ -13,7 +13,7 @@ export default function BatchListing() {
 
     return (
         <div className='batchMain'>
-            <p className='mainAlloyingTitleIn' >Batch Listing</p>
+            <p className='mainTitle' >PROCASTING-BATCH LISTING</p>
 
             <div style={{display : 'flex' ,flexWrap: 'wrap' }}>
                 <div className='batchLsitBoxMain'>
@@ -48,7 +48,7 @@ export default function BatchListing() {
                                 color: '#ff5757',
                                 fontWeight: 700,
                                 margin: '0px'
-                            }}>AE</p>
+                            }}>AB</p>
                             <p style={{ fontSize: '30px', fontWeight: 600, width: '100px', color: '#cb6ce6' }}>(F1)</p>
                         </div>
                         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
@@ -95,8 +95,8 @@ export default function BatchListing() {
                                 color: '#ff5757',
                                 fontWeight: 700,
                                 margin: '0px'
-                            }}>AE</p>
-                            <p style={{ fontSize: '30px', fontWeight: 600, width: '100px', color: '#cb6ce6' }}>(F1)</p>
+                            }}>BC</p>
+                            <p style={{ fontSize: '30px', fontWeight: 600, width: '100px', color: '#cb6ce6' }}>(F2)</p>
                         </div>
                         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                             <p style={{
@@ -142,8 +142,8 @@ export default function BatchListing() {
                                 color: '#ff5757',
                                 fontWeight: 700,
                                 margin: '0px'
-                            }}>AE</p>
-                            <p style={{ fontSize: '30px', fontWeight: 600, width: '100px', color: '#cb6ce6' }}>(F1)</p>
+                            }}>CD</p>
+                            <p style={{ fontSize: '30px', fontWeight: 600, width: '100px', color: '#cb6ce6' }}>(F3)</p>
                         </div>
                         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                             <p style={{
