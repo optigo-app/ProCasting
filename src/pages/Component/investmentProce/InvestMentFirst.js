@@ -28,6 +28,7 @@ export default function InvestMentFirst() {
   const [phValue, setPhValue] = useState(undefined);
   const [showTimmerBtn, setShowTimmerBtn] = useState(false);
   const [selectedLabels, setSelectedLabels] = useState([]);
+  const [enteredTime, setEnteredTime] = useState('');
   const navigation = useNavigate();
   const containerStyle = {
     width: '170px',
@@ -99,13 +100,13 @@ export default function InvestMentFirst() {
 
   useEffect(() => {
 
-    if (enteredValues.length === 1) {
+    if (enteredValues?.length === 1) {
       setOpenYourBagDrawer(true)
     }
 
   }, [enteredValues])
 
-  const [enteredTime, setEnteredTime] = useState('');
+
   const handleInputChangen = (e) => {
     setEnteredTime(e.target.value);
   };
@@ -184,7 +185,7 @@ export default function InvestMentFirst() {
 
           const updatedData = enteredValues.map((d,index) => {
             if (!d.timer && evi === index) {
-              d.timer = <Countdown date={Date.now() + 420000} renderer={renderer} />;
+              d.timer = <Countdown date={Date.now() + 30000} renderer={renderer} />;
             }
             return d;
           });
@@ -355,10 +356,10 @@ export default function InvestMentFirst() {
               flexDirection: "column",
             }}
           >
-            {enteredValues.map((value, index) => (
+            {enteredValues?.map((value, index) => (
               <div className="allScanInvestdataMain">
                 <p className="allInvestScanData" key={index}>
-                  {value}
+                  {value?.label}
                 </p>
               </div>
             ))}
@@ -486,13 +487,13 @@ export default function InvestMentFirst() {
                   </th>
                 </tr>
                 <tr>
-                  <th className="investTableRow">Flask ID</th>
+                  <th className="investTableRow">{value?.label}</th>
                 </tr>
                 <tr>
                   <th className='btncom' style={{display: eviIndex?.includes(index) ? "none":'block'}}>{value?.btncom}</th>
                 </tr>
                 <tr>
-                  <th style={{color:'white'}}>{value?.timer}</th>
+                  <th style={{color:'red'}}>{value?.timer}</th>
                 </tr>
               </table>
             ))}
