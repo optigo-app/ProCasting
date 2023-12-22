@@ -2,13 +2,17 @@ import QRCode from 'qrcode.react'
 import React, { useEffect, useState } from 'react'
 import './BurnOut.css'
 import { useNavigate } from 'react-router-dom';
-import { Drawer } from '@mui/material';
+import { Dialog, DialogContentText, DialogTitle, Drawer } from '@mui/material';
 
 import greenImges from '../../assets/green.png'
 import blueImges from '../../assets/blue.png'
 import orangeImges from '../../assets/orange.png'
 import { IoMdClose } from "react-icons/io";
 import Barcode from 'react-barcode';
+
+import Button from '@mui/material/Button';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
 
 export default function BurnOut() {
 
@@ -28,10 +32,21 @@ export default function BurnOut() {
         overflow: 'hidden',
         alignItems: 'center'
     };
+    const [open, setOpen] = useState(false);
+
+    const handleClickOpen = () => {
+        setOpen(true);
+    };
+
+    const handleClose = () => {
+        setOpen(false);
+        window.location.reload();
+    };
 
     const barcodeValue = '123456789012345678901234';
 
     const navigation = useNavigate();
+
 
     useEffect(() => {
 
@@ -63,6 +78,14 @@ export default function BurnOut() {
         }
 
     }, [enteredValues])
+    useEffect(() => {
+
+        if (enteredValues.length === 1) {
+            setOpenYourBagDrawer(true)
+        }
+
+    }, [enteredValues])
+
 
     const handleInputChange = (event) => {
         setInputValue(event.target.value);
@@ -90,8 +113,29 @@ export default function BurnOut() {
         }
     };
 
+    const handleIssueJob = () => {
+        if (enteredValues.length === 0) {
+            alert('Enetr job first')
+        } else {
+            setOpen(true);
+        }
+    }
+
     return (
         <div>
+            <Dialog
+                open={open}
+                // onClose={handleClose}
+                aria-labelledby="alert-dialog-title"
+                aria-describedby="alert-dialog-description"
+            >
+                <DialogTitle id="alert-dialog-title" style={{ marginInline: '45px' }}>
+                    {"SAVE THE FLASK PROCESS"}
+                </DialogTitle>
+                <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '20px' }}>
+                    <Button onClick={handleClose}>SAVE</Button>
+                </div>
+            </Dialog>
             <Drawer
                 open={openYourBagDrawer}
                 // onClose={() => {
@@ -156,7 +200,7 @@ export default function BurnOut() {
                         <p className='investDestilInputTitle'>Batch No:</p>
                         <input type='text' className='investDestilInput' value={enteredValues.length === 0 ? '' : enteredValues.length === 1 ? 'AB' : enteredValues.length === 2 ? 'BC' : 'CD'} />
                     </div>
-                    <button className='burnOutIssueBtn' onClick={() => navigation('/unlock')}>Issue Job</button>
+                    <button className='burnOutIssueBtn' onClick={handleIssueJob}>Issue Job</button>
                 </div>
 
             </div>

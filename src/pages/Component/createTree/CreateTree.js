@@ -21,12 +21,14 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import RemoveCircleRoundedIcon from '@mui/icons-material/RemoveCircleRounded';
 import Barcode from 'react-barcode';
+import scaneCodeImage from '../../assets/scanBarcode.gif'
+import idle from '../../assets/idle.gif'
+import BarcodeScanner from 'react-barcode-reader';
 
 const useStyles = makeStyles({
     datePickerRoot: {
         width: '100%',
         marginTop: '10px',
-        //   height: '20%'
     },
     datePickerInput: {
         backgroundColor: 'lightgray',
@@ -35,11 +37,10 @@ const useStyles = makeStyles({
         width: '100%',
         height: '20px'
     },
-
     inputRoot: {
-        color: 'blue', // Change color to desired value
+        color: 'blue',
         '&::placeholder': {
-            color: 'red', // Change placeholder color to desired value
+            color: 'red',
         },
     },
 
@@ -51,12 +52,23 @@ export default function QRScanner() {
     const [enteredValues, setEnteredValues] = useState([]);
     const [inputError, setInputError] = useState(false)
     const [camFlag, setCamFlag] = useRecoilState(CurrentCamFlag)
+    const [isImageVisible, setIsImageVisible] = useState(true);
     const navigation = useNavigate();
     const classes = useStyles();
 
     const CurrentImageValue = useRecoilValue(CurrentImageState);
 
-    console.log("CurrentImageValue",CurrentImageValue.length);
+    const [scannedCode, setScannedCode] = useState('');
+
+    const handleScan = (data) => {
+        setEnteredValues([...enteredValues, data]);
+        setScannedCode((prev) => [...prev , data]);
+    };
+
+    const handleError = (error) => {
+        console.error('Error while scanning:', error);
+    };
+
 
     const [open, setOpen] = useState(false);
 
@@ -67,7 +79,9 @@ export default function QRScanner() {
     const handleClose = () => {
         setOpen(false);
     };
-
+    const toggleImageVisibility = () => {
+        setIsImageVisible(!isImageVisible);
+    };
 
     const handleInputChange = (event) => {
         setInputValue(event.target.value);
@@ -97,14 +111,13 @@ export default function QRScanner() {
         }
     };
 
-    const containerStyle = {
-        width: '170px',
-        display: 'inline-block',
-        overflow: 'hidden',
-        alignItems: 'center'
-    };
+    const handleMoreInfoShow = () => {
 
-    const barcodeValue = '123456789012345678901234';
+        let newData = ['1/1999', '2/1123', '1/3453', '2/121', '5/14523']
+
+
+        setEnteredValues([...enteredValues, ...newData]);
+    }
     return (
         <>
             <Dialog
@@ -123,11 +136,16 @@ export default function QRScanner() {
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleClose}>ADD</Button>
-
                 </DialogActions>
             </Dialog>
             <div>
-                {/* <button className='headerTwoListBtn' onClick={() => navigation('/addFlask')}>New Tree</button> */}
+                <BarcodeScanner
+                    onScan={handleScan}
+                    onError={handleError}
+                    facingMode="environment" // Use the device's rear camera (optional)
+                />
+                <p>Scanned Barcode: {scannedCode}</p>
+
                 <p className='mainTitle' >PROCASTING-CREATE NEW BATCH</p>
                 <div style={{ display: 'flex', marginTop: '30px' }}>
                     <div className='allDataCreteDiv'>
@@ -135,8 +153,6 @@ export default function QRScanner() {
                             <input type='text' placeholder='Batch' className='infoTextInputBatch' />
                             <input type='text' placeholder='Enter Weight' className='infoTextInputWight' />
                             <input type='text' placeholder='Eneter Assign To' value={'E0025(ANDERSON PATRICK)'} className='infoTextInput' />
-                            {/* </div> */}
-                            {/* <div style={{ display: 'flex', paddingInline: '10px' }}> */}
                             <div style={{ width: '25%' }}>
                                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                                     <DatePicker
@@ -165,10 +181,18 @@ export default function QRScanner() {
                     </div>
                 </div>
 
-                <div style={{ display: 'flex', marginTop: '20px',justifyContent:'space-between',flexWrap:'wrap'}} className='body_container'>
-                    <div className= {'createORMain'} >
-                        {/* <Barcode value={barcodeValue} displayValue={false} width={0.7} height={100} /> */}
-                        <div style={{ width: '60%', display: 'flex', justifyContent: 'center' }}>
+                <div style={{ display: 'flex', marginTop: '20px', justifyContent: 'space-between', flexWrap: 'wrap' }} className='body_container'>
+                    <div className={'createORMain'} >
+                        <div onClick={toggleImageVisibility} style={{ width: 'fit-content', marginLeft: '30px' }}>
+                            {isImageVisible ? <div>
+                                <img src={scaneCodeImage} className='createImageQrCode' />
+                            </div> :
+                                <div>
+                                    <img src={idle} />
+                                </div>}
+                        </div>
+
+                        {/* <div style={{ width: '60%', display: 'flex', justifyContent: 'center' }}>
                             <div style={containerStyle}>
                                 <Barcode
                                     value={barcodeValue}
@@ -178,7 +202,7 @@ export default function QRScanner() {
                                     displayValue={false}
                                 />
                             </div>
-                        </div>
+                        </div> */}
                         <div style={{ display: 'flex', marginTop: '10px' }}>
                             <input type='text' style={{ border: inputError && '1px solid red' }} className='enterBrachItemBox' value={inputValue}
                                 onChange={handleInputChange} onKeyDown={handleKeyDown} />
@@ -196,7 +220,7 @@ export default function QRScanner() {
                             {enteredValues.map((value, index) => (
                                 <div className='allScandataMain' >
                                     <p className='allScanData' key={index}>{value}</p>
-                                    <RemoveCircleRoundedIcon style={{ color: '#FF0000', cursor: 'pointer',fontSize:'30px'}} onClick={() => handleRemoveItem(index)} />
+                                    <RemoveCircleRoundedIcon style={{ color: '#FF0000', cursor: 'pointer', fontSize: '30px' }} onClick={() => handleRemoveItem(index)} />
                                 </div>
                             ))}
                         </div>
@@ -207,8 +231,8 @@ export default function QRScanner() {
                 </div>
 
                 <div className='bottomBtnDivMain'>
-                    <button className='showInfoBtn'>Show Info</button>
-                    <button className='showInfoBtn' onClick={() => navigation('/addFlask')}>print OR</button>
+                    <button className='showInfoBtn' onClick={handleMoreInfoShow}>Show Info</button>
+                    <button className='showInfoBtn' onClick={() => navigation('/printQr')}>print OR</button>
                     <button className='showInfoBtn' onClick={() => navigation('/addFlask')}>Show list</button>
                     <button className='showInfoBtn' onClick={() => navigation('/addFlask')}>Save & New</button>
                 </div>
