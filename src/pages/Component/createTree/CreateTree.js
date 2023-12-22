@@ -145,49 +145,33 @@ export default function QRScanner() {
                 <p className='mainTitle' >PROCASTING-CREATE NEW BATCH</p>
                 <div style={{ display: 'flex', marginTop: '30px' }}>
                     <div className='allDataCreteDiv'>
-                        <div style={{ display: 'flex' }}>
+                        <div style={{ display: 'flex' , justifyContent: 'center' ,alignItems:'center',gap: '5px' }}>
                             <input type='text' placeholder='Batch' className='infoTextInputBatch' />
                             <input type='text' placeholder='Enter Weight' className='infoTextInputWight' />
                             <input type='text' placeholder='Eneter Assign To' value={'E0025(ANDERSON PATRICK)'} className='infoTextInput' />
-                            <div style={{ width: '25%' }}>
-                                <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                    <DatePicker
-                                        className={classes.datePickerRoot}
-                                        renderInput={(params) => (
-                                            <TextField
-                                                {...params.inputProps}
-                                                placeholder="Choose date" // Placeholder text
-                                                InputLabelProps={{
-                                                    shrink: true,
-                                                }}
-                                            />
-                                        )}
-                                    />
-                                </LocalizationProvider> */}
-                  
-                  <input
-                    type="date"
-                    style={{
-                      border: "1px solid #e2e2e2",
-                      outline: "none",
-                      width: "25%" ,
-                      height: "45px",
-                      backgroundColor:'#d9d9d8',
-                      fontSize:'22px'
-                    }}
-                  />
-              
-                <div style={{ width: "20%" }}>
-                  <select className="selecGold" style={{backgroundColor:'#d9d9d8'}}>
-                    <option className="selecGoldOption">GOLD 14K WHITE</option>
-                    <option className="selecGoldOption">GOLD 14K YELLOW</option>
-                    <option className="selecGoldOption">GOLD 18K WHITE</option>
-                    <option className="selecGoldOption">GOLD 18K YELLOW</option>
-                  </select>
+                            <input
+                                type="date"
+                                style={{
+                                    border: "1px solid #e2e2e2",
+                                    outline: "none",
+                                    width: "25%",
+                                    height: "45px",
+                                    backgroundColor: '#d9d9d8',
+                                    fontSize: '22px'
+                                }}
+                            />
+
+                            <div style={{ width: "20%" }}>
+                                <select className="selecGold" style={{ backgroundColor: '#d9d9d8' }}>
+                                    <option className="selecGoldOption">GOLD 14K WHITE</option>
+                                    <option className="selecGoldOption">GOLD 14K YELLOW</option>
+                                    <option className="selecGoldOption">GOLD 18K WHITE</option>
+                                    <option className="selecGoldOption">GOLD 18K YELLOW</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-              </div>
-            </div>
-          </div>
 
                 <div style={{ display: 'flex', marginTop: '20px', justifyContent: 'space-between', flexWrap: 'wrap' }} className='body_container'>
                     <div className={'createORMain'} >
@@ -226,48 +210,48 @@ export default function QRScanner() {
                     </div>
                 </div>
 
-          <div className="bottomBtnDivMain">
-            <button className="showInfoBtn" onClick={handleMoreInfoShow}>
-              Show Info
-            </button>
-            <button
-              className="showInfoBtn"
-              onClick={() => navigation("/printQr")}
+                <div className="bottomBtnDivMain">
+                    <button className="showInfoBtn" onClick={handleMoreInfoShow}>
+                        Show Info
+                    </button>
+                    <button
+                        className="showInfoBtn"
+                        onClick={() => navigation("/printQr")}
+                    >
+                        print OR
+                    </button>
+                    <button
+                        className="showInfoBtn"
+                        onClick={() => navigation("/addFlask")}
+                    >
+                        Show list
+                    </button>
+                    <button
+                        className="showInfoBtn"
+                        onClick={() => navigation("/addFlask")}
+                    >
+                        Save & New
+                    </button>
+                </div>
+                <div style={{ marginTop: "10px" }}>
+                    <p className="homeNoteTitle" onClick={handleClickOpen}>
+                        Add Sp. Remark
+                    </p>
+                    <p className="homeNoteDesc">
+                        Note*:
+                        <b>
+                            User Wired or Wireless Barcode/QR scanner,Not Use TAB Camera
+                        </b>
+                    </p>
+                </div>
+            </div>
+            <Dialog
+                open={camFlag}
+                fullWidth={"sm"}
+                onClose={() => setCamFlag(false)}
             >
-              print OR
-            </button>
-            <button
-              className="showInfoBtn"
-              onClick={() => navigation("/addFlask")}
-            >
-              Show list
-            </button>
-            <button
-              className="showInfoBtn"
-              onClick={() => navigation("/addFlask")}
-            >
-              Save & New
-            </button>
-          </div>
-          <div style={{ marginTop: "10px" }}>
-            <p className="homeNoteTitle" onClick={handleClickOpen}>
-              Add Sp. Remark
-            </p>
-            <p className="homeNoteDesc">
-              Note*:
-              <b>
-                User Wired or Wireless Barcode/QR scanner,Not Use TAB Camera
-              </b>
-            </p>
-          </div>
-        </div>
-        <Dialog
-          open={camFlag}
-          fullWidth={"sm"}
-          onClose={() => setCamFlag(false)}
-        >
-          <ImageWebCam />
-        </Dialog>
-      </>
+                <ImageWebCam />
+            </Dialog>
+        </>
     );
 }
