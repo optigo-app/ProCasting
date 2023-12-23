@@ -120,7 +120,7 @@ input[type='date']::-webkit-calender-picker-indicatore {
     display: flex;
     flex-direction: column;
     align-items: center;
-    height: 300px;
+    height: 390px;
 }
 
 .CreateDataMain {
@@ -209,8 +209,8 @@ input[type='date']::-webkit-calender-picker-indicatore {
 }
 
 .uplodedImage {
-    width: 100%;
-    height: 100%;
+    width: 95%;
+    height: 95%;
     margin-left: -10px;
 }
 
