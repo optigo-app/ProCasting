@@ -24,6 +24,7 @@
     font-size: 25px;
     margin-inline: 25px;
 }
+
 .infoTextInputBatch {
     height: 40px;
     width: 203px;
@@ -67,7 +68,8 @@
     color: #a2a2a2;
 
 }
-.infoTextInputSelectGod{
+
+.infoTextInputSelectGod {
     height: 40px;
     width: auto;
     border: none;
@@ -79,7 +81,7 @@
     margin-inline: 25px;
 }
 
-input[type='date']::-webkit-calender-picker-indicatore{
+input[type='date']::-webkit-calender-picker-indicatore {
     display: none;
 }
 
@@ -102,7 +104,7 @@ input[type='date']::-webkit-calender-picker-indicatore{
     display: flex;
     flex-direction: column;
     margin: 0px 0px 0px 30px;
-    width: 15%;
+    width: 45%;
 }
 
 .enterBrachItemBox {
@@ -114,7 +116,7 @@ input[type='date']::-webkit-calender-picker-indicatore{
 }
 
 .allScaneDataMain {
-    width: 25%;
+    width: 30%;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -129,15 +131,47 @@ input[type='date']::-webkit-calender-picker-indicatore{
 }
 
 .totalItemText {
-    font-size: 20px;
+    font-size: 25px;
     background-color: #eceded;
-    padding-inline: 80px;
     padding-block: 10px;
-    height: 30px;
+    height: 80px;
+    width: 100px;
     display: flex;
     align-items: center;
     margin: 0px;
-    width: fit-content;
+    justify-content: center;
+    border-radius: 100px;
+    margin: 10px;
+}
+
+.totalItemTextFail {
+    font-size: 25px;
+    background-color: red;
+    padding-block: 10px;
+    display: flex;
+    align-items: center;
+    margin: 0px;
+    justify-content: center;
+    border-radius: 100px;
+    margin: 10px;
+    height: 80px;
+    width: 100px;
+
+}
+
+.totalItemTextTrue {
+    font-size: 25px;
+    background-color: lightgreen;
+    padding-block: 10px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    margin: 0px;
+    width: 100px;
+    justify-content: center;
+    border-radius: 100px;
+    margin: 10px;
+
 }
 
 .allScandataMain {
@@ -179,19 +213,23 @@ input[type='date']::-webkit-calender-picker-indicatore{
     height: 100%;
     margin-left: -10px;
 }
-.uplodedImageProfile{
+
+.uplodedImageProfile {
     width: 85%;
     margin-left: -10px;
 }
+
 .bottomBtnDivMain {
     display: flex;
     align-items: center;
     justify-content: space-around;
 }
-.TopBtnDivMain{
+
+.TopBtnDivMain {
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-wrap: wrap;
     /* justify-content: space-around; */
 }
 
@@ -286,13 +324,22 @@ input[type='date']::-webkit-calender-picker-indicatore{
 .body_container {
     display: flex;
     margin-top: 20px;
-    justify-content: space-between;
+}
+
+.createFooterMain {
+    position: absolute;
+    bottom: 0px;
+    width: 100%;
+    margin-top: 10px;
+}
+
+.scaneUploadMain {
+    display: flex;
+    width: 65%;
 }
 
 
-
-
-@media screen and (max-width:720px) {
+@media screen and (max-width: 1000px) {
     .body_container {
         display: flex;
         flex-wrap: wrap;
@@ -312,11 +359,29 @@ input[type='date']::-webkit-calender-picker-indicatore{
         order: 3;
     }
 
-    .uplodedImageMain {
+    .scaneUploadMain {
+        width: 50%;
+    }
+    .uplodedImageMain{
+        margin-left: 60px;
+    }
+    .infoTextInput {
+        font-size: 20px;
+        font-weight: 500;
+    }
+
+    .infoTextInputSelectGod {
+        font-size: 20px;
+        font-weight: 500;
+
+    }
+
+    .uplodedImageProfile {
         width: 100%;
-        order: 2;
+    }
+
+    .scaneUploadMain {
         display: flex;
-        justify-content: center;
-        align-items: center;
+        flex-direction: column;
     }
 }
