@@ -1,4 +1,3 @@
-import QRCode from 'qrcode.react'
 import React, { useEffect, useState } from 'react'
 import './BurnOut.css'
 import { Dialog, DialogTitle, Drawer } from '@mui/material';

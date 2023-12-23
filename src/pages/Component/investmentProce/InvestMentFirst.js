@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import './InvestMentFirst.css'
-import QRCode from 'qrcode.react'
 import { Button, Dialog, DialogTitle, Drawer } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
 import greenImges from '../../assets/green.png'
 import blueImges from '../../assets/blue.png'
 import orangeImges from '../../assets/orange.png'
