@@ -50,6 +50,7 @@ export default function QRScanner() {
     const [camFlag, setCamFlag] = useRecoilState(CurrentCamFlag)
     const [isImageVisible, setIsImageVisible] = useState(true);
     const [todayDate, setTodayDate] = useState('');
+    const [inpFocus, setInpFocus] = useState(false);
     const navigation = useNavigate();
     const classes = useStyles();
 
@@ -61,11 +62,19 @@ export default function QRScanner() {
         setTodayDate(today)
     }, [])
     const handleScan = (data) => {
-        setEnteredValues([...enteredValues, data]);
+        if(isImageVisible===true){
+            setEnteredValues([...enteredValues, data]);
+        }
+        console.log("data",data);
+        if(data.length){
+            setInpFocus(true)
+        }
     };
 
     const handleError = (error) => {
         console.error('Error while scanning:', error);
+        setIsImageVisible(false)
+        setInpFocus(false)
     };
 
 
@@ -148,7 +157,6 @@ export default function QRScanner() {
             <BarcodeScanner
                 onScan={handleScan}
                 onError={handleError}
-                facingMode="environment"
             />
             <div>
                 <div className="TopBtnDivMain">
@@ -185,7 +193,7 @@ export default function QRScanner() {
                                         <img src={idle} />
                                 </div>}
                                 <div>
-                                <input type='text' style={{width:'20px',position:'absolute',top:'130px',left:'120px',zIndex:-1}} autoFocus={true}/>
+                                <input type='text' style={{width:'20px',position:'absolute',top:'130px',left:'120px',zIndex:-1}} autoFocus={ isImageVisible===false ? false :inpFocus}/>
                             </div>
                         </div>
                             <div style={{ display: 'flex', marginTop: '10px' }}>
