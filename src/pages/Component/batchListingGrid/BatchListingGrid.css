@@ -6,12 +6,12 @@
   }
 
 .grid-btn{
-    border:1px solid rgba(0,0,0,0.12);  
+    border:1px solid #b8b8b8;  
     border-radius:5px;
     padding:5px 12px;
     cursor:pointer;
     /* box-shadow: 2px 4px 3px #dbdbdb; */
-    background-color: #d9d9d8;
+    background-color: #f0f0f0;
     width:auto
 }
 
@@ -22,6 +22,13 @@
 .grid_head{
     display:flex;
     gap:12px;
+}
+
+.DataGridTable{
+    /* height: 100%; */
+    position: absolute;
+    bottom: 0;
+    top:58px;
 }
 
 
@@ -57,16 +64,18 @@
 
     .menu{
         display: block;
-        margin-right: 120px;
     }
 
     .menu_responsive{
         display:flex;
-        gap:12px;
+        gap:5px;
         flex-direction:row-reverse;
     }
 
     .grid_head_container{
         display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap:5px
     }
 }
