@@ -54,7 +54,7 @@ export default function QRScanner() {
     const classes = useStyles();
 
     const CurrentImageValue = useRecoilValue(CurrentImageState);
-
+    const [inputWightValue, setInputWeightValue] = useState('');
 
     useEffect(() => {
         const today = new Date().toISOString().split('T')[0];
@@ -111,16 +111,18 @@ export default function QRScanner() {
     };
 
     const handleMoreInfoShow = () => {
-
         let newData = ['1/1999', '2/1123', '1/3453', '2/121', '5/14523']
-
-
         setEnteredValues([...enteredValues, ...newData]);
     }
 
+    const handleInputWeightChange = (event) => {
+        const { value } = event.target;
+        const newValue = value.replace(/\D/g, '').slice(0, 3);
+        setInputWeightValue(newValue);
+    };
+
     const handleSaveNew = () => {
         window.location.reload();
-
     }
     return (
         <>
@@ -150,26 +152,27 @@ export default function QRScanner() {
             />
             <div>
                 <div className="TopBtnDivMain">
-                    <p style={{ color: '#6257e3', margin: '5px', fontSize: '18px' }}>NEW BATCH - <span style={{ fontWeight: 600, fontSize: '25px' }}>B1101</span></p>
-                    <input type='text' placeholder='Batch' className='infoTextInputBatch' />
-                    <input type='text' placeholder='Enter Weight' className='infoTextInputWight' />
-                    <input type='text' placeholder='Eneter Assign To' value={'E0025(ANDERSON PATRICK)'} className='infoTextInput' />
+                    <p className='infoTextInput'>E0025</p>
+                    <p className='infoTextInputSelectGod'>GOLD 14K WHITE</p>
+
                     <input
                         value={todayDate}
                         onChange={(e) => setTodayDate(e.target.value)}
                         type="date"
                         style={{
-                            // border: "1px solid #e2e2e2",
-                            border: "none",
+                            border: "1px solid #b8b8b8",
+                            borderRadius: '5px',
                             outline: "none",
-                            width: "11%",
+                            width: "auto",
                             height: "42px",
                             color: 'black',
                             backgroundColor: 'white',
-                            fontSize: '17px'
+                            fontSize: '25px'
                         }}
                     />
-                    <input type='text' value={'GOLD 14K WHITE'} className='infoTextInputSelectGod' />
+                    <input type='text' placeholder='Batch' className='infoTextInputBatch' />
+                    <input type='number'  value={inputWightValue} onChange={handleInputWeightChange} placeholder='Tree Weight' className='infoTextInputWight' />
+
                 </div>
                 <div style={{ display: 'flex', marginTop: '30px', justifyContent: 'space-between', flexWrap: 'wrap' }} className='body_container'>
                     <div className='createORMain' >
@@ -211,7 +214,7 @@ export default function QRScanner() {
                     </div>
                 </div>
 
-                <div style={{ position: 'absolute', bottom: '5px', width: '100%', marginTop: "10px" }}>
+                <div style={{ position: 'absolute', bottom: '0px', width: '100%', marginTop: "10px" }}>
                     <div className="bottomBtnDivMain">
                         <button className="showInfoBtn" onClick={handleMoreInfoShow}>
                             Show Info
