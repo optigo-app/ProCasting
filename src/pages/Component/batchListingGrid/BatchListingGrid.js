@@ -277,7 +277,7 @@ const BatchListingGrid = () => {
     <>
       <div className="grid_head_container">
         <div className="grid_head menu" >
-          <MenuRoundedIcon onClick={() => setMenuFlag(true)} />
+          <MenuRoundedIcon onClick={() => setMenuFlag(true)} sx={{fontSize:'30px'}} />
 
           {/* <div style={{display : 'flex' ,alignItems: 'stretch'}}>
             <p style={{margin : '0px 5px',cursor:'pointer', fontSize: '14px',textDecoration: 'underline', color: 'blue'}} onClick={() => navigation('/investmentFirst')}>INVESTMENT PROCESS</p>
@@ -336,7 +336,7 @@ const BatchListingGrid = () => {
           alignItems: "center",
         }}
       >
-        <div style={{ width: "90%", marginTop: "30px" }}>
+        <div style={{ width: "100%"}} className="DataGridTable">
           <DataGrid
             rows={rows}
             columns={columns.map((column) => ({
@@ -346,6 +346,7 @@ const BatchListingGrid = () => {
             pageSize={5}
             rowsPerPageOptions={[5, 10, 20]}
             checkboxSelection={false}
+            
           />
         </div>
       </div>
