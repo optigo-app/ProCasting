@@ -181,8 +181,11 @@ export default function QRScanner() {
                                 </div> :
                                     <div>
                                         <img src={idle} />
-                                    </div>}
+                                </div>}
+                                <div>
+                                <input type='text' style={{width:'20px',position:'absolute',top:'130px',left:'120px',zIndex:-1}} autoFocus={true}/>
                             </div>
+                        </div>
                             <div style={{ display: 'flex', marginTop: '10px' }}>
                                 <input type='text' style={{ border: inputError && '1px solid red' }} className='enterBrachItemBox' value={inputValue}
                                     onChange={handleInputChange} onKeyDown={handleKeyDown} />
