@@ -171,42 +171,49 @@ export default function QRScanner() {
                         }}
                     />
                     <input type='text' placeholder='Batch' className='infoTextInputBatch' />
-                    <input type='number'  value={inputWightValue} onChange={handleInputWeightChange} placeholder='Tree Weight' className='infoTextInputWight' />
+                    <input type='number' value={inputWightValue} onChange={handleInputWeightChange} placeholder='Tree Weight' className='infoTextInputWight' />
 
                 </div>
-                <div style={{ display: 'flex', marginTop: '30px', justifyContent: 'space-between', flexWrap: 'wrap' }} className='body_container'>
-                    <div className='createORMain' >
-                        <div onClick={toggleImageVisibility} style={{ width: 'fit-content', marginLeft: '30px' }}>
-                            {isImageVisible ? <div>
-                                <img src={scaneCodeImage} className='createImageQrCode' />
-                            </div> :
+                <div style={{ display: 'flex', marginTop: '30px', flexWrap: 'wrap' }} className='body_container'>
+                    <div className='scaneUploadMain'>
+                        <div className='createORMain' >
+                            <div onClick={toggleImageVisibility} style={{ width: 'fit-content', marginLeft: '30px' }}>
+                                {isImageVisible ? <div>
+                                    <img src={scaneCodeImage} className='createImageQrCode' />
+                                </div> :
+                                    <div>
+                                        <img src={idle} />
+                                </div>}
                                 <div>
-                                    <img src={idle} />
-                            </div>}
-                            <div>
                                 <input type='text' style={{width:'20px',position:'absolute',top:'130px',left:'120px',zIndex:-1}} autoFocus={true}/>
                             </div>
                         </div>
-                        <div style={{ display: 'flex', marginTop: '10px' }}>
-                            <input type='text' style={{ border: inputError && '1px solid red' }} className='enterBrachItemBox' value={inputValue}
-                                onChange={handleInputChange} onKeyDown={handleKeyDown} />
-                            <button style={{ height: '98%', width: '45px', fontSize: '20px', fontWeight: 600, cursor: 'pointer' }} onClick={handleGoButtonClick}>
-                                Go
-                            </button>
+                            <div style={{ display: 'flex', marginTop: '10px' }}>
+                                <input type='text' style={{ border: inputError && '1px solid red' }} className='enterBrachItemBox' value={inputValue}
+                                    onChange={handleInputChange} onKeyDown={handleKeyDown} />
+                                <button style={{ height: '98%', width: '45px', fontSize: '20px', fontWeight: 600, cursor: 'pointer' }} onClick={handleGoButtonClick}>
+                                    Go
+                                </button>
+                            </div>
+                            <p className="homeNoteTitle" onClick={handleClickOpen}>
+                                Add Sp. Remark
+                            </p>
                         </div>
-                        <p className="homeNoteTitle" onClick={handleClickOpen}>
-                            Add Sp. Remark
-                        </p>
-                    </div>
-                    <div className='allScaneDataMain'>
-                        <p className='totalItemText'>{totalValues} Item Added</p>
-                        <div className='CreateDataMain'>
-                            {enteredValues.map((value, index) => (
-                                <div className='allScandataMain' >
-                                    <p className='allScanData' key={index}>{value}</p>
-                                    <RemoveCircleRoundedIcon style={{ color: '#FF0000', cursor: 'pointer', fontSize: '30px' }} onClick={() => handleRemoveItem(index)} />
-                                </div>
-                            ))}
+                        <div className='allScaneDataMain'>
+                            <div style={{ display: 'flex' }}>
+                                <p className='totalItemText'>{totalValues}</p>
+                                <p className='totalItemTextTrue'>{totalValues}</p>
+                                <p className='totalItemTextFail'>{'0'}</p>
+
+                            </div>
+                            <div className='CreateDataMain'>
+                                {enteredValues.map((value, index) => (
+                                    <div className='allScandataMain' >
+                                        <p className='allScanData' key={index}>{value}</p>
+                                        <RemoveCircleRoundedIcon style={{ color: '#FF0000', cursor: 'pointer', fontSize: '30px' }} onClick={() => handleRemoveItem(index)} />
+                                    </div>
+                                ))}
+                            </div>
                         </div>
                     </div>
                     <div className='uplodedImageMain' >
@@ -217,7 +224,7 @@ export default function QRScanner() {
                     </div>
                 </div>
 
-                <div style={{ position: 'absolute', bottom: '0px', width: '100%', marginTop: "10px" }}>
+                <div className='createFooterMain'>
                     <div className="bottomBtnDivMain">
                         <button className="showInfoBtn" onClick={handleMoreInfoShow}>
                             Show Info
