@@ -19,6 +19,7 @@ import scaneCodeImage from '../../assets/scanBarcode.gif'
 import idle from '../../assets/idle.gif'
 import ProfileImg from '../../assets/profile.webp'
 import BarcodeScanner from 'react-barcode-reader';
+import castingTree from '../../assets/castingtree.jpg'
 
 const useStyles = makeStyles({
     datePickerRoot: {
@@ -213,7 +214,7 @@ export default function QRScanner() {
                         </div>
                     </div>
                     <div className='uplodedImageMain' >
-                        <img src={CurrentImageValue ? CurrentImageValue : ProfileImg} className={CurrentImageValue ? 'uplodedImage' : 'uplodedImageProfile'} />
+                        <img src={CurrentImageValue ? CurrentImageValue : castingTree} className={CurrentImageValue ? 'uplodedImage' : 'uplodedImageProfile'} />
                         <div style={{ marginTop: '5px' }}>
                             <button className='uploadImageBtn' onClick={() => setCamFlag(true)} >Upload Tree</button>
                         </div>
