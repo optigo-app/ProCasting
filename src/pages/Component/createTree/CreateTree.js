@@ -1,13 +1,7 @@
-import React, { useRef, useState } from 'react';
-import QRCode from 'qrcode.react';
-import { QrReader } from 'react-qr-reader';
+import React, { useEffect, useRef, useState } from 'react';
 import './CreateTree.css'
-import { IoMdClose } from "react-icons/io";
 import { useNavigate } from 'react-router-dom';
 
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { makeStyles } from '@mui/styles';
 import { Dialog, TextField } from '@mui/material';
 import profile from '../../assets/profile.webp'
@@ -23,6 +17,7 @@ import RemoveCircleRoundedIcon from '@mui/icons-material/RemoveCircleRounded';
 import Barcode from 'react-barcode';
 import scaneCodeImage from '../../assets/scanBarcode.gif'
 import idle from '../../assets/idle.gif'
+import ProfileImg from '../../assets/profile.webp'
 import BarcodeScanner from 'react-barcode-reader';
 
 const useStyles = makeStyles({
@@ -53,12 +48,17 @@ export default function QRScanner() {
     const [inputError, setInputError] = useState(false)
     const [camFlag, setCamFlag] = useRecoilState(CurrentCamFlag)
     const [isImageVisible, setIsImageVisible] = useState(true);
+    const [todayDate, setTodayDate] = useState('');
     const navigation = useNavigate();
     const classes = useStyles();
 
     const CurrentImageValue = useRecoilValue(CurrentImageState);
 
 
+    useEffect(() => {
+        const today = new Date().toISOString().split('T')[0];
+        setTodayDate(today)
+    }, [])
     const handleScan = (data) => {
         setEnteredValues([...enteredValues, data]);
     };
@@ -116,6 +116,11 @@ export default function QRScanner() {
 
         setEnteredValues([...enteredValues, ...newData]);
     }
+
+    const handleSaveNew = () => {
+        window.location.reload();
+
+    }
     return (
         <>
             <Dialog
@@ -136,45 +141,37 @@ export default function QRScanner() {
                     <Button onClick={handleClose}>ADD</Button>
                 </DialogActions>
             </Dialog>
+
+            <BarcodeScanner
+                onScan={handleScan}
+                onError={handleError}
+                facingMode="environment"
+            />
             <div>
-                <BarcodeScanner
-                    onScan={handleScan}
-                    onError={handleError}
-                    facingMode="environment"
-                />
-                <p className='mainTitle' >PROCASTING-CREATE NEW BATCH</p>
-                <div style={{ display: 'flex', marginTop: '30px' }}>
-                    <div className='allDataCreteDiv'>
-                        <div style={{ display: 'flex' , justifyContent: 'center' ,alignItems:'center',gap: '5px' }}>
-                            <input type='text' placeholder='Batch' className='infoTextInputBatch' />
-                            <input type='text' placeholder='Enter Weight' className='infoTextInputWight' />
-                            <input type='text' placeholder='Eneter Assign To' value={'E0025(ANDERSON PATRICK)'} className='infoTextInput' />
-                            <input
-                                type="date"
-                                style={{
-                                    border: "1px solid #e2e2e2",
-                                    outline: "none",
-                                    width: "25%",
-                                    height: "45px",
-                                    backgroundColor: '#d9d9d8',
-                                    fontSize: '22px'
-                                }}
-                            />
-
-                            <div style={{ width: "20%" }}>
-                                <select className="selecGold" style={{ backgroundColor: '#d9d9d8' }}>
-                                    <option className="selecGoldOption">GOLD 14K WHITE</option>
-                                    <option className="selecGoldOption">GOLD 14K YELLOW</option>
-                                    <option className="selecGoldOption">GOLD 18K WHITE</option>
-                                    <option className="selecGoldOption">GOLD 18K YELLOW</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
+                <div className="TopBtnDivMain">
+                    <p style={{ color: '#6257e3', margin: '5px', fontSize: '18px' }}>NEW BATCH - <span style={{ fontWeight: 600, fontSize: '25px' }}>B1101</span></p>
+                    <input type='text' placeholder='Batch' className='infoTextInputBatch' />
+                    <input type='text' placeholder='Enter Weight' className='infoTextInputWight' />
+                    <input type='text' placeholder='Eneter Assign To' value={'E0025(ANDERSON PATRICK)'} className='infoTextInput' />
+                    <input
+                        value={todayDate}
+                        onChange={(e) => setTodayDate(e.target.value)}
+                        type="date"
+                        style={{
+                            // border: "1px solid #e2e2e2",
+                            border: "none",
+                            outline: "none",
+                            width: "11%",
+                            height: "42px",
+                            color: 'black',
+                            backgroundColor: 'white',
+                            fontSize: '17px'
+                        }}
+                    />
+                    <input type='text' value={'GOLD 14K WHITE'} className='infoTextInputSelectGod' />
                 </div>
-
-                <div style={{ display: 'flex', marginTop: '20px', justifyContent: 'space-between', flexWrap: 'wrap' }} className='body_container'>
-                    <div className={'createORMain'} >
+                <div style={{ display: 'flex', marginTop: '30px', justifyContent: 'space-between', flexWrap: 'wrap' }} className='body_container'>
+                    <div className='createORMain' >
                         <div onClick={toggleImageVisibility} style={{ width: 'fit-content', marginLeft: '30px' }}>
                             {isImageVisible ? <div>
                                 <img src={scaneCodeImage} className='createImageQrCode' />
@@ -186,17 +183,17 @@ export default function QRScanner() {
                         <div style={{ display: 'flex', marginTop: '10px' }}>
                             <input type='text' style={{ border: inputError && '1px solid red' }} className='enterBrachItemBox' value={inputValue}
                                 onChange={handleInputChange} onKeyDown={handleKeyDown} />
-                            <button style={{ height: '100%', width: '50px', fontSize: '20px', fontWeight: 600, cursor: 'pointer' }} onClick={handleGoButtonClick}>
+                            <button style={{ height: '98%', width: '45px', fontSize: '20px', fontWeight: 600, cursor: 'pointer' }} onClick={handleGoButtonClick}>
                                 Go
                             </button>
                         </div>
-                        <div style={{ marginTop: '30px' }}>
-                            <button className='uploadImageBtn' onClick={() => setCamFlag(true)} >uppload tree image</button>
-                        </div>
+                        <p className="homeNoteTitle" onClick={handleClickOpen}>
+                            Add Sp. Remark
+                        </p>
                     </div>
                     <div className='allScaneDataMain'>
                         <p className='totalItemText'>{totalValues} Item Added</p>
-                        <div style={{ height: '360px', alignItems: 'center', overflow: 'auto', display: 'flex', flexDirection: 'column' }}>
+                        <div className='CreateDataMain'>
                             {enteredValues.map((value, index) => (
                                 <div className='allScandataMain' >
                                     <p className='allScanData' key={index}>{value}</p>
@@ -206,43 +203,45 @@ export default function QRScanner() {
                         </div>
                     </div>
                     <div className='uplodedImageMain' >
-                        <img src={CurrentImageValue} className='uplodedImage' />
+                        <img src={CurrentImageValue ? CurrentImageValue : ProfileImg} className={CurrentImageValue ? 'uplodedImage' : 'uplodedImageProfile'} />
+                        <div style={{ marginTop: '5px' }}>
+                            <button className='uploadImageBtn' onClick={() => setCamFlag(true)} >Upload Tree</button>
+                        </div>
                     </div>
                 </div>
 
-                <div className="bottomBtnDivMain">
-                    <button className="showInfoBtn" onClick={handleMoreInfoShow}>
-                        Show Info
-                    </button>
-                    <button
-                        className="showInfoBtn"
-                        onClick={() => navigation("/printQr")}
-                    >
-                        print OR
-                    </button>
-                    <button
-                        className="showInfoBtn"
-                        onClick={() => navigation("/addFlask")}
-                    >
-                        Show list
-                    </button>
-                    <button
-                        className="showInfoBtn"
-                        onClick={() => navigation("/addFlask")}
-                    >
-                        Save & New
-                    </button>
-                </div>
-                <div style={{ marginTop: "10px" }}>
-                    <p className="homeNoteTitle" onClick={handleClickOpen}>
-                        Add Sp. Remark
-                    </p>
-                    <p className="homeNoteDesc">
-                        Note*:
-                        <b>
-                            User Wired or Wireless Barcode/QR scanner,Not Use TAB Camera
-                        </b>
-                    </p>
+                <div style={{ position: 'absolute', bottom: '5px', width: '100%', marginTop: "10px" }}>
+                    <div className="bottomBtnDivMain">
+                        <button className="showInfoBtn" onClick={handleMoreInfoShow}>
+                            Show Info
+                        </button>
+                        <button
+                            className="showInfoBtn"
+                            onClick={() => navigation("/printQr")}
+                        >
+                            Print QR
+                        </button>
+                        <button
+                            className="showInfoBtn"
+                            onClick={() => navigation("/batchListingGrid")}
+                        >
+                            Show List
+                        </button>
+                        <button
+                            className="showInfoBtn"
+                            onClick={handleSaveNew}
+                        >
+                            Save & New
+                        </button>
+                    </div>
+                    <div>
+                        <p className="homeNoteDesc">
+                            Note*:
+                            <b>
+                                Use Wired or Wireless Barcode/QR scanner,Not Use TAB Camera
+                            </b>
+                        </p>
+                    </div>
                 </div>
             </div>
             <Dialog
