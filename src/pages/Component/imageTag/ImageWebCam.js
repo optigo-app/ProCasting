@@ -39,10 +39,9 @@ const ImageWebCam = () => {
         ref={camera}
         numberOfCamerasCallback={setNumberOfCameras}
         aspectRatio={4/3}
-        facingMode={'environment'}
         errorMessages={
             {
-                noCameraAccessible: '',
+                noCameraAccessible: 'camera device is not accessible or connected!!!',
                 permissionDenied: 'Permission denied. Please refresh and give camera permission.',
                 switchCamera:
                 'It is not possible to switch camera to different one because there is only one video device accessible.',
