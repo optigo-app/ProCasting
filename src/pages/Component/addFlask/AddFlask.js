@@ -1,8 +1,5 @@
 import React, { useState } from 'react'
 import './AddFlask.css'
-import QRCode from 'qrcode.react'
-import { useNavigate } from 'react-router-dom';
-import Barcode from 'react-barcode';
 import BarcodeScanner from 'react-barcode-reader';
 import scaneCodeImage from '../../assets/scanBarcode.gif'
 import idle from '../../assets/idle.gif'

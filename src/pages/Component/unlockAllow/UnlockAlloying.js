@@ -1,11 +1,6 @@
 import React, { useState } from 'react'
 import './UnlockAlloying.css'
-import QRCode from 'qrcode.react';
-import { useNavigate } from 'react-router-dom';
-import Barcode from 'react-barcode';
-
 import { Dialog, DialogContentText, DialogTitle, Drawer } from '@mui/material';
-
 import Button from '@mui/material/Button';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
