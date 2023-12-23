@@ -162,7 +162,6 @@ export default function QRScanner() {
                 <div className="TopBtnDivMain">
                     <p className='infoTextInput'>E0025</p>
                     <p className='infoTextInputSelectGod'>GOLD 14K WHITE</p>
-
                     <input
                         value={todayDate}
                         onChange={(e) => setTodayDate(e.target.value)}
@@ -180,7 +179,6 @@ export default function QRScanner() {
                     />
                     <input type='text' placeholder='Batch' className='infoTextInputBatch' />
                     <input type='number' value={inputWightValue} onChange={handleInputWeightChange} placeholder='Tree Weight' className='infoTextInputWight' />
-
                 </div>
                 <div style={{ display: 'flex', marginTop: '30px', flexWrap: 'wrap' }} className='body_container'>
                     <div className='scaneUploadMain'>
