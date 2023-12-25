@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import './CreateTree.css'
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 import { makeStyles } from '@mui/styles';
 import { Dialog, TextField } from '@mui/material';
@@ -20,6 +20,7 @@ import idle from '../../assets/idle.gif'
 import ProfileImg from '../../assets/profile.webp'
 import BarcodeScanner from 'react-barcode-reader';
 import castingTree from '../../assets/castingtree.jpg'
+import EditTreeImg from '../../assets/tree.jpg'
 
 const useStyles = makeStyles({
     datePickerRoot: {
@@ -56,12 +57,27 @@ export default function CreateTreeOne() {
     const CurrentImageValue = useRecoilValue(CurrentImageState);
     const [inputWightValue, setInputWeightValue] = useState('');
     const [open, setOpen] = useState(false);
+    const [addLsit, setAddLsit] = useState(false);
+    const location = useLocation();
+    const [editTreeImg, setEditTreeImg] = useState(false)
 
 
     useEffect(() => {
+
         const today = new Date().toISOString().split('T')[0];
         setTodayDate(today)
     }, [])
+    useEffect(() => {
+        setEditTreeImg(JSON.parse(localStorage.getItem('EditTreePage')))
+    }, [])
+    useEffect(() => {
+    if(editTreeImg) setInputWeightValue('100')
+    }, [editTreeImg])
+
+
+    console.log('editrrr', editTreeImg);
+
+    // alert(location?.state?.editTree)
     const handleScan = (data) => {
 
         // if (isImageVisible === true) {
@@ -123,8 +139,13 @@ export default function CreateTreeOne() {
     };
 
     const handleMoreInfoShow = () => {
-        let newData = ['1/1999', '2/1123', '1/3453', '2/121', '5/14523']
-        setEnteredValues([...enteredValues, ...newData]);
+
+        if (addLsit === false) {
+            setAddLsit(true);
+            let newData = ['1/1999', '2/1123', '1/3453', '2/121', '5/14523']
+            setEnteredValues([...enteredValues, ...newData]);
+        }
+
     }
 
     const handleInputWeightChange = (event) => {
@@ -167,9 +188,9 @@ export default function CreateTreeOne() {
             <div>
                 <div className="TopBtnDivMainOne">
                     <div>
-                        <p style={{margin : '0px' ,fontSize:'20px', fontWeight: 500}}>CREATE NEW BATCH</p>
+                        <p style={{ margin: '0px', fontSize: '20px', fontWeight: 500 }}>CREATE NEW BATCH</p>
                     </div>
-                    <div style={{display : 'flex'}}>
+                    <div style={{ display: 'flex' }}>
                         <p className='infoTextInputONe'>E0025(BOB THOMAS)</p>
                         {totalValues !== 0 && <p className='infoTextInputONe'>GOLD 14K WHITE</p>}
                     </div>
@@ -190,7 +211,7 @@ export default function CreateTreeOne() {
                             </div>
                             <div style={{ display: 'flex', marginTop: '10px' }}>
                                 <input type='text' value={inputValue} style={{ border: inputError && '1px solid red' }} className='enterBrachItemBox' onChange={handleInputChange} onKeyDown={handleKeyDown} />
-                                <button style={{ height: '98%', width: '55px',marginLeft:'5px', fontSize: '20px', fontWeight: 600, cursor: 'pointer' }} onClick={handleGoButtonClick}>
+                                <button style={{ height: '98%', width: '55px', marginLeft: '5px', fontSize: '20px', fontWeight: 600, cursor: 'pointer' }} onClick={handleGoButtonClick}>
                                     Go
                                 </button>
                             </div>
@@ -210,7 +231,7 @@ export default function CreateTreeOne() {
                                     marginTop: '15px'
                                 }}
                             />
-                            <input type='text' placeholder='Batch' style={{ marginTop: '15px' }} className='infoTextInputBatch' />
+                            <input type='text' placeholder='Batch' value={'AB'} style={{ marginTop: '15px' }} className='infoTextInputBatch' />
                             <input type='number' value={inputWightValue} style={{ marginTop: '15px' }} onChange={handleInputWeightChange} placeholder='Tree Weight' className='infoTextInputWight' />
 
                         </div>
@@ -232,7 +253,10 @@ export default function CreateTreeOne() {
                         </div>
                     </div>
                     <div className='uplodedImageMain' >
-                        <img src={CurrentImageValue ? CurrentImageValue : castingTree} className={CurrentImageValue ? 'uplodedImage' : 'uplodedImageProfile'} />
+                        {editTreeImg === true ? <img src={EditTreeImg} style={{ height: '430px' ,objectFit: 'contain' }} className={CurrentImageValue ? 'uplodedImage' : 'uplodedImageProfile'} /> :
+                            <img src={CurrentImageValue ? CurrentImageValue : castingTree} className={CurrentImageValue ? 'uplodedImage' : 'uplodedImageProfile'} />}
+
+
                         <div style={{ marginTop: '5px', display: 'flex', justifyContent: 'space-around' }}>
                             <button className='uploadImageBtn' onClick={() => setCamFlag(true)} >Upload Tree</button>
                             <p className="homeNoteTitle" style={{ margin: '0px', fontSize: '23px' }} onClick={handleClickOpen}>
