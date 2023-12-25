@@ -232,7 +232,7 @@ export default function CreateTree() {
                 <div style={{ display: 'flex', marginTop: '5px', flexWrap: 'wrap' }} className='body_container'>
                     <div className='scaneUploadMain'>
                         <div className='createORMain' >
-                            <div onClick={toggleImageVisibility} style={{ width: 'fit-content', marginLeft: '30px' }}>
+                            <div onClick={toggleImageVisibility} style={{ width: 'fit-content', marginLeft: '30px',position:'relative'}}>
                                 {isImageVisible ? <div>
                                     <img src={scaneCodeImage} className='createImageQrCode' />
                                 </div> :
@@ -242,7 +242,7 @@ export default function CreateTree() {
                                 <div>
                             
                                 {!isImageVisible && <p style={{fontWeight:'bold',marginLeft:'-40px'}}> <span style={{color:'red'}}>Click</span> On The Image For Scan<span style={{color:'red'}}>*</span></p>}
-                                <input style={{width:'20px',position:'absolute',top:'150px',left:'110px',zIndex:-1}} value={inpFocus} onChange={(e)=>handelscanvalue(e.target.value)}  ref={inputRef}/>
+                                <input style={{width:'20px',position:'absolute',top:'80px',left:'40px',zIndex:-1}} value={inpFocus} onChange={(e)=>handelscanvalue(e.target.value)}  ref={inputRef}/>
                             </div>
                         </div>
                             <div style={{ display: 'flex', marginTop: '10px' }}>
