@@ -48,33 +48,74 @@ export default function QRScanner() {
     const [enteredValues, setEnteredValues] = useState([]);
     const [inputError, setInputError] = useState(false)
     const [camFlag, setCamFlag] = useRecoilState(CurrentCamFlag)
-    const [isImageVisible, setIsImageVisible] = useState(true);
+    const [isImageVisible, setIsImageVisible] = useState(false);
     const [todayDate, setTodayDate] = useState('');
-    const [inpFocus, setInpFocus] = useState(false);
+    const [inpFocus, setInpFocus] = useState('');
     const navigation = useNavigate();
     const classes = useStyles();
 
+    const inputRef = useRef(null);
+    const containerRef = useRef(null);
+
     const CurrentImageValue = useRecoilValue(CurrentImageState);
     const [inputWightValue, setInputWeightValue] = useState('');
+
+    // console.log("scan",isImageVisible);
 
     useEffect(() => {
         const today = new Date().toISOString().split('T')[0];
         setTodayDate(today)
     }, [])
+
+
+    useEffect(() => {
+        if (inputRef.current && isImageVisible) {
+          inputRef.current.focus();
+        }
+    }, [isImageVisible]);
+    
+
+    const handelscanvalue = (target) =>{
+        setInpFocus(target)
+    }
+
+ 
+    setTimeout(()=>{
+        if(inpFocus?.length>0){
+            setInpFocus('')
+        }
+    },510)
+    
+
+    console.log("inputRef",inpFocus);
+
+    useEffect(()=>{
+        if (isImageVisible === true && inpFocus?.length > 0) {
+            setTimeout(()=>{
+                let data = inpFocus;
+                setEnteredValues([...enteredValues, data]);
+            },500)
+        }
+    },[isImageVisible,inpFocus])
+
+    useEffect(() => {
+        if (containerRef.current) {
+          containerRef.current.scrollTop = 0;
+        }
+      }, [enteredValues])
+
     const handleScan = (data) => {
         if(isImageVisible===true){
             setEnteredValues([...enteredValues, data]);
         }
         console.log("data",data);
         if(data.length){
-            setInpFocus(true)
         }
     };
 
     const handleError = (error) => {
         console.error('Error while scanning:', error);
         setIsImageVisible(false)
-        setInpFocus(false)
     };
 
 
@@ -155,8 +196,8 @@ export default function QRScanner() {
             </Dialog>
 
             <BarcodeScanner
-                onScan={handleScan}
-                onError={handleError}
+                onScan={()=>handleScan()}
+                onError={()=>handleError()}
             />
             <div>
                 <div className="TopBtnDivMain">
@@ -191,7 +232,9 @@ export default function QRScanner() {
                                         <img src={idle} />
                                 </div>}
                                 <div>
-                                <input type='text' style={{width:'20px',position:'absolute',top:'130px',left:'120px',zIndex:-1}} autoFocus={ isImageVisible===false ? false :inpFocus}/>
+                            
+                                {!isImageVisible && <p style={{fontWeight:'bold',marginLeft:'-40px'}}> <span style={{color:'red'}}>Click</span> On The Image For Scan<span style={{color:'red'}}>*</span></p>}
+                                <input style={{width:'20px',position:'absolute',top:'150px',left:'110px',zIndex:-1}} value={inpFocus} onChange={(e)=>handelscanvalue(e.target.value)}  ref={inputRef}/>
                             </div>
                         </div>
                             <div style={{ display: 'flex', marginTop: '10px' }}>
@@ -212,7 +255,7 @@ export default function QRScanner() {
                                 <p className='totalItemTextFail'>{'0'}</p>
 
                             </div>
-                            <div className='CreateDataMain'>
+                            <div className='CreateDataMain' ref={containerRef}>
                                 {enteredValues.map((value, index) => (
                                     <div className='allScandataMain' >
                                         <p className='allScanData' key={index}>{value}</p>
