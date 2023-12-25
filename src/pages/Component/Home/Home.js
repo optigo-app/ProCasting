@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import './Home.css'
 import { useNavigate } from 'react-router-dom'
 import Logo from '../../assets/oraillogo.png'
@@ -17,36 +17,54 @@ import BarcodeScanner from 'react-barcode-reader';
 export default function Home() {
 
     const [open, setOpen] = useState(false);
-    const [scannedValue, setScannedValue] = useState(undefined);
+    const [scannedValue, setScannedValue] = useState();
     const [scannedValueError, setScannedValueError] = useState(false);
+    const scanRef = useRef(null);
 
     const navigation = useNavigate();
 
-    const handleScan = (data) => {
+    useEffect(() => {
+        if (scanRef.current) {
+            scanRef.current.focus()
+        }
+    }, [])
 
+    console.log('refff', scanRef);
+    const handleScan = (data) => {
+        console.log("data", data);
+        setScannedValue(data)
+        setScannedValueError(false)
     };
-    
+
     const handleError = (error) => {
         console.error('Error while scanning:', error);
     };
 
-    const handleClose = () => {
-
-        if(scannedValue === undefined || scannedValue === ''){
-            setScannedValueError(true)
-        }else{
-            setScannedValueError(false)
-            setScannedValue('AB')
-        }
-        // setOpen(false);
-
-        // navigation('/createTree')
-        // navigation('/createTreeOne')
-    };
-
     const handleClickOpen = () => {
         setOpen(true);
+        localStorage.setItem('EditTreePage', false)
+
     };
+    const handleClickOpenEdit = () => {
+        setOpen(true);
+        localStorage.setItem('EditTreePage', true)
+
+    };
+    const handleClose = () => {
+        setOpen(false);
+        setScannedValue('');
+        setScannedValueError(false);
+    };
+    const handleCloseContiue = () => {
+        if (scannedValue === undefined || scannedValue === '') {
+            setScannedValueError(true)
+        } else {
+            setScannedValueError(false)
+            setScannedValue('AB')
+            // navigation(editTree === false ? '/createTreeOne' : '/createTreeOne', { state: { editTree: editTree ? 'true' : 'false' } })
+            navigation('/createTreeOne')
+        }
+    }
 
 
     useEffect(() => {
@@ -59,7 +77,7 @@ export default function Home() {
     return (
         <div >
 
-<BarcodeScanner
+            <BarcodeScanner
                 onScan={handleScan}
                 onError={handleError}
             />
@@ -76,14 +94,16 @@ export default function Home() {
                 <DialogContent>
                     <DialogContentText id="alert-dialog-description" style={{ width: '300px' }}>
                         <img src={scaneCodeImage} className='createImageQrCode' />
+                        <input type='text' autoFocus value={scannedValue} ref={scanRef} onChange={(text) => setScannedValue(text.target.value)} style={{ width: '2px', position: 'absolute', zIndex: '-1' }} />
+
                     </DialogContentText>
-                    <div style={{display  :'flex'}}>
-                        <input type='text' value={scannedValue} onChange={(text) => setScannedValue(text)} className='scaneTreeInputBox'/>
-                        {scannedValueError && <p style={{color: 'red' , fontSize : '18px'  ,margin : '5px'}}>FIRST SCAN TREE</p>}
+                    <div style={{ display: 'flex' }}>
+                        <input type='text' disabled value={scannedValue} onChange={(text) => setScannedValue(text)} className='scaneTreeInputBox' />
+                        {scannedValueError && <p style={{ color: 'red', fontSize: '18px', margin: '5px' }}>FIRST SCAN TREE</p>}
                     </div>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleClose}>CONTINUE</Button> 
+                    <Button onClick={handleCloseContiue}>CONTINUE</Button>
                 </DialogActions>
             </Dialog>
             <p className='mainTitle'>PROCASTING</p>
@@ -98,7 +118,7 @@ export default function Home() {
                     </div>
 
                     <div className='NoteMain'>
-                        <img src={Note} className='Noteimg' onClick={handleClickOpen} />
+                        <img src={Note} className='Noteimg' onClick={handleClickOpenEdit} />
                         <p className='NoteImgTitle'>EDIT TREE</p>
                     </div>
 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import './UnlockAlloying.css'
 import { Dialog, DialogContentText, DialogTitle, Drawer } from '@mui/material';
 import Button from '@mui/material/Button';
@@ -12,14 +12,31 @@ export default function UnlockAlloying() {
 
 
     const [inputValue, setInputValue] = useState('');
+    const [inputValueHidden, setInputValueHidden] = useState('');
     const [enteredValues, setEnteredValues] = useState([]);
     const [inputError, setInputError] = useState(false)
     const [flashCode, setFlashCode] = useState('');
     const [open, setOpen] = useState(false);
     const [isImageVisible, setIsImageVisible] = useState(true);
+    const scanRef = useRef(null);
+
+    useEffect(() => {
+        if (scanRef.current) {
+            scanRef.current.focus()
+        }
+    }, [])
+
+    useEffect(() => {
+        setEnteredValues([...enteredValues, inputValueHidden]);
+    }, [inputValueHidden])
+
+    useEffect(() => {
+        setEnteredValues([]);
+    }, [])
+
 
     const handleScan = (data) => {
-        setEnteredValues([...enteredValues, data]);
+
     };
 
     const handleError = (error) => {
@@ -42,6 +59,11 @@ export default function UnlockAlloying() {
 
     const handleInputChange = (event) => {
         setInputValue(event.target.value);
+        setFlashCode(event.target.value);
+    };
+
+    const handleInputChangeHidden = (event) => {
+        setInputValueHidden(event.target.value);
         setFlashCode(event.target.value);
     };
 
@@ -91,18 +113,14 @@ export default function UnlockAlloying() {
             <p className='mainTitle' >PROCASTING-ALLOYING UNLOCK PROCESS</p>
             <div style={{ display: 'flex' }}>
                 <div className='UnlockTopBox1'>
-                    <div onClick={toggleImageVisibility} style={{ width: 'fit-content', marginLeft: '20px' }}>
-                        {isImageVisible ? <div>
-                            <img src={scaneCodeImage} className='createImageQrCode' />
-                        </div> :
-                            <div>
-                                <img src={idle} />
-                            </div>}
+                    <div onClick={toggleImageVisibility} style={{ width: 'fit-content', position: 'relative' }}>
+                        <img src={scaneCodeImage} className='createImageQrCode' />
+                        <input type='text' value={inputValueHidden} onChange={handleInputChangeHidden} style={{ width: '20px', position: 'absolute', right: '0px', zIndex: '-1' }} autoFocus />
                     </div>
                     <div style={{ display: 'flex', marginTop: '5px' }}>
-                        <input type='text' style={{ border: inputError && '1px solid red' }} className='enterBrachItemBox' value={inputValue}
-                            onChange={handleInputChange} onKeyDown={handleKeyDown} />
-                        <button style={{ width: '50px', fontSize: '20px', fontWeight: 600, cursor: 'pointer' }} onClick={handleGoButtonClick}>
+                        <input type='text' style={{ border: inputError && '1px solid red' }} className='enterBrachItemBox' value={inputValue} onChange={handleInputChange} onKeyDown={handleKeyDown} />
+
+                        <button  style={{ height: '98%', width: '55px', marginLeft: '5px', fontSize: '20px', fontWeight: 600, cursor: 'pointer' }} onClick={handleGoButtonClick}>
                             Go
                         </button>
                     </div>
