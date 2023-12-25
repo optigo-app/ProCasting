@@ -3,7 +3,7 @@ import './CreateTree.css'
 import { useNavigate } from 'react-router-dom';
 
 import { makeStyles } from '@mui/styles';
-import { Dialog } from '@mui/material';
+import { Dialog, TextField } from '@mui/material';
 import profile from '../../assets/profile.webp'
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { CurrentCamFlag, CurrentImageState } from '../../recoil/Recoil';
@@ -43,20 +43,16 @@ const useStyles = makeStyles({
 });
 
 
-export default function CreateTree() {
+export default function CreateTreeOne() {
     const [inputValue, setInputValue] = useState(undefined);
     const [inputValueHidden, setInputValueHidden] = useState(undefined);
     const [enteredValues, setEnteredValues] = useState([]);
     const [inputError, setInputError] = useState(false)
     const [camFlag, setCamFlag] = useRecoilState(CurrentCamFlag)
-    const [isImageVisible, setIsImageVisible] = useState(false);
+    const [isImageVisible, setIsImageVisible] = useState(true);
     const [todayDate, setTodayDate] = useState('');
-    const [inpFocus, setInpFocus] = useState('');
     const navigation = useNavigate();
     const hiddenInputRef = useRef(null);
-
-    const inputRef = useRef(null);
-    const containerRef = useRef(null);
     const CurrentImageValue = useRecoilValue(CurrentImageState);
     const [inputWightValue, setInputWeightValue] = useState('');
     const [open, setOpen] = useState(false);
@@ -66,56 +62,17 @@ export default function CreateTree() {
         const today = new Date().toISOString().split('T')[0];
         setTodayDate(today)
     }, [])
-
-
-    useEffect(() => {
-        if (inputRef.current && isImageVisible) {
-          inputRef.current.focus();
-        }
-    }, [isImageVisible]);
-    
-
-    const handelscanvalue = (target) =>{
-        setInpFocus(target)
-    }
-
- 
-    setTimeout(()=>{
-        if(inpFocus?.length>0){
-            setInpFocus('')
-        }
-    },510)
-    
-
-    console.log("inputRef",inpFocus);
-
-    useEffect(()=>{
-        if (isImageVisible === true && inpFocus?.length > 0) {
-            setTimeout(()=>{
-                let data = inpFocus;
-                setEnteredValues([...enteredValues, data]);
-            },500)
-        }
-    },[isImageVisible,inpFocus])
-
-    useEffect(() => {
-        if (containerRef.current) {
-          containerRef.current.scrollTop = 0;
-        }
-      }, [enteredValues])
-
     const handleScan = (data) => {
-        if(isImageVisible===true){
-            setEnteredValues([...enteredValues, data]);
-        }
-        console.log("data",data);
-        if(data.length){
-        }
+
+        // if (isImageVisible === true) {
+        //     setEnteredValues([...enteredValues, data]);
+        // }
+        // setEnteredValues([...enteredValues, data]);
+
     };
 
     const handleError = (error) => {
         console.error('Error while scanning:', error);
-        setIsImageVisible(false)
     };
 
 
@@ -204,32 +161,20 @@ export default function CreateTree() {
             </Dialog>
 
             <BarcodeScanner
-                onScan={()=>handleScan()}
-                onError={()=>handleError()}
+                onScan={handleScan}
+                onError={handleError}
             />
             <div>
-                <div className="TopBtnDivMain">
-                    <p className='infoTextInput'>E0025</p>
-                    <p className='infoTextInputSelectGod'>GOLD 14K WHITE</p>
-                    <input
-                        value={todayDate}
-                        onChange={(e) => setTodayDate(e.target.value)}
-                        type="date"
-                        style={{
-                            border: "1px solid #b8b8b8",
-                            borderRadius: '5px',
-                            outline: "none",
-                            width: "auto",
-                            height: "42px",
-                            color: 'black',
-                            backgroundColor: 'white',
-                            fontSize: '25px'
-                        }}
-                    />
-                    <input type='text' placeholder='Batch' className='infoTextInputBatch' />
-                    <input type='number' value={inputWightValue} onChange={handleInputWeightChange} placeholder='Tree Weight' className='infoTextInputWight' />
+                <div className="TopBtnDivMainOne">
+                    <div>
+                        <p style={{margin : '0px' ,fontSize:'20px', fontWeight: 500}}>CREATE NEW BATCH</p>
+                    </div>
+                    <div style={{display : 'flex'}}>
+                        <p className='infoTextInputONe'>E0025(BOB THOMAS)</p>
+                        {totalValues !== 0 && <p className='infoTextInputONe'>GOLD 14K WHITE</p>}
+                    </div>
                 </div>
-                <div style={{ display: 'flex', marginTop: '5px', flexWrap: 'wrap' }} className='body_container'>
+                <div style={{ display: 'flex', marginTop: '15px', flexWrap: 'wrap' }} className='body_container'>
                     <div className='scaneUploadMain'>
                         <div className='createORMain' >
                             <div onClick={toggleImageVisibility} style={{ width: 'fit-content', marginLeft: '30px' }}>
@@ -240,21 +185,34 @@ export default function CreateTree() {
                                         <img src={idle} />
                                     </div>}
                                 <div>
-                            
-                                {!isImageVisible && <p style={{fontWeight:'bold',marginLeft:'-40px'}}> <span style={{color:'red'}}>Click</span> On The Image For Scan<span style={{color:'red'}}>*</span></p>}
-                                <input style={{width:'20px',position:'absolute',top:'150px',left:'110px',zIndex:-1}} value={inpFocus} onChange={(e)=>handelscanvalue(e.target.value)}  ref={inputRef}/>
+                                    <input type='text' value={inputValueHidden} onChange={handleInputChangeHidden} style={{ width: '20px', position: 'absolute', top: '130px', left: '120px', zIndex: -1 }} />
+                                </div>
                             </div>
-                        </div>
                             <div style={{ display: 'flex', marginTop: '10px' }}>
-                                <input type='text' value={inputValue} style={{ border: inputError && '1px solid red' }} className='enterBrachItemBox' onChange={handleInputChange} onKeyDown={handleKeyDown}/>
-
-                                <button style={{ height: '98%', width: '45px', fontSize: '20px', fontWeight: 600, cursor: 'pointer' }} onClick={handleGoButtonClick}>
+                                <input type='text' value={inputValue} style={{ border: inputError && '1px solid red' }} className='enterBrachItemBox' onChange={handleInputChange} onKeyDown={handleKeyDown} />
+                                <button style={{ height: '98%', width: '55px',marginLeft:'5px', fontSize: '20px', fontWeight: 600, cursor: 'pointer' }} onClick={handleGoButtonClick}>
                                     Go
                                 </button>
                             </div>
-                            <p className="homeNoteTitle" onClick={handleClickOpen}>
-                                Remark
-                            </p>
+                            <input
+                                value={todayDate}
+                                onChange={(e) => setTodayDate(e.target.value)}
+                                type="date"
+                                style={{
+                                    border: "1px solid #b8b8b8",
+                                    borderRadius: '5px',
+                                    outline: "none",
+                                    width: "210px",
+                                    height: "42px",
+                                    color: 'black',
+                                    backgroundColor: 'white',
+                                    fontSize: '25px',
+                                    marginTop: '15px'
+                                }}
+                            />
+                            <input type='text' placeholder='Batch' style={{ marginTop: '15px' }} className='infoTextInputBatch' />
+                            <input type='number' value={inputWightValue} style={{ marginTop: '15px' }} onChange={handleInputWeightChange} placeholder='Tree Weight' className='infoTextInputWight' />
+
                         </div>
                         <div className='allScaneDataMain'>
                             <div style={{ display: 'flex' }}>
@@ -263,7 +221,7 @@ export default function CreateTree() {
                                 <p className='totalItemTextFail'>{'0'}</p>
 
                             </div>
-                            <div className='CreateDataMain' ref={containerRef}>
+                            <div className='CreateDataMain'>
                                 {enteredValues.map((value, index) => (
                                     <div className='allScandataMain' >
                                         <p className='allScanData' key={index}>{value}</p>
@@ -275,8 +233,11 @@ export default function CreateTree() {
                     </div>
                     <div className='uplodedImageMain' >
                         <img src={CurrentImageValue ? CurrentImageValue : castingTree} className={CurrentImageValue ? 'uplodedImage' : 'uplodedImageProfile'} />
-                        <div style={{ marginTop: '5px' }}>
+                        <div style={{ marginTop: '5px', display: 'flex', justifyContent: 'space-around' }}>
                             <button className='uploadImageBtn' onClick={() => setCamFlag(true)} >Upload Tree</button>
+                            <p className="homeNoteTitle" style={{ margin: '0px', fontSize: '23px' }} onClick={handleClickOpen}>
+                                Remark
+                            </p>
                         </div>
                     </div>
                 </div>

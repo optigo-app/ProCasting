@@ -11,6 +11,7 @@ import BatchListing from './pages/Component/batchListing/BatchListing';
 import BatchListingGrid from './pages/Component/batchListingGrid/BatchListingGrid';
 import ImageWebCam from './pages/Component/imageTag/ImageWebCam';
 import PrintQr from './pages/Component/printQr/PrintQr';
+import CreateTreeOne from './pages/Component/createTree/CreateTreeOne';
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
       <Routes>
         <Route path='/' element={<Home />} />
         <Route path='/createTree' element={<CreateTree />} />
+        <Route path='/createTreeOne' element={<CreateTreeOne />} />
         <Route path='/addFlask' element={<AddFlask />} />
         <Route path='/investmentFirst' element={<InvestMentFirst />} />
         <Route path='/burnOut' element={<BurnOut />} />
