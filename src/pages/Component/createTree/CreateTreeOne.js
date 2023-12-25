@@ -58,7 +58,8 @@ export default function CreateTreeOne() {
     const [inputWightValue, setInputWeightValue] = useState('');
     const [open, setOpen] = useState(false);
     const [treeFlag,setTreeFlag] = useState(false)
-    const ScanRef = useRef(null)    const [addLsit, setAddLsit] = useState(false);
+    const ScanRef = useRef(null)    
+    const [addLsit, setAddLsit] = useState(false);
     const location = useLocation();
     const [editTreeImg, setEditTreeImg] = useState(false)
 
