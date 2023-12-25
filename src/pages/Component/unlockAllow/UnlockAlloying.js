@@ -102,7 +102,7 @@ export default function UnlockAlloying() {
                     <div style={{ display: 'flex', marginTop: '5px' }}>
                         <input type='text' style={{ border: inputError && '1px solid red' }} className='enterBrachItemBox' value={inputValue}
                             onChange={handleInputChange} onKeyDown={handleKeyDown} />
-                        <button style={{ height: '45px', width: '50px', fontSize: '20px', fontWeight: 600, cursor: 'pointer' }} onClick={handleGoButtonClick}>
+                        <button style={{ width: '50px', fontSize: '20px', fontWeight: 600, cursor: 'pointer' }} onClick={handleGoButtonClick}>
                             Go
                         </button>
                     </div>
