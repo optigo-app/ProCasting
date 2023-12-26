@@ -262,7 +262,10 @@ export default function CreateTreeOne() {
                                 }}
                             />
                             <input type='text' placeholder='Batch' value={'AB'} style={{ marginTop: '15px' }} className='infoTextInputBatch' />
+                            <span style={{display:'flex',flexDirection:'column'}}>
                             <input type='number' value={inputWightValue} style={{ marginTop: '15px', border: !treeFlag && '1px solid red' }} onChange={handleInputWeightChange} placeholder='Tree Weight' className='infoTextInputWight' />
+                            {!treeFlag && <small style={{color:'red',marginLeft:'6px'}}>enter tree weight*</small>}
+                            </span>
 
                         </div>
                         <div className='allScaneDataMain'>
