@@ -61,16 +61,18 @@ export default function AddFlask() {
     }, 500);
   }, [scanInp]);
 
-  setTimeout(() => {
-    if (scanInp?.length > 0) {
-      setScanInp("");
-    }
-  }, 510);
+    setTimeout(() => {
+        if(scanInp?.length>0){
+          setScanInp('')
+        }
+    }, 510);
 
-  const saveData = () => {
-    setEnteredValues([]);
-    setInputErrorMax(false);
-  };
+    const saveData = () => {
+
+        setEnteredValues([])
+        setInputErrorMax(false)
+
+    }
 
   const handleKeyDown = (event) => {
     if (event.key === "Enter") {
@@ -79,11 +81,12 @@ export default function AddFlask() {
     }
   };
 
-  const handelScanInp = (target) => {
-    setScanInp(target);
-  };
+    const handelScanInp = (target) =>{
+        setScanInp(target)
+      }
 
-  console.log("enteredValues", enteredValues);
+
+    console.log("enteredValues",enteredValues);
 
   return (
     <div>
