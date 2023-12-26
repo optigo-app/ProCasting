@@ -215,7 +215,9 @@ input[type='date']::-webkit-calender-picker-indicatore {
     height: 95%;
     margin-left: -10px;
 }
-
+.uploadDefaultImg{
+    width: 55%;
+}
 .uplodedImageProfile {
     width: 85%;
     margin-left: -10px;
