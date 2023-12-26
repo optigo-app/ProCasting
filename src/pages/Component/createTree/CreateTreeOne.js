@@ -81,7 +81,7 @@ export default function CreateTreeOne() {
 
     console.log('editrrr', treeFlag);
 
-    const handleScan = (data) => {};
+    const handleScan = (data) => { };
 
     const handleError = (error) => {
         console.error('Error while scanning:', error);
@@ -155,10 +155,10 @@ export default function CreateTreeOne() {
 
     const handleInputWeightChange = (event) => {
         const { value } = event.target;
-           
-        if(value?.length){
+
+        if (value?.length) {
             setTreeFlag(true)
-        }else{
+        } else {
             setTreeFlag(false)
         }
         const newValue = value.replace(/\D/g, '').slice(0, 3);
@@ -184,7 +184,7 @@ export default function CreateTreeOne() {
     //       console.log("Input field is currently focused.");
     //     } else {
     //       console.log("Input field is not focused.");
-      
+
     //     }
     // },[inputField,document.activeElement])
 
@@ -192,8 +192,8 @@ export default function CreateTreeOne() {
     console.log("inputWightValue",inputWightValue);
     const toggleImageVisibility = () => {
         // setIsImageVisible(!isImageVisible);
-        let safe=ScanRef.current
-        console.log("valueeeeeee",{safe,treeFlag})
+        let safe = ScanRef.current
+        console.log("valueeeeeee", { safe, treeFlag })
         if (ScanRef.current && treeFlag) {
             ScanRef.current.focus();
         }
@@ -273,9 +273,9 @@ export default function CreateTreeOne() {
                                 }}
                             />
                             <input type='text' placeholder='Batch' value={'AB'} style={{ marginTop: '15px' }} className='infoTextInputBatch' />
-                            <span style={{display:'flex',flexDirection:'column'}}>
-                            <input type='number' value={inputWightValue} style={{ marginTop: '15px', border: !treeFlag && '1px solid red' }} onChange={handleInputWeightChange} placeholder='Tree Weight' className='infoTextInputWight' />
-                            {!treeFlag && <small style={{color:'red',marginLeft:'6px'}}>enter tree weight*</small>}
+                            <span style={{ display: 'flex', flexDirection: 'column' }}>
+                                <input type='number' value={inputWightValue} style={{ marginTop: '15px', border: !treeFlag && '1px solid red' }} onChange={handleInputWeightChange} placeholder='Tree Weight' className='infoTextInputWight' />
+                                {!treeFlag && <small style={{ color: 'red', marginLeft: '6px' }}>enter tree weight*</small>}
                             </span>
 
                         </div>

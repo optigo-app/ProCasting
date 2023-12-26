@@ -219,7 +219,7 @@ export default function InvestMentFirst() {
   }, 510);
 
   useEffect(()=>{
-    setWeightInp('2000')
+    enteredValues.length > 0 && setWeightInp('2000')
   },[])
 
   useEffect(()=>{
@@ -232,12 +232,12 @@ export default function InvestMentFirst() {
     if(orangeImg){
       setWeightInp("3000")
     }
-    if(weight){
-      setWeightInp("")
-    }
-    if(defaultImg){
-      setWeightInp("")
-    }
+    // if(weight){
+    //   setWeightInp("")
+    // }
+    // if(defaultImg){
+    //   setWeightInp("")
+    // }
 
   },[greenImg,blueImg,orangeImg,weight,defaultImg])
 
@@ -410,7 +410,7 @@ export default function InvestMentFirst() {
             style={{
               width: "30%",
               overflow: "auto",
-              height: "350px",
+              height: "250px",
               display: "flex",
               alignItems: "center",
               flexDirection: "column",
@@ -472,50 +472,9 @@ export default function InvestMentFirst() {
               </button>
             </div>
           </div>
-
-          {/* <div className='investTopBox2' >
-                        <p className='investTreeCount'>(5)Tree Count</p>
-                        <div>
-                            <p style={{ margin: '0px', fontSize: '25px', marginTop: '30px', textAlign: 'center' }}>Req Powder weight</p>
-                            <p className='investPowder'>3000 gm</p>
-
-                            <p style={{ margin: '0px', fontSize: '30px', marginTop: '30px', color: '#a6a6a6', textAlign: 'center' }}>Req Powder weight</p>
-                            <p className='investReqPowder'>3000 gm</p>
-                        </div>
-                    </div> */}
         </div>
 
-        {/* <div>
-                    <div style={{ display: 'flex', marginTop: '15px' }}>
-                        <p className='investDestilInputTitle'>Flash Code:</p>
-                        <input type='text' className='investDestilInput' />
-                    </div>
-                    <div style={{ display: 'flex', marginTop: '15px' }}>
-                        <p className='investDestilInputTitle'>Batch No:</p>
-                        <input type='text' className='investDestilInput' />
-                    </div>
-                    <div style={{ display: 'flex', marginTop: '15px' }}>
-                        <p className='investDestilInputTitle'>Employee:</p>
-                        <input type='text' className='investDestilInput' />
-                    </div>
-                    <div style={{ display: 'flex', marginTop: '15px' }}>
-                        <p className='investDestilInputTitle'>Department:</p>
-                        <select className='investDestilInput'>
-                            <option>Department1</option>
-                            <option>Department2</option>
-                            <option>Department3</option>
-                            <option>Department4</option>
-                        </select>
-                    </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', marginTop: '15px' }}>
-                        {timeOut === undefined ?
-                            <button className='investAddGlassBtn' onClick={handleClickOpen}>Add Glass of time</button> :
-                            timeOut === false ?
-                                <h1>Time is Running</h1> : <h1>Time out</h1>}
-                        <button className='investStartBtn' onClick={() => navigation('/burnOut')}>START</button>
-                    </div>
-                </div> */}
-        <div style={{ display: "flex", marginTop: '-70px', flexWrap: "wrap" }}>
+        <div style={{ display: "flex", marginTop: '0px', flexWrap: "wrap" }}>
           {enteredValues?.map((value, index) => (
             <table
               key={index}

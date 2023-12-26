@@ -241,7 +241,7 @@ export default function BurnOut() {
                 <h2 className='brunFurnaceId'>furnace ID : F123</h2>
             </div>
 
-            <div style={{ display: 'flex', marginTop: '-15px', flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', marginTop: '-20px', flexWrap: 'wrap' }}>
                 {enteredValues.map((value, index) => (
                     <table key={index} style={{ backgroundColor: greenImg && '#b1d8b7' || blueImg && '#a396c8' || orangeImg && 'orange' || defaultImg && '#add8e6', margin: '20px' }}>
                         <tr>
@@ -253,6 +253,7 @@ export default function BurnOut() {
                         <tr>
                             <th className='investTableRow'>150 Grams </th>
                         </tr>
+                        
                         <tr>
                             <th className='investTableRow'>{greenImg && 'Wax Setting' || blueImg && 'Regular' || orangeImg && 'RPT'}</th>
                         </tr>
