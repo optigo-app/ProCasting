@@ -124,10 +124,12 @@ export default function CreateTreeOne() {
             setInputError(true)
         } else {
             setInputError(false)
-            setEnteredValues([...enteredValues, inputValue]);
+            if(isImageVisible)setEnteredValues([...enteredValues, inputValue]);
             setInputValue('');
         }
     };
+
+   
 
     const totalValues = enteredValues.length;
     const handleRemoveItem = (indexToRemove) => {
@@ -163,6 +165,14 @@ export default function CreateTreeOne() {
         setInputWeightValue(newValue);
     };
 
+    useEffect(()=>{
+        if(inputWightValue?.length){
+            setTreeFlag(false)
+        }else{
+            setTreeFlag(true)
+        }
+    },[])
+
     const handleSaveNew = () => {
         window.location.reload();
     }
@@ -177,8 +187,8 @@ export default function CreateTreeOne() {
     //     }
     // },[inputField,document.activeElement])
 
-    console.log("ScanRef.current", ScanRef.current);
-    console.log("treeFlag", treeFlag);
+    console.log("ScanRef.current",ScanRef.current );
+    console.log("inputWightValue",inputWightValue);
     const toggleImageVisibility = () => {
         // setIsImageVisible(!isImageVisible);
         let safe = ScanRef.current
@@ -240,8 +250,8 @@ export default function CreateTreeOne() {
                                 </div>
                             </div>
                             <div style={{ display: 'flex', marginTop: '10px' }}>
-                                <input type='text' value={inputValue} style={{ border: inputError && '1px solid red' }} className='enterBrachItemBox' onChange={handleInputChange} onKeyDown={handleKeyDown} autoFocus="false" />
-                                <button style={{ height: '98%', width: '55px', marginLeft: '5px', fontSize: '20px', fontWeight: 600, cursor: 'pointer' }} onClick={handleGoButtonClick}>
+                                <input type='text' value={inputValue} style={{ border: inputError && '1px solid red' }} className='enterBrachItemBox' onChange={handleInputChange} onKeyDown={handleKeyDown} />
+                                <button style={{ height: '98%', width: '55px', marginLeft: '5px', fontSize: '20px', fontWeight: 600, cursor: 'pointer' }} onClick={handleGoButtonClick} >
                                     Go
                                 </button>
                             </div>
