@@ -124,10 +124,12 @@ export default function CreateTreeOne() {
             setInputError(true)
         } else {
             setInputError(false)
-            setEnteredValues([...enteredValues, inputValue]);
+            if(isImageVisible)setEnteredValues([...enteredValues, inputValue]);
             setInputValue('');
         }
     };
+
+   
 
     const totalValues = enteredValues.length;
     const handleRemoveItem = (indexToRemove) => {
@@ -249,7 +251,7 @@ export default function CreateTreeOne() {
                             </div>
                             <div style={{ display: 'flex', marginTop: '10px' }}>
                                 <input type='text' value={inputValue} style={{ border: inputError && '1px solid red' }} className='enterBrachItemBox' onChange={handleInputChange} onKeyDown={handleKeyDown} />
-                                <button style={{ height: '98%', width: '55px', marginLeft: '5px', fontSize: '20px', fontWeight: 600, cursor: 'pointer' }} onClick={handleGoButtonClick}>
+                                <button style={{ height: '98%', width: '55px', marginLeft: '5px', fontSize: '20px', fontWeight: 600, cursor: 'pointer' }} onClick={handleGoButtonClick} >
                                     Go
                                 </button>
                             </div>

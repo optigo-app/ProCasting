@@ -41,7 +41,7 @@ export default function AddFlask() {
       } else {
         // alert(enteredValues[0])
         setInputError(false);
-        setEnteredValues([...enteredValues, scanInp]);
+        setEnteredValues([...enteredValues, inputValue]);
         setInputValue("");
       }
     } else {
