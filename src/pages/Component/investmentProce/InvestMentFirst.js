@@ -1,4 +1,4 @@
-import React, { useEffect, useState ,useRef} from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import './InvestMentFirst.css'
 import { Button, Dialog, DialogTitle, Drawer } from '@mui/material';
 import greenImges from '../../assets/green.png'
@@ -31,8 +31,8 @@ export default function InvestMentFirst() {
   const [scanInp, setScanInp] = useState('');
   const [isImageVisible, setIsImageVisible] = useState(true);
   const [enteredTime, setEnteredTime] = useState('');
-   const[eviIndex,setEviIndex]=useState([]);
-   const [weightInp,setWeightInp] = useState('')
+  const [eviIndex, setEviIndex] = useState([]);
+  const [weightInp, setWeightInp] = useState('')
 
   const invProRef = useRef(null)
 
@@ -49,9 +49,9 @@ export default function InvestMentFirst() {
 
   const toggleImageVisibility = () => {
     // setIsImageVisible(!isImageVisible);
-    if (invProRef.current ) {
+    if (invProRef.current) {
       invProRef.current.focus();
-  }
+    }
   };
 
   const handleClickOpen = () => {
@@ -198,38 +198,38 @@ export default function InvestMentFirst() {
     setEnteredValues(updatedData);
   }
 
-    const handelScanInp = (target) =>{
-      setScanInp(target)
+  const handelScanInp = (target) => {
+    setScanInp(target)
+  }
+
+  useEffect(() => {
+    if (scanInp?.length) {
+      setTimeout(() => {
+        if (!openYourBagDrawer && isImageVisible) {
+          setEnteredValues([...enteredValues, { label: scanInp }]);
+        }
+      }, 500)
     }
+  }, [scanInp])
 
-    useEffect(()=>{
-      if(scanInp?.length){
-          setTimeout(()=>{
-            if(!openYourBagDrawer && isImageVisible) {
-              setEnteredValues([...enteredValues, {label:scanInp}]);
-            }
-          },500)
-      }
-  },[scanInp])
-
-    setTimeout(() => {
-      if(scanInp?.length>0){
-        setScanInp('')
-      }
+  setTimeout(() => {
+    if (scanInp?.length > 0) {
+      setScanInp('')
+    }
   }, 510);
 
-  useEffect(()=>{
+  useEffect(() => {
     enteredValues.length > 0 && setWeightInp('2000')
-  },[])
+  }, [])
 
-  useEffect(()=>{
-    if(greenImg){
+  useEffect(() => {
+    if (greenImg) {
       setWeightInp("3000")
     }
-    if(blueImg){
+    if (blueImg) {
       setWeightInp("3000")
     }
-    if(orangeImg){
+    if (orangeImg) {
       setWeightInp("3000")
     }
     // if(weight){
@@ -239,7 +239,7 @@ export default function InvestMentFirst() {
     //   setWeightInp("")
     // }
 
-  },[greenImg,blueImg,orangeImg,weight,defaultImg])
+  }, [greenImg, blueImg, orangeImg, weight, defaultImg])
 
 
   return (
@@ -290,7 +290,7 @@ export default function InvestMentFirst() {
       <Drawer
         open={openYourBagDrawer}
         onClose={() => {
-            setOpenYourBagDrawer(false);
+          setOpenYourBagDrawer(false);
         }}
         anchor="right"
         elevation={0}
@@ -355,21 +355,27 @@ export default function InvestMentFirst() {
         </div>
         <div style={{ display: "flex", marginTop: '0px' }}>
           <div className="investTopBox1">
-            <div onClick={toggleImageVisibility} style={{ width: 'fit-content', marginLeft: !isImageVisible &&'45px',position:'relative' }}>
+            <div onClick={toggleImageVisibility} style={{ width: 'fit-content', marginLeft: !isImageVisible && '45px', position: 'relative' }}>
               {isImageVisible ? <div>
-                <img src={scaneCodeImage} className='createImageQrCode' style={{marginRight:'25px'}} />
+                <img src={scaneCodeImage} className='createImageQrCode' style={{ marginRight: '25px' }} />
               </div> :
                 <div>
                   <img src={idle} />
                 </div>}
-                {!isImageVisible && (
-              <p style={{ fontWeight: "bold", marginLeft: "-40px",marginTop:'-10px' }}>
-                {" "}
-                <span style={{ color: "red" }}>Click</span> On The Image For
-                Scan<span style={{ color: "red" }}>*</span>
-              </p>
-            )}
-                <input style={{width:'12px',position:'absolute',left:'50px',top:'70px',zIndex:-1}} ref={invProRef} onBlur={()=>{setIsImageVisible(false)}} onFocus={()=>setIsImageVisible(true)} value={scanInp} onChange={(e)=>handelScanInp(e.target.value)} autoFocus/>
+              {!isImageVisible && (
+                <p style={{ fontWeight: "bold", marginLeft: "-40px", marginTop: '-10px' }}>
+                  {" "}
+                  <span style={{ color: "red" }}>Click</span> On The Image For
+                  Scan<span style={{ color: "red" }}>*</span>
+                </p>
+              )}
+              <input style={{ width: '12px', position: 'absolute', left: '50px', top: '70px', zIndex: -1 }} ref={invProRef} onBlur={() => { setIsImageVisible(false) }} onFocus={() => setIsImageVisible(true)} value={scanInp} onChange={(e) => handelScanInp(e.target.value)} autoFocus />
+              <button style={{
+                position: "absolute",
+                left: "50px",
+                top: "70px",
+                zIndex: -1,
+              }}>c</button>
             </div>
             <div style={{ display: "flex", marginTop: "5px" }}>
               <input
@@ -425,7 +431,7 @@ export default function InvestMentFirst() {
             ))}
           </div>
           <div>
-            <div style={{ display: "flex", marginTop: "15px",alignItems:'center',justifyContent:'center'}}>
+            <div style={{ display: "flex", marginTop: "15px", alignItems: 'center', justifyContent: 'center' }}>
               <p className="investDestilInputTitleNew">Weight:</p>
               <input
                 type="text"
@@ -437,11 +443,11 @@ export default function InvestMentFirst() {
                 //   (defaultImg && "")
                 // }
                 value={weightInp}
-                onChange={(e)=>setWeightInp(e.target.value)}
+                onChange={(e) => setWeightInp(e.target.value)}
                 className="investDestilInput"
               />
             </div>
-            <div style={{ display: "flex", marginTop: "15px",alignItems:'center',justifyContent:'center' }}>
+            <div style={{ display: "flex", marginTop: "15px", alignItems: 'center', justifyContent: 'center' }}>
               <p className="investDestilInputTitleNew">TDS:</p>
               <input
                 type="text"
@@ -450,7 +456,7 @@ export default function InvestMentFirst() {
                 onChange={(e) => setTDS(e.target.value)}
               />
             </div>
-            <div style={{ display: "flex", marginTop: "15px",alignItems:'center',justifyContent:'center'}}>
+            <div style={{ display: "flex", marginTop: "15px", alignItems: 'center', justifyContent: 'center' }}>
               <p className="investDestilInputTitleNew">PHvalue:</p>
               <input
                 type="text"
