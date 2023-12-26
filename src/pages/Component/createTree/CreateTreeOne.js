@@ -57,10 +57,9 @@ export default function CreateTreeOne() {
     const CurrentImageValue = useRecoilValue(CurrentImageState);
     const [inputWightValue, setInputWeightValue] = useState('');
     const [open, setOpen] = useState(false);
-    const [treeFlag,setTreeFlag] = useState(false)
-    const ScanRef = useRef(null)    
+    const [treeFlag, setTreeFlag] = useState(false)
+    const ScanRef = useRef(null)
     const [addLsit, setAddLsit] = useState(false);
-    const location = useLocation();
     const [editTreeImg, setEditTreeImg] = useState(false)
 
 
@@ -76,7 +75,7 @@ export default function CreateTreeOne() {
 
 
     useEffect(() => {
-    if(editTreeImg) setInputWeightValue('100')
+        if (editTreeImg) setInputWeightValue('100')
     }, [editTreeImg])
 
 
@@ -96,7 +95,6 @@ export default function CreateTreeOne() {
         setOpen(false);
     };
 
-
     const handleInputChange = (event) => {
         setInputValue(event.target.value);
     };
@@ -105,18 +103,18 @@ export default function CreateTreeOne() {
         setInputValueHidden(event.target.value);
     };
 
-    useEffect(()=>{
-        if(inputValueHidden.length){
-            setTimeout(()=>{
-                if(!isImageVisible){
+    useEffect(() => {
+        if (inputValueHidden.length) {
+            setTimeout(() => {
+                if (!isImageVisible) {
                     setEnteredValues([...enteredValues, inputValueHidden]);
                 }
-            },500)
+            }, 500)
         }
-    },[inputValueHidden])
+    }, [inputValueHidden])
 
     setTimeout(() => {
-        if(inputValueHidden?.length>0){
+        if (inputValueHidden?.length > 0) {
             setInputValueHidden('')
         }
     }, 510);
@@ -169,6 +167,15 @@ export default function CreateTreeOne() {
         window.location.reload();
     }
 
+    // const inputField = document.getElementById("hiddeninp");
+    // useEffect(()=>{
+    //     if (document.activeElement === inputField) {
+    //       console.log("Input field is currently focused.");
+    //     } else {
+    //       console.log("Input field is not focused.");
+      
+    //     }
+    // },[inputField,document.activeElement])
 
     console.log("ScanRef.current",ScanRef.current );
     console.log("treeFlag",treeFlag);
@@ -206,12 +213,11 @@ export default function CreateTreeOne() {
             <BarcodeScanner
                 onScan={handleScan}
                 onError={handleError}
-                
             />
             <div>
                 <div className="TopBtnDivMainOne">
                     <div>
-                        <p style={{ margin: '0px', fontSize: '20px', fontWeight: 500 }}>CREATE NEW BATCH</p>
+                        <p style={{ margin: '0px', marginLeft: '10px', fontSize: '20px', fontWeight: 500 }}>CREATE NEW BATCH</p>
                     </div>
                     <div style={{ display: 'flex' }}>
                         <p className='infoTextInputONe'>E0025(BOB THOMAS)</p>
@@ -221,16 +227,16 @@ export default function CreateTreeOne() {
                 <div style={{ display: 'flex', marginTop: '15px', flexWrap: 'wrap' }} className='body_container'>
                     <div className='scaneUploadMain'>
                         <div className='createORMain' >
-                            <div onClick={toggleImageVisibility} style={{ width: 'fit-content', marginLeft: '30px',position:'relative'}}>
+                            <div onClick={toggleImageVisibility} style={{ width: 'fit-content', marginLeft: '30px', position: 'relative' }}>
                                 {!isImageVisible ? <div>
                                     <img src={scaneCodeImage} className='createImageQrCode' />
                                 </div> :
                                     <div>
-                                        <img src={idle}  />
+                                        <img src={idle} />
                                     </div>}
                                 <div>
-                                {isImageVisible && <p style={{fontWeight:'bold',marginLeft:'-40px'}}> <span style={{color:'red'}}>Click</span> On The Image For Scan<span style={{color:'red'}}>*</span></p>}
-                                    <input type='text' id="hiddeninp" ref={ScanRef} onBlur={()=>{setIsImageVisible(true)}} onFocus={()=>setIsImageVisible(false)} value={inputValueHidden} onChange={handleInputChangeHidden} style={{ width: '20px', position: 'absolute', top: '80px', left: '50px',zIndex:-1}} />
+                                    {isImageVisible && <p style={{ fontWeight: 'bold', marginLeft: '-40px' }}> <span style={{ color: 'red' }}>Click</span> On The Image For Scan<span style={{ color: 'red' }}>*</span></p>}
+                                    <input type='text' id="hiddeninp" ref={ScanRef} onBlur={() => { setIsImageVisible(true) }} onFocus={() => setIsImageVisible(false)} value={inputValueHidden} onChange={handleInputChangeHidden} style={{ width: '20px', position: 'absolute', top: '80px', left: '50px', zIndex: -1 }} />
                                 </div>
                             </div>
                             <div style={{ display: 'flex', marginTop: '10px' }}>
@@ -256,7 +262,7 @@ export default function CreateTreeOne() {
                                 }}
                             />
                             <input type='text' placeholder='Batch' value={'AB'} style={{ marginTop: '15px' }} className='infoTextInputBatch' />
-                            <input type='number' value={inputWightValue} style={{ marginTop: '15px',border: !treeFlag && '1px solid red' }} onChange={handleInputWeightChange} placeholder='Tree Weight' className='infoTextInputWight' />
+                            <input type='number' value={inputWightValue} style={{ marginTop: '15px', border: !treeFlag && '1px solid red' }} onChange={handleInputWeightChange} placeholder='Tree Weight' className='infoTextInputWight' />
 
                         </div>
                         <div className='allScaneDataMain'>
@@ -277,12 +283,9 @@ export default function CreateTreeOne() {
                         </div>
                     </div>
                     <div className='uplodedImageMain' >
-                        {editTreeImg === true ? <img src={EditTreeImg} style={{ height: '430px' ,objectFit: 'contain' }} className={CurrentImageValue ? 'uplodedImage' : 'uplodedImageProfile'} /> :
-                            <img src={CurrentImageValue ? CurrentImageValue : castingTree} className={CurrentImageValue ? 'uplodedImage' : 'uplodedImageProfile'} />}
-
-
+                        <img src={CurrentImageValue ? CurrentImageValue : editTreeImg === true ? EditTreeImg : castingTree} className={CurrentImageValue ? 'uplodedImage' : editTreeImg === true ? 'uploadDefaultImg' : 'uplodedImageProfile'} />
                         <div style={{ marginTop: '5px', display: 'flex', justifyContent: 'space-around' }}>
-                            <button className='uploadImageBtn' onClick={() => setCamFlag(true)} >Upload Tree</button>
+                            <button className='uploadImageBtn' onClick={() => setCamFlag(true)} >{editTreeImg === true ? 'Edit Tree' : 'Upload Tree'}</button>
                             <p className="homeNoteTitle" style={{ margin: '0px', fontSize: '23px' }} onClick={handleClickOpen}>
                                 Remark
                             </p>

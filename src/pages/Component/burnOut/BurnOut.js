@@ -163,24 +163,25 @@ export default function BurnOut() {
                     <img src={greenImg && greenImges || blueImg && blueImges || orangeImg && orangeImges} className='DrawerImg' />
                 </div>
             </Drawer>
-            <p className='mainTitle'>PROCASTING-BURNOUT PROCESS</p>
-            <div style={{ height: '50px' }}>
-
+            <div className="TopBtnDivMainOne">
+                <p style={{ margin: '0px', marginLeft: '10px', fontSize: '20px', fontWeight: 500 }}>BURNOUT PROCESS</p>
+            </div>
+            <div style={{ height: "50px", position: 'absolute', right: '0px' }}>
                 {greenImg && <button onClick={() => setOpenYourBagDrawer(true)} style={{ float: 'right', height: '50px', width: '120px' }}>Open Image</button>}
                 {blueImg && <button onClick={() => setOpenYourBagDrawer(true)} style={{ float: 'right', height: '50px', width: '120px' }}>Open Image</button>}
                 {orangeImg && <button onClick={() => setOpenYourBagDrawer(true)} style={{ float: 'right', height: '50px', width: '120px' }}>Open Image</button>}
             </div>
-            <div style={{ display: 'flex' }}>
+            <div style={{ display: 'flex' , marginTop: '-10px'}}>
                 <div className='BurnTopBox1'>
-                   
-                <div onClick={toggleImageVisibility} style={{ width: 'fit-content', marginLeft: '20px' }}>
-                            {isImageVisible ? <div>
-                                <img src={scaneCodeImage} className='createImageQrCode' />
-                            </div> :
-                                <div>
-                                    <img src={idle} />
-                                </div>}
-                        </div>
+
+                    <div onClick={toggleImageVisibility} style={{ width: 'fit-content' }}>
+                        {isImageVisible ? <div>
+                            <img src={scaneCodeImage} className='createImageQrCode' />
+                        </div> :
+                            <div>
+                                <img src={idle} />
+                            </div>}
+                    </div>
                     <div style={{ display: 'flex', marginTop: '5px' }}>
                         <input type='text' onKeyDown={handleKeyDown} style={{ border: inputError && '1px solid red' }} className='enterBrachItemBox' value={inputValue}
                             onChange={handleInputChange} />
@@ -213,7 +214,7 @@ export default function BurnOut() {
                 <h2 className='brunFurnaceId'>furnace ID : F123</h2>
             </div>
 
-            <div style={{ display: 'flex', flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex',marginTop:'-15px', flexWrap: 'wrap' }}>
                 {enteredValues.map((value, index) => (
                     <table key={index} style={{ backgroundColor: greenImg && '#b1d8b7' || blueImg && '#a396c8' || orangeImg && 'orange' || defaultImg && '#add8e6', margin: '20px' }}>
                         <tr>
