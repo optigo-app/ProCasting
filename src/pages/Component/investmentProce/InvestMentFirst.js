@@ -32,6 +32,7 @@ export default function InvestMentFirst() {
   const [isImageVisible, setIsImageVisible] = useState(true);
   const [enteredTime, setEnteredTime] = useState('');
    const[eviIndex,setEviIndex]=useState([]);
+   const [weightInp,setWeightInp] = useState('')
 
   const invProRef = useRef(null)
 
@@ -217,6 +218,29 @@ export default function InvestMentFirst() {
       }
   }, 510);
 
+  useEffect(()=>{
+    setWeightInp('2000')
+  },[])
+
+  useEffect(()=>{
+    if(greenImg){
+      setWeightInp("3000")
+    }
+    if(blueImg){
+      setWeightInp("3000")
+    }
+    if(orangeImg){
+      setWeightInp("3000")
+    }
+    if(weight){
+      setWeightInp("")
+    }
+    if(defaultImg){
+      setWeightInp("")
+    }
+
+  },[greenImg,blueImg,orangeImg,weight,defaultImg])
+
 
   return (
     <div>
@@ -331,7 +355,7 @@ export default function InvestMentFirst() {
         </div>
         <div style={{ display: "flex", marginTop: '0px' }}>
           <div className="investTopBox1">
-            <div onClick={toggleImageVisibility} style={{ width: 'fit-content', marginLeft: '45px',position:'relative' }}>
+            <div onClick={toggleImageVisibility} style={{ width: 'fit-content', marginLeft: !isImageVisible &&'45px',position:'relative' }}>
               {isImageVisible ? <div>
                 <img src={scaneCodeImage} className='createImageQrCode' style={{marginRight:'25px'}} />
               </div> :
@@ -401,21 +425,23 @@ export default function InvestMentFirst() {
             ))}
           </div>
           <div>
-            <div style={{ display: "flex", marginTop: "15px" }}>
-              <p className="investDestilInputTitleNew">weight:</p>
+            <div style={{ display: "flex", marginTop: "15px",alignItems:'center',justifyContent:'center'}}>
+              <p className="investDestilInputTitleNew">Weight:</p>
               <input
                 type="text"
-                value={
-                  (greenImg && "3000") ||
-                  (blueImg && "3000") ||
-                  (orangeImg && "3000") ||
-                  (weight && "") ||
-                  (defaultImg && "")
-                }
+                // value={
+                //   (greenImg && "3000") ||
+                //   (blueImg && "3000") ||
+                //   (orangeImg && "3000") ||
+                //   (weight && "") ||
+                //   (defaultImg && "")
+                // }
+                value={weightInp}
+                onChange={(e)=>setWeightInp(e.target.value)}
                 className="investDestilInput"
               />
             </div>
-            <div style={{ display: "flex", marginTop: "15px" }}>
+            <div style={{ display: "flex", marginTop: "15px",alignItems:'center',justifyContent:'center' }}>
               <p className="investDestilInputTitleNew">TDS:</p>
               <input
                 type="text"
@@ -424,7 +450,7 @@ export default function InvestMentFirst() {
                 onChange={(e) => setTDS(e.target.value)}
               />
             </div>
-            <div style={{ display: "flex", marginTop: "15px" }}>
+            <div style={{ display: "flex", marginTop: "15px",alignItems:'center',justifyContent:'center'}}>
               <p className="investDestilInputTitleNew">PHvalue:</p>
               <input
                 type="text"
