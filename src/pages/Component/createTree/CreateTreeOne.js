@@ -4,7 +4,6 @@ import { useLocation, useNavigate } from 'react-router-dom';
 
 import { makeStyles } from '@mui/styles';
 import { Dialog, TextField } from '@mui/material';
-import profile from '../../assets/profile.webp'
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { CurrentCamFlag, CurrentImageState } from '../../recoil/Recoil';
 import ImageWebCam from '../imageTag/ImageWebCam';
@@ -22,28 +21,6 @@ import BarcodeScanner from 'react-barcode-reader';
 import castingTree from '../../assets/castingtree.jpg'
 import EditTreeImg from '../../assets/tree.jpg'
 
-const useStyles = makeStyles({
-    datePickerRoot: {
-        width: '100%',
-        marginTop: '10px',
-    },
-    datePickerInput: {
-        backgroundColor: 'lightgray',
-        borderRadius: '4px',
-        padding: '8px',
-        width: '100%',
-        height: '20px'
-    },
-    inputRoot: {
-        color: 'blue',
-        '&::placeholder': {
-            color: 'red',
-        },
-    },
-
-});
-
-
 export default function CreateTreeOne() {
     const [inputValue, setInputValue] = useState(undefined);
     const [inputValueHidden, setInputValueHidden] = useState('');
@@ -53,7 +30,6 @@ export default function CreateTreeOne() {
     const [isImageVisible, setIsImageVisible] = useState(true);
     const [todayDate, setTodayDate] = useState('');
     const navigation = useNavigate();
-    const hiddenInputRef = useRef(null);
     const CurrentImageValue = useRecoilValue(CurrentImageState);
     const [inputWightValue, setInputWeightValue] = useState('');
     const [open, setOpen] = useState(false);
@@ -70,19 +46,24 @@ export default function CreateTreeOne() {
     }, [])
 
     useEffect(() => {
+        if (inputValueHidden.length) {
+            setTimeout(() => {
+                if (!isImageVisible) {
+                    setEnteredValues([...enteredValues, inputValueHidden]);
+                }
+            }, 500)
+        }
+    }, [inputValueHidden])
+
+    useEffect(() => {
         setEditTreeImg(JSON.parse(localStorage.getItem('EditTreePage')))
     }, [])
-
 
     useEffect(() => {
         if (editTreeImg) setInputWeightValue('100')
     }, [editTreeImg])
 
-
-    console.log('editrrr', treeFlag);
-
     const handleScan = (data) => { };
-
     const handleError = (error) => {
         console.error('Error while scanning:', error);
     };
@@ -103,16 +84,6 @@ export default function CreateTreeOne() {
         setInputValueHidden(event.target.value);
     };
 
-    useEffect(() => {
-        if (inputValueHidden.length) {
-            setTimeout(() => {
-                if (!isImageVisible) {
-                    setEnteredValues([...enteredValues, inputValueHidden]);
-                }
-            }, 500)
-        }
-    }, [inputValueHidden])
-
     setTimeout(() => {
         if (inputValueHidden?.length > 0) {
             setInputValueHidden('')
@@ -129,8 +100,6 @@ export default function CreateTreeOne() {
         }
     };
 
-
-
     const totalValues = enteredValues.length;
     const handleRemoveItem = (indexToRemove) => {
         setEnteredValues(enteredValues.filter((_, index) => index !== indexToRemove));
@@ -144,18 +113,15 @@ export default function CreateTreeOne() {
     };
 
     const handleMoreInfoShow = () => {
-
         if (addLsit === false) {
             setAddLsit(true);
             let newData = ['1/1999', '2/1123', '1/3453', '2/121', '5/14523']
             setEnteredValues([...enteredValues, ...newData]);
         }
-
     }
 
     const handleInputWeightChange = (event) => {
         const { value } = event.target;
-
         if (value?.length) {
             setTreeFlag(true)
         } else {
@@ -165,40 +131,24 @@ export default function CreateTreeOne() {
         setInputWeightValue(newValue);
     };
 
-
-    useEffect(()=>{
-        if(!inputWightValue){
+    useEffect(() => {
+        if (!inputWightValue) {
             setTreeFlag(false)
         } else {
             setTreeFlag(true)
         }
-    },[inputWightValue])
+    }, [inputWightValue])
 
     const handleSaveNew = () => {
         window.location.reload();
     }
-
-    // const inputField = document.getElementById("hiddeninp");
-    // useEffect(()=>{
-    //     if (document.activeElement === inputField) {
-    //       console.log("Input field is currently focused.");
-    //     } else {
-    //       console.log("Input field is not focused.");
-
-    //     }
-    // },[inputField,document.activeElement])
-
-    console.log("ScanRef.current", ScanRef.current);
-    console.log("inputWightValue", inputWightValue);
+    
     const toggleImageVisibility = () => {
-        // setIsImageVisible(!isImageVisible);
         let safe = ScanRef.current
-        console.log("valueeeeeee", { safe, treeFlag })
         if (ScanRef.current && treeFlag) {
             ScanRef.current.focus();
         }
     };
-
 
     return (
         <>

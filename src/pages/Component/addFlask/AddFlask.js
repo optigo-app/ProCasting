@@ -10,21 +10,35 @@ export default function AddFlask() {
   const [inputError, setInputError] = useState(false);
   const [inputErrorMax, setInputErrorMax] = useState(false);
   const [scanInp, setScanInp] = useState("");
-
   const [isImageVisible, setIsImageVisible] = useState(true);
-
   const invProRef = useRef(null);
 
-  const handleScan = (data) => {
-    // setEnteredValues([...enteredValues, data]);
-  };
+  useEffect(() => {
+    invProRef.current.focus();
+  }, [invProRef]);
+
+  useEffect(() => {
+    setTimeout(() => {
+      if (scanInp.length) {
+        setEnteredValues([...enteredValues, scanInp]);
+      }
+    }, 500);
+  }, [scanInp]);
+
+  setTimeout(() => {
+    if (scanInp?.length > 0) {
+      setScanInp('')
+    }
+  }, 510);
+
+
+  const handleScan = (data) => { };
 
   const handleError = (error) => {
     console.error("Error while scanning:", error);
   };
 
   const toggleImageVisibility = () => {
-    // setIsImageVisible(!isImageVisible);
     if (invProRef.current) {
       invProRef.current.focus();
     }
@@ -49,30 +63,10 @@ export default function AddFlask() {
     }
   };
 
-  useEffect(() => {
-    invProRef.current.focus();
-  }, [invProRef]);
-
-  useEffect(() => {
-    setTimeout(() => {
-      if (scanInp.length) {
-        setEnteredValues([...enteredValues, scanInp]);
-      }
-    }, 500);
-  }, [scanInp]);
-
-    setTimeout(() => {
-        if(scanInp?.length>0){
-          setScanInp('')
-        }
-    }, 510);
-
-    const saveData = () => {
-
-        setEnteredValues([])
-        setInputErrorMax(false)
-
-    }
+  const saveData = () => {
+    setEnteredValues([])
+    setInputErrorMax(false)
+  }
 
   const handleKeyDown = (event) => {
     if (event.key === "Enter") {
@@ -81,12 +75,9 @@ export default function AddFlask() {
     }
   };
 
-    const handelScanInp = (target) =>{
-        setScanInp(target)
-      }
-
-
-    console.log("enteredValues",enteredValues);
+  const handelScanInp = (target) => {
+    setScanInp(target)
+  }
 
   return (
     <div>

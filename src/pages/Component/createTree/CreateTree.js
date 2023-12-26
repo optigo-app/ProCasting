@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import './CreateTree.css'
 import { useNavigate } from 'react-router-dom';
-
 import { makeStyles } from '@mui/styles';
 import { Dialog } from '@mui/material';
 import profile from '../../assets/profile.webp'
@@ -21,31 +20,8 @@ import ProfileImg from '../../assets/profile.webp'
 import BarcodeScanner from 'react-barcode-reader';
 import castingTree from '../../assets/castingtree.jpg'
 
-const useStyles = makeStyles({
-    datePickerRoot: {
-        width: '100%',
-        marginTop: '10px',
-    },
-    datePickerInput: {
-        backgroundColor: 'lightgray',
-        borderRadius: '4px',
-        padding: '8px',
-        width: '100%',
-        height: '20px'
-    },
-    inputRoot: {
-        color: 'blue',
-        '&::placeholder': {
-            color: 'red',
-        },
-    },
-
-});
-
-
 export default function CreateTree() {
     const [inputValue, setInputValue] = useState(undefined);
-    const [inputValueHidden, setInputValueHidden] = useState(undefined);
     const [enteredValues, setEnteredValues] = useState([]);
     const [inputError, setInputError] = useState(false)
     const [camFlag, setCamFlag] = useRecoilState(CurrentCamFlag)
@@ -53,63 +29,54 @@ export default function CreateTree() {
     const [todayDate, setTodayDate] = useState('');
     const [inpFocus, setInpFocus] = useState('');
     const navigation = useNavigate();
-    const hiddenInputRef = useRef(null);
-
-    const inputRef = useRef(null);
-    const containerRef = useRef(null);
     const CurrentImageValue = useRecoilValue(CurrentImageState);
     const [inputWightValue, setInputWeightValue] = useState('');
     const [open, setOpen] = useState(false);
-
+    const hiddenInputRef = useRef(null);
+    const inputRef = useRef(null);
+    const containerRef = useRef(null);
 
     useEffect(() => {
         const today = new Date().toISOString().split('T')[0];
         setTodayDate(today)
     }, [])
 
-
     useEffect(() => {
         if (inputRef.current && isImageVisible) {
-          inputRef.current.focus();
+            inputRef.current.focus();
         }
     }, [isImageVisible]);
-    
 
-    const handelscanvalue = (target) =>{
-        setInpFocus(target)
-    }
-
- 
-    setTimeout(()=>{
-        if(inpFocus?.length>0){
-            setInpFocus('')
-        }
-    },510)
-    
-
-    console.log("inputRef",inpFocus);
-
-    useEffect(()=>{
+    useEffect(() => {
         if (isImageVisible === true && inpFocus?.length > 0) {
-            setTimeout(()=>{
+            setTimeout(() => {
                 let data = inpFocus;
                 setEnteredValues([...enteredValues, data]);
-            },500)
+            }, 500)
         }
-    },[isImageVisible,inpFocus])
+    }, [isImageVisible, inpFocus])
 
     useEffect(() => {
         if (containerRef.current) {
-          containerRef.current.scrollTop = 0;
+            containerRef.current.scrollTop = 0;
         }
-      }, [enteredValues])
+    }, [enteredValues])
+
+    const handelscanvalue = (target) => {
+        setInpFocus(target)
+    }
+
+    setTimeout(() => {
+        if (inpFocus?.length > 0) {
+            setInpFocus('')
+        }
+    }, 510)
 
     const handleScan = (data) => {
-        if(isImageVisible===true){
+        if (isImageVisible === true) {
             setEnteredValues([...enteredValues, data]);
         }
-        console.log("data",data);
-        if(data.length){
+        if (data.length) {
         }
     };
 
@@ -117,8 +84,6 @@ export default function CreateTree() {
         console.error('Error while scanning:', error);
         setIsImageVisible(false)
     };
-
-
 
     const handleClickOpen = () => {
         setOpen(true);
@@ -134,13 +99,8 @@ export default function CreateTree() {
         }
     };
 
-
     const handleInputChange = (event) => {
         setInputValue(event.target.value);
-    };
-
-    const handleInputChangeHidden = (event) => {
-        setInputValueHidden(event.target.value);
     };
 
     const handleGoButtonClick = () => {
@@ -154,6 +114,7 @@ export default function CreateTree() {
     };
 
     const totalValues = enteredValues.length;
+
     const handleRemoveItem = (indexToRemove) => {
         setEnteredValues(enteredValues.filter((_, index) => index !== indexToRemove));
     };
@@ -180,8 +141,6 @@ export default function CreateTree() {
         window.location.reload();
     }
 
-
-
     return (
         <>
             <Dialog
@@ -204,8 +163,8 @@ export default function CreateTree() {
             </Dialog>
 
             <BarcodeScanner
-                onScan={()=>handleScan()}
-                onError={()=>handleError()}
+                onScan={() => handleScan()}
+                onError={() => handleError()}
             />
             <div>
                 <div className="TopBtnDivMain">
@@ -232,7 +191,7 @@ export default function CreateTree() {
                 <div style={{ display: 'flex', marginTop: '5px', flexWrap: 'wrap' }} className='body_container'>
                     <div className='scaneUploadMain'>
                         <div className='createORMain' >
-                            <div onClick={toggleImageVisibility} style={{ width: 'fit-content', marginLeft: '30px',position:'relative'}}>
+                            <div onClick={toggleImageVisibility} style={{ width: 'fit-content', marginLeft: '30px', position: 'relative' }}>
                                 {isImageVisible ? <div>
                                     <img src={scaneCodeImage} className='createImageQrCode' />
                                 </div> :
@@ -240,13 +199,13 @@ export default function CreateTree() {
                                         <img src={idle} />
                                     </div>}
                                 <div>
-                            
-                                {!isImageVisible && <p style={{fontWeight:'bold',marginLeft:'-40px'}}> <span style={{color:'red'}}>Click</span> On The Image For Scan<span style={{color:'red'}}>*</span></p>}
-                                <input style={{width:'20px',position:'absolute',top:'80px',left:'40px',zIndex:-1}} value={inpFocus} onChange={(e)=>handelscanvalue(e.target.value)}  ref={inputRef}/>
+
+                                    {!isImageVisible && <p style={{ fontWeight: 'bold', marginLeft: '-40px' }}> <span style={{ color: 'red' }}>Click</span> On The Image For Scan<span style={{ color: 'red' }}>*</span></p>}
+                                    <input style={{ width: '20px', position: 'absolute', top: '80px', left: '40px', zIndex: -1 }} value={inpFocus} onChange={(e) => handelscanvalue(e.target.value)} ref={inputRef} />
+                                </div>
                             </div>
-                        </div>
                             <div style={{ display: 'flex', marginTop: '10px' }}>
-                                <input type='text' value={inputValue} style={{ border: inputError && '1px solid red' }} className='enterBrachItemBox' onChange={handleInputChange} onKeyDown={handleKeyDown}/>
+                                <input type='text' value={inputValue} style={{ border: inputError && '1px solid red' }} className='enterBrachItemBox' onChange={handleInputChange} onKeyDown={handleKeyDown} />
 
                                 <button style={{ height: '98%', width: '45px', fontSize: '20px', fontWeight: 600, cursor: 'pointer' }} onClick={handleGoButtonClick}>
                                     Go
