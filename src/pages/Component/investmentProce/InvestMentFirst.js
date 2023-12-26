@@ -219,7 +219,7 @@ export default function InvestMentFirst() {
   }, 510);
 
   useEffect(()=>{
-    setWeightInp('2000')
+    enteredValues.length > 0 && setWeightInp('2000')
   },[])
 
   useEffect(()=>{
@@ -232,12 +232,12 @@ export default function InvestMentFirst() {
     if(orangeImg){
       setWeightInp("3000")
     }
-    if(weight){
-      setWeightInp("")
-    }
-    if(defaultImg){
-      setWeightInp("")
-    }
+    // if(weight){
+    //   setWeightInp("")
+    // }
+    // if(defaultImg){
+    //   setWeightInp("")
+    // }
 
   },[greenImg,blueImg,orangeImg,weight,defaultImg])
 
