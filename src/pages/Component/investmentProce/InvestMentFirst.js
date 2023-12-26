@@ -395,7 +395,7 @@ export default function InvestMentFirst() {
           </div>
           <div>
             <div style={{ display: "flex", marginTop: "15px" }}>
-              <p className="investDestilInputTitleNew">weight:</p>
+              <p className="investDestilInputTitleNew">Weight:</p>
               <input
                 type="text"
                 value={

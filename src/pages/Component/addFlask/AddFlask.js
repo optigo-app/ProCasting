@@ -26,10 +26,10 @@ export default function AddFlask() {
 
     const toggleImageVisibility = () => {
         // setIsImageVisible(!isImageVisible);
-        if (invProRef.current ) {
-          invProRef.current.focus();
-      }
-      };
+        if (invProRef.current) {
+            invProRef.current.focus();
+        }
+    };
 
     const handleInputChange = (event) => {
         setInputValue(event.target.value);
@@ -42,38 +42,35 @@ export default function AddFlask() {
             } else {
                 // alert(enteredValues[0])
                 setInputError(false)
-                setEnteredValues([...enteredValues, scanInp]);
+                setEnteredValues([...enteredValues, inputValue]);
                 setInputValue('');
             }
         } else {
             setInputErrorMax(true)
         }
-
     };
 
     useEffect(() => {
         invProRef.current.focus();
-      }, [invProRef]);
+    }, [invProRef]);
 
-    useEffect(()=>{
+    useEffect(() => {
         setTimeout(() => {
-            if(scanInp.length){
+            if (scanInp.length) {
                 setEnteredValues([...enteredValues, scanInp]);
             }
         }, 500);
-    },[scanInp])
+    }, [scanInp])
 
     setTimeout(() => {
-        if(scanInp?.length>0){
-          setScanInp('')
+        if (scanInp?.length > 0) {
+            setScanInp('')
         }
     }, 510);
 
     const saveData = () => {
-
         setEnteredValues([])
         setInputErrorMax(false)
-
     }
 
     const handleKeyDown = (event) => {
@@ -83,12 +80,12 @@ export default function AddFlask() {
         }
     };
 
-    const handelScanInp = (target) =>{
+    const handelScanInp = (target) => {
         setScanInp(target)
-      }
+    }
 
 
-    console.log("enteredValues",enteredValues);
+    console.log("enteredValues", enteredValues);
 
     return (
         <div>
@@ -99,24 +96,24 @@ export default function AddFlask() {
             <p className='mainTitle'>PROCASTING-TREE BIND WITH FLASK</p>
             <div className='addFLaskMain'>
                 <div className='addFlaskQRMAin' >
-                    <div onClick={toggleImageVisibility} style={{ width: 'fit-content', marginLeft: '30px',position:'relative'}}>
+                    <div onClick={toggleImageVisibility} style={{ width: 'fit-content', marginLeft: '30px', position: 'relative' }}>
                         {isImageVisible ? <div>
                             <img src={scaneCodeImage} className='createImageQrCode' />
                         </div> :
                             <div>
                                 <img src={idle} />
                             </div>}
-                            <input style={{width:'12px',position:'absolute',left:'50px',top:'70px',zIndex:-1}} ref={invProRef} onBlur={()=>{setIsImageVisible(false)}} 
-                            onFocus={()=>{
-                                setIsImageVisible(true)  
+                        <input style={{ width: '12px', position: 'absolute', left: '50px', top: '70px', zIndex: -1 }} ref={invProRef} onBlur={() => { setIsImageVisible(false) }}
+                            onFocus={() => {
+                                setIsImageVisible(true)
                                 invProRef.current?.focus()
-                            }} 
-                            value={scanInp} onChange={(e)=>handelScanInp(e.target.value)} autoFocus/>
+                            }}
+                            value={scanInp} onChange={(e) => handelScanInp(e.target.value)} autoFocus />
                     </div>
                     <div style={{ display: 'flex', marginTop: '5px' }}>
                         <input type='text' style={{ border: inputError && '1px solid red' }} className='enterBrachItemBox' value={inputValue}
                             onChange={handleInputChange} onKeyDown={handleKeyDown} />
-                        <button style={{width: '50px', fontSize: '20px', fontWeight: 600, cursor: 'pointer' }} onClick={handleGoButtonClick}>
+                        <button style={{ width: '50px', fontSize: '20px', fontWeight: 600, cursor: 'pointer' }} onClick={handleGoButtonClick}>
                             Go
                         </button>
                     </div>
