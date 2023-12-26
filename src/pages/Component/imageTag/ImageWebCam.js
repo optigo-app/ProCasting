@@ -15,10 +15,6 @@ const ImageWebCam = () => {
   const [image1, setImage1] = useState([]);
   const [cameraError, setCameraError] = useState(false);
 
-  console.log("cameraError",cameraError);
-
-  
-
   useEffect(() => {
     const checkCameraAccessibility = async () => {
       try {
@@ -56,7 +52,6 @@ const ImageWebCam = () => {
             onClick={() => {
               if (camera.current) {
                 const photo = camera.current.takePhoto();
-                console.log(photo);
                 setImage(photo);
                 setImage1([photo, ...image1]);
                 setImageflag(false)
@@ -71,7 +66,6 @@ const ImageWebCam = () => {
             onClick={() => {
               if (camera.current) {
                 const result = camera.current.switchCamera();
-                console.log(result);
               }
             }}
             className="cameraclickflip"

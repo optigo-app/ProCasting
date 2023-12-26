@@ -6,11 +6,9 @@ import blueImges from '../../assets/blue.png'
 import orangeImges from '../../assets/orange.png'
 import { IoMdClose } from "react-icons/io";
 import Countdown from "react-countdown";
-
 import BarcodeScanner from 'react-barcode-reader';
 import scaneCodeImage from '../../assets/scanBarcode.gif'
 import idle from '../../assets/idle.gif'
-
 
 export default function InvestMentFirst() {
 
@@ -33,55 +31,23 @@ export default function InvestMentFirst() {
   const [enteredTime, setEnteredTime] = useState('');
   const [eviIndex, setEviIndex] = useState([]);
   const [weightInp, setWeightInp] = useState('')
-
   const invProRef = useRef(null)
 
-  const handleScan = (data) => {
-    // setEnteredValues([...enteredValues, data]);
-  };
-
-  const handleError = (error) => {
-    console.error('Error while scanning:', error);
-  };
-
-
-  console.log("eviIndex", eviIndex);
-
-  const toggleImageVisibility = () => {
-    // setIsImageVisible(!isImageVisible);
-    if (invProRef.current) {
-      invProRef.current.focus();
+  useEffect(() => {
+    if (greenImg) {
+      setWeightInp("3000")
     }
-  };
-
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
-  };
-
-  const handleInputChange = (event) => {
-    setInputValue(event.target.value);
-  };
-
-  const handleGoButtonClick = () => {
-    if (inputValue === '' || inputValue === undefined) {
-      setInputError(true)
-    } else {
-      setInputError(false)
-      setEnteredValues([...enteredValues, { label: inputValue }]);
-      setInputValue('');
+    if (blueImg) {
+      setWeightInp("3000")
     }
-
-  };
+    if (orangeImg) {
+      setWeightInp("3000")
+    }
+  }, [greenImg, blueImg, orangeImg, weight, defaultImg])
 
 
   useEffect(() => {
-
     if (enteredValues[0]?.label === 'F1') {
-      // setOpenYourBagDrawer(true)
       setGreeImg(true)
     } else if (enteredValues[0]?.label === 'F2') {
       setGreeImg(true)
@@ -106,24 +72,72 @@ export default function InvestMentFirst() {
     } else {
       setDefaultImg(true)
     }
-
   }, [enteredValues])
 
   useEffect(() => {
-
     if (enteredValues?.length === 1) {
       setOpenYourBagDrawer(true)
     }
-
   }, [enteredValues])
 
+  useEffect(() => {
+    if (scanInp?.length) {
+      setTimeout(() => {
+        if (!openYourBagDrawer && isImageVisible) {
+          setEnteredValues([...enteredValues, { label: scanInp }]);
+        }
+      }, 500)
+    }
+  }, [scanInp])
+
+  setTimeout(() => {
+    if (scanInp?.length > 0) {
+      setScanInp('')
+    }
+  }, 510);
+
+  useEffect(() => {
+    enteredValues.length > 0 && setWeightInp('2000')
+  }, [])
+
+  const handleScan = (data) => { };
+
+  const handleError = (error) => {
+    console.error('Error while scanning:', error);
+  };
+
+  const toggleImageVisibility = () => {
+    if (invProRef.current) {
+      invProRef.current.focus();
+    }
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  const handleInputChange = (event) => {
+    setInputValue(event.target.value);
+  };
+
+  const handleGoButtonClick = () => {
+    if (inputValue === '' || inputValue === undefined) {
+      setInputError(true)
+    } else {
+      setInputError(false)
+      setEnteredValues([...enteredValues, { label: inputValue }]);
+      setInputValue('');
+    }
+  };
 
   const handleInputChangen = (e) => {
     setEnteredTime(e.target.value);
   };
+
   const handleDelayedFunction = () => {
     setTiemOut(true);
   };
+
   const handleDoneClick = () => {
     setTiemOut(false)
     let totalTi = enteredTime * 60000
@@ -156,13 +170,11 @@ export default function InvestMentFirst() {
         return ev
       })
       setEnteredValues(updateData)
-      console.log("enteredValues", enteredValues);
       setShowTimmerBtn(true)
       setTDS('')
       setPhValue('')
     }
   }
-
 
   const Completionist = () => {
     const d = new Date();
@@ -171,7 +183,6 @@ export default function InvestMentFirst() {
     let sec = d.getSeconds().toString().length === 1 ? `0${d.getSeconds()}` : d.getSeconds()
     return `${hour}:${min}:${sec}`;
   }
-
 
   const handleStartTime = (evi) => {
     setEviIndex((pre) => [...pre, evi])
@@ -187,60 +198,18 @@ export default function InvestMentFirst() {
         );
       }
     };
-
     const updatedData = enteredValues.map((d, index) => {
       if (!d.timer && evi === index) {
         d.timer = <Countdown date={Date.now() + 30000} renderer={renderer} />;
       }
       return d;
     });
-
     setEnteredValues(updatedData);
   }
 
   const handelScanInp = (target) => {
     setScanInp(target)
   }
-
-  useEffect(() => {
-    if (scanInp?.length) {
-      setTimeout(() => {
-        if (!openYourBagDrawer && isImageVisible) {
-          setEnteredValues([...enteredValues, { label: scanInp }]);
-        }
-      }, 500)
-    }
-  }, [scanInp])
-
-  setTimeout(() => {
-    if (scanInp?.length > 0) {
-      setScanInp('')
-    }
-  }, 510);
-
-  useEffect(() => {
-    enteredValues.length > 0 && setWeightInp('2000')
-  }, [])
-
-  useEffect(() => {
-    if (greenImg) {
-      setWeightInp("3000")
-    }
-    if (blueImg) {
-      setWeightInp("3000")
-    }
-    if (orangeImg) {
-      setWeightInp("3000")
-    }
-    // if(weight){
-    //   setWeightInp("")
-    // }
-    // if(defaultImg){
-    //   setWeightInp("")
-    // }
-
-  }, [greenImg, blueImg, orangeImg, weight, defaultImg])
-
 
   return (
     <div>

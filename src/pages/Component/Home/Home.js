@@ -3,7 +3,6 @@ import './Home.css'
 import { useNavigate } from 'react-router-dom'
 import Logo from '../../assets/oraillogo.png'
 import Note from '../../assets/note.jpg'
-
 import Button from '@mui/material/Button';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
@@ -13,14 +12,12 @@ import { Dialog } from '@mui/material';
 import scaneCodeImage from '../../assets/scanBarcode.gif'
 import BarcodeScanner from 'react-barcode-reader';
 
-
 export default function Home() {
 
     const [open, setOpen] = useState(false);
     const [scannedValue, setScannedValue] = useState();
     const [scannedValueError, setScannedValueError] = useState(false);
     const scanRef = useRef(null);
-
     const navigation = useNavigate();
 
     useEffect(() => {
@@ -29,9 +26,14 @@ export default function Home() {
         }
     }, [])
 
-    console.log('refff', scanRef);
+    useEffect(() => {
+        document.body.style.backgroundColor = 'lightblue';
+        return () => {
+            document.body.style.backgroundColor = '';
+        };
+    }, []);
+
     const handleScan = (data) => {
-        console.log("data", data);
         setScannedValue(data)
         setScannedValueError(false)
     };
@@ -61,27 +63,17 @@ export default function Home() {
         } else {
             setScannedValueError(false)
             setScannedValue('AB')
-            // navigation(editTree === false ? '/createTreeOne' : '/createTreeOne', { state: { editTree: editTree ? 'true' : 'false' } })
             navigation('/createTreeOne')
+            // navigation(editTree === false ? '/createTreeOne' : '/createTreeOne', { state: { editTree: editTree ? 'true' : 'false' } })
         }
     }
 
-
-    useEffect(() => {
-        document.body.style.backgroundColor = 'lightblue';
-        return () => {
-            document.body.style.backgroundColor = '';
-        };
-    }, []);
-
     return (
         <div >
-
             <BarcodeScanner
                 onScan={handleScan}
                 onError={handleError}
             />
-
             <Dialog
                 open={open}
                 onClose={handleClose}

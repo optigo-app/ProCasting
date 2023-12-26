@@ -5,16 +5,12 @@ import greenImges from '../../assets/green.png'
 import blueImges from '../../assets/blue.png'
 import orangeImges from '../../assets/orange.png'
 import { IoMdClose } from "react-icons/io";
-import Barcode from 'react-barcode';
 import Button from '@mui/material/Button';
 import BarcodeScanner from 'react-barcode-reader';
 import scaneCodeImage from '../../assets/scanBarcode.gif'
 import idle from '../../assets/idle.gif'
 
-
 export default function BurnOut() {
-
-
     const [inputValue, setInputValue] = useState('');
     const [enteredValues, setEnteredValues] = useState([]);
     const [greenImg, setGreeImg] = useState(false);
@@ -29,58 +25,8 @@ export default function BurnOut() {
     const [scanInp, setScanInp] = useState('');
     const invProRef = useRef(null)
 
-    const handleScan = (data) => {
-        setEnteredValues([...enteredValues, data]);
-    };
-
-    const handleError = (error) => {
-        console.error('Error while scanning:', error);
-    };
-
     useEffect(() => {
-        if (scanInp?.length) {
-            setTimeout(() => {
-                // if (!openYourBagDrawer && isImageVisible) {
-                if (isImageVisible) {
-                    setEnteredValues([...enteredValues, scanInp ]);
-
-                    setFlashCode(scanInp)
-                }
-            }, 500)
-        }
-    }, [scanInp])
-
-    setTimeout(() => {
-        if (scanInp?.length > 0) {
-            setScanInp('')
-        }
-    }, 510);
-    const handelScanInp = (target) => {
-        setScanInp(target)
-    }
-
-    const toggleImageVisibility = () => {
-        // setIsImageVisible(!isImageVisible);
-        if (invProRef.current) {
-            invProRef.current.focus();
-        }
-    };
-
-
-    const handleClickOpen = () => {
-        setOpen(true);
-    };
-
-    const handleClose = () => {
-        setOpen(false);
-        window.location.reload();
-    };
-
-
-    useEffect(() => {
-
         if (enteredValues[0] === 'F1') {
-            // setOpenYourBagDrawer(true)
             setGreeImg(true)
         } else if (enteredValues[0] === 'F2') {
             setGreeImg(true)
@@ -107,14 +53,54 @@ export default function BurnOut() {
         }
 
     }, [enteredValues])
-    useEffect(() => {
 
+    useEffect(() => {
         if (enteredValues.length === 1) {
             setOpenYourBagDrawer(true)
         }
-
     }, [enteredValues])
 
+    useEffect(() => {
+        if (scanInp?.length) {
+            setTimeout(() => {
+                // if (!openYourBagDrawer && isImageVisible) {
+                if (isImageVisible) {
+                    setEnteredValues([...enteredValues, scanInp ]);
+
+                    setFlashCode(scanInp)
+                }
+            }, 500)
+        }
+    }, [scanInp])
+
+    setTimeout(() => {
+        if (scanInp?.length > 0) {
+            setScanInp('')
+        }
+    }, 510);
+
+    const handleScan = (data) => {
+        setEnteredValues([...enteredValues, data]);
+    };
+
+    const handleError = (error) => {
+        console.error('Error while scanning:', error);
+    };
+   
+    const handelScanInp = (target) => {
+        setScanInp(target)
+    }
+
+    const toggleImageVisibility = () => {
+        if (invProRef.current) {
+            invProRef.current.focus();
+        }
+    };
+
+    const handleClose = () => {
+        setOpen(false);
+        window.location.reload();
+    };
 
     const handleInputChange = (event) => {
         setInputValue(event.target.value);
