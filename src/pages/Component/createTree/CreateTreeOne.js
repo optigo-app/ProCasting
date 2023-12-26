@@ -79,7 +79,7 @@ export default function CreateTreeOne() {
     }, [editTreeImg])
 
 
-    console.log('editrrr', editTreeImg);
+    console.log('editrrr', treeFlag);
 
     const handleScan = (data) => {};
 
@@ -165,13 +165,14 @@ export default function CreateTreeOne() {
         setInputWeightValue(newValue);
     };
 
+
     useEffect(()=>{
-        if(inputWightValue?.length){
+        if(!inputWightValue){
             setTreeFlag(false)
         }else{
             setTreeFlag(true)
         }
-    },[])
+    },[inputWightValue])
 
     const handleSaveNew = () => {
         window.location.reload();
