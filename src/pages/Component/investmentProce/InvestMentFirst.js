@@ -339,7 +339,7 @@ export default function InvestMentFirst() {
                   <img src={idle} />
                 </div>}
                 {!isImageVisible && (
-              <p style={{ fontWeight: "bold", marginLeft: "-40px" }}>
+              <p style={{ fontWeight: "bold", marginLeft: "-40px",marginTop:'-10px' }}>
                 {" "}
                 <span style={{ color: "red" }}>Click</span> On The Image For
                 Scan<span style={{ color: "red" }}>*</span>
