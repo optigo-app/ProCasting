@@ -42,7 +42,7 @@ export default function UnlockAlloying() {
     setEnteredValues([]);
   }, []);
 
-  const handleScan = (data) => {};
+  const handleScan = (data) => { };
 
   const handleError = (error) => {
     console.error("Error while scanning:", error);
@@ -129,7 +129,7 @@ export default function UnlockAlloying() {
         <div className="UnlockTopBox1">
           <div
             onClick={toggleImageVisibility}
-            style={{ width: "fit-content", position: "relative",marginLeft:!isImageVisible && "46px" }}
+            style={{ width: "fit-content", position: "relative", marginLeft: !isImageVisible && "46px" }}
           >
             {isImageVisible ? (
               <div>
@@ -141,7 +141,7 @@ export default function UnlockAlloying() {
               </div>
             )}
             {!isImageVisible && (
-              <p style={{ fontWeight: "bold", marginLeft: "-40px",marginTop:'-10px'}}>
+              <p style={{ fontWeight: "bold", marginLeft: "-40px", marginTop: '-10px' }}>
                 {" "}
                 <span style={{ color: "red" }}>Click</span> On The Image For
                 Scan<span style={{ color: "red" }}>*</span>
@@ -165,6 +165,12 @@ export default function UnlockAlloying() {
               onFocus={() => setIsImageVisible(true)}
               autoFocus
             />
+            <button style={{
+              position: "absolute",
+              left: "50px",
+              top: "70px",
+              zIndex: -1,
+            }}>c</button>
           </div>
           <div style={{ display: "flex", marginTop: "5px" }}>
             <input
@@ -210,10 +216,10 @@ export default function UnlockAlloying() {
                 enteredValues.length === 0
                   ? ""
                   : enteredValues.length === 1
-                  ? "AB"
-                  : enteredValues.length === 2
-                  ? "BC"
-                  : "CD"
+                    ? "AB"
+                    : enteredValues.length === 2
+                      ? "BC"
+                      : "CD"
               }
             />
           </div>

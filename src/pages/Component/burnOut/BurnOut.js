@@ -40,12 +40,16 @@ export default function BurnOut() {
     useEffect(() => {
         if (scanInp?.length) {
             setTimeout(() => {
-                if (!openYourBagDrawer && isImageVisible) {
-                    setEnteredValues([...enteredValues, { label: scanInp }]);
+                // if (!openYourBagDrawer && isImageVisible) {
+                if (isImageVisible) {
+                    setEnteredValues([...enteredValues, scanInp ]);
+
+                    setFlashCode(scanInp)
                 }
             }, 500)
         }
     }, [scanInp])
+
     setTimeout(() => {
         if (scanInp?.length > 0) {
             setScanInp('')
@@ -201,13 +205,18 @@ export default function BurnOut() {
                         {isImageVisible ? <div>
                             <img src={scaneCodeImage} className='createImageQrCode' />
                         </div> :
-                            <div style={{display : 'flex' ,justifyContent: 'center'}}>
+                            <div style={{ display: 'flex', justifyContent: 'center' }}>
                                 <img src={idle} />
                             </div>}
                         {!isImageVisible && <p style={{ fontWeight: 'bold', margin: '-5px 5px 15px 10px' }}> <span style={{ color: 'red' }}>Click</span> On The Image For Scan<span style={{ color: 'red' }}>*</span></p>}
 
                         <input style={{ width: '12px', position: 'absolute', left: '80px', top: '75px', zIndex: -1 }} ref={invProRef} onBlur={() => { setIsImageVisible(false) }} onFocus={() => setIsImageVisible(true)} value={scanInp} onChange={(e) => handelScanInp(e.target.value)} autoFocus />
-
+                        <button style={{
+                            position: "absolute",
+                            left: "85px",
+                            top: "70px",
+                            zIndex: -1,
+                        }}>c</button>
                     </div>
                     <div style={{ display: 'flex', marginTop: '5px' }}>
                         <input type='text' onKeyDown={handleKeyDown} style={{ border: inputError && '1px solid red' }} className='enterBrachItemBox' value={inputValue}
@@ -253,7 +262,7 @@ export default function BurnOut() {
                         <tr>
                             <th className='investTableRow'>150 Grams </th>
                         </tr>
-                        
+
                         <tr>
                             <th className='investTableRow'>{greenImg && 'Wax Setting' || blueImg && 'Regular' || orangeImg && 'RPT'}</th>
                         </tr>
