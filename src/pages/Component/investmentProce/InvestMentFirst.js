@@ -331,13 +331,20 @@ export default function InvestMentFirst() {
         </div>
         <div style={{ display: "flex", marginTop: '0px' }}>
           <div className="investTopBox1">
-            <div onClick={toggleImageVisibility} style={{ width: 'fit-content',position:'relative' }}>
+            <div onClick={toggleImageVisibility} style={{ width: 'fit-content', marginLeft: '45px',position:'relative' }}>
               {isImageVisible ? <div>
-                <img src={scaneCodeImage} className='createImageQrCode' />
+                <img src={scaneCodeImage} className='createImageQrCode' style={{marginRight:'25px'}} />
               </div> :
                 <div>
                   <img src={idle} />
                 </div>}
+                {!isImageVisible && (
+              <p style={{ fontWeight: "bold", marginLeft: "-40px" }}>
+                {" "}
+                <span style={{ color: "red" }}>Click</span> On The Image For
+                Scan<span style={{ color: "red" }}>*</span>
+              </p>
+            )}
                 <input style={{width:'12px',position:'absolute',left:'50px',top:'70px',zIndex:-1}} ref={invProRef} onBlur={()=>{setIsImageVisible(false)}} onFocus={()=>setIsImageVisible(true)} value={scanInp} onChange={(e)=>handelScanInp(e.target.value)} autoFocus/>
             </div>
             <div style={{ display: "flex", marginTop: "5px" }}>
