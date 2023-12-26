@@ -27,17 +27,24 @@ export default function UnlockAlloying() {
     }, [])
 
     useEffect(() => {
-        setEnteredValues([...enteredValues, inputValueHidden]);
+        setTimeout(()=>{
+            if(inputValueHidden.length){
+                setEnteredValues([...enteredValues, inputValueHidden]);
+            }
+        },500)
     }, [inputValueHidden])
+
+    setTimeout(()=>{
+        if(inputValueHidden.length){
+            setInputValueHidden('');
+        }
+    },510)
 
     useEffect(() => {
         setEnteredValues([]);
     }, [])
 
-
-    const handleScan = (data) => {
-
-    };
+    const handleScan = (data) => {};
 
     const handleError = (error) => {
         console.error('Error while scanning:', error);
@@ -113,7 +120,7 @@ export default function UnlockAlloying() {
                 <div className='UnlockTopBox1'>
                     <div onClick={toggleImageVisibility} style={{ width: 'fit-content', position: 'relative' }}>
                         <img src={scaneCodeImage} className='createImageQrCode' />
-                        <input type='text' value={inputValueHidden} onChange={handleInputChangeHidden} style={{ width: '20px', position: 'absolute', right: '0px', zIndex: '-1' }} autoFocus />
+                        <input type='text' value={inputValueHidden} onChange={handleInputChangeHidden} style={{ width: '20px', position: 'absolute', right: '0px', zIndex: 1 }} autoFocus />
                     </div>
                     <div style={{ display: 'flex', marginTop: '5px' }}>
                         <input type='text' style={{ border: inputError && '1px solid red' }} className='enterBrachItemBox' value={inputValue} onChange={handleInputChange} onKeyDown={handleKeyDown} />
@@ -127,12 +134,20 @@ export default function UnlockAlloying() {
                 <div style={{ marginTop: '10px' }}>
                     <div style={{ display: 'flex', marginTop: '15px' }}>
                         <p className='investDestilInputTitle'>Flash Code:</p>
-                        <input type='text' className='investDestilInput' value={flashCode} />
+                        <input type='text' className='investDestilInput' value={flashCode}  />
                     </div>
                     <div style={{ display: 'flex', marginTop: '15px' }}>
                         <p className='investDestilInputTitle'>Batch No:</p>
                         <input type='text' className='investDestilInput' value={enteredValues.length === 0 ? '' : enteredValues.length === 1 ? 'AB' : enteredValues.length === 2 ? 'BC' : 'CD'} />
                     </div>
+                    {/* <div style={{ display: 'flex', marginTop: '15px' }}>
+                        <p className='investDestilInputTitle'>Employee:</p>
+                        <input type='text' className='investDestilInput' />
+                    </div>
+                    <div style={{ display: 'flex', marginTop: '15px' }}>
+                        <p className='investDestilInputTitle'>Issue wight:</p>
+                        <input type='text' className='investDestilInput' />
+                    </div> */}
                     <div style={{ display: 'flex', marginTop: '15px' }}>
                         <p className='investDestilInputTitle'>Department:</p>
                         <input type='text' value={enteredValues.length === 0 ? '' : 'ALLOYING'} className='investDestilInput' />

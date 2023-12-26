@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState ,useRef} from 'react'
 import './InvestMentFirst.css'
 import { Button, Dialog, DialogTitle, Drawer } from '@mui/material';
 import greenImges from '../../assets/green.png'
@@ -28,24 +28,29 @@ export default function InvestMentFirst() {
   const [TDS, setTDS] = useState(undefined);
   const [phValue, setPhValue] = useState(undefined);
   const [showTimmerBtn, setShowTimmerBtn] = useState(false);
-  const [selectedLabels, setSelectedLabels] = useState([]);
+  const [scanInp, setScanInp] = useState('');
   const [isImageVisible, setIsImageVisible] = useState(true);
   const [enteredTime, setEnteredTime] = useState('');
+   const[eviIndex,setEviIndex]=useState([]);
+
+  const invProRef = useRef(null)
 
   const handleScan = (data) => {
-    setEnteredValues([...enteredValues, data]);
+    // setEnteredValues([...enteredValues, data]);
   };
 
   const handleError = (error) => {
     console.error('Error while scanning:', error);
   };
 
-  const [eviIndex, setEviIndex] = useState([]);
 
   console.log("eviIndex", eviIndex);
 
   const toggleImageVisibility = () => {
-    setIsImageVisible(!isImageVisible);
+    // setIsImageVisible(!isImageVisible);
+    if (invProRef.current ) {
+      invProRef.current.focus();
+  }
   };
 
   const handleClickOpen = () => {
@@ -192,6 +197,25 @@ export default function InvestMentFirst() {
     setEnteredValues(updatedData);
   }
 
+    const handelScanInp = (target) =>{
+      setScanInp(target)
+    }
+
+    useEffect(()=>{
+      if(scanInp?.length){
+          setTimeout(()=>{
+            if(!openYourBagDrawer && isImageVisible) {
+              setEnteredValues([...enteredValues, {label:scanInp}]);
+            }
+          },500)
+      }
+  },[scanInp])
+
+    setTimeout(() => {
+      if(scanInp?.length>0){
+        setScanInp('')
+      }
+  }, 510);
 
 
   return (
@@ -241,9 +265,9 @@ export default function InvestMentFirst() {
 
       <Drawer
         open={openYourBagDrawer}
-        // onClose={() => {
-        //     setOpenYourBagDrawer(false);
-        // }}
+        onClose={() => {
+            setOpenYourBagDrawer(false);
+        }}
         anchor="right"
         elevation={0}
         className="searchCustomDrawer"
@@ -307,13 +331,14 @@ export default function InvestMentFirst() {
         </div>
         <div style={{ display: "flex", marginTop: '0px' }}>
           <div className="investTopBox1">
-            <div onClick={toggleImageVisibility} style={{ width: 'fit-content'}}>
+            <div onClick={toggleImageVisibility} style={{ width: 'fit-content', marginLeft: '30px',position:'relative' }}>
               {isImageVisible ? <div>
                 <img src={scaneCodeImage} className='createImageQrCode' />
               </div> :
                 <div>
                   <img src={idle} />
                 </div>}
+                <input style={{width:'12px',position:'absolute',left:'50px',top:'70px',zIndex:-1}} ref={invProRef} onBlur={()=>{setIsImageVisible(false)}} onFocus={()=>setIsImageVisible(true)} value={scanInp} onChange={(e)=>handelScanInp(e.target.value)} autoFocus/>
             </div>
             <div style={{ display: "flex", marginTop: "5px" }}>
               <input
