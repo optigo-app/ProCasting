@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import './AddFlask.css'
 import BarcodeScanner from 'react-barcode-reader';
 import scaneCodeImage from '../../assets/scanBarcode.gif'
@@ -10,11 +10,14 @@ export default function AddFlask() {
     const [enteredValues, setEnteredValues] = useState([]);
     const [inputError, setInputError] = useState(false)
     const [inputErrorMax, setInputErrorMax] = useState(false)
+    const [scanInp, setScanInp] = useState('');
 
     const [isImageVisible, setIsImageVisible] = useState(true);
 
+    const invProRef = useRef(null)
+
     const handleScan = (data) => {
-        setEnteredValues([...enteredValues, data]);
+        // setEnteredValues([...enteredValues, data]);
     };
 
     const handleError = (error) => {
@@ -22,8 +25,11 @@ export default function AddFlask() {
     };
 
     const toggleImageVisibility = () => {
-        setIsImageVisible(!isImageVisible);
-    };
+        // setIsImageVisible(!isImageVisible);
+        if (invProRef.current ) {
+          invProRef.current.focus();
+      }
+      };
 
     const handleInputChange = (event) => {
         setInputValue(event.target.value);
@@ -36,7 +42,7 @@ export default function AddFlask() {
             } else {
                 // alert(enteredValues[0])
                 setInputError(false)
-                setEnteredValues([...enteredValues, inputValue]);
+                setEnteredValues([...enteredValues, scanInp]);
                 setInputValue('');
             }
         } else {
@@ -44,6 +50,24 @@ export default function AddFlask() {
         }
 
     };
+
+    useEffect(() => {
+        invProRef.current.focus();
+      }, [invProRef]);
+
+    useEffect(()=>{
+        setTimeout(() => {
+            if(scanInp.length){
+                setEnteredValues([...enteredValues, scanInp]);
+            }
+        }, 500);
+    },[scanInp])
+
+    setTimeout(() => {
+        if(scanInp?.length>0){
+          setScanInp('')
+        }
+    }, 510);
 
     const saveData = () => {
 
@@ -59,26 +83,35 @@ export default function AddFlask() {
         }
     };
 
+    const handelScanInp = (target) =>{
+        setScanInp(target)
+      }
 
-    console.log(enteredValues);
+
+    console.log("enteredValues",enteredValues);
 
     return (
         <div>
             <BarcodeScanner
                 onScan={handleScan}
                 onError={handleError}
-                facingMode="environment"
             />
-            <p className='mainTitle' >PROCASTING-TREE BIND WITH FLASK</p>
+            <p className='mainTitle'>PROCASTING-TREE BIND WITH FLASK</p>
             <div className='addFLaskMain'>
                 <div className='addFlaskQRMAin' >
-                    <div onClick={toggleImageVisibility} style={{ width: 'fit-content', marginLeft: '30px' }}>
+                    <div onClick={toggleImageVisibility} style={{ width: 'fit-content', marginLeft: '30px',position:'relative'}}>
                         {isImageVisible ? <div>
                             <img src={scaneCodeImage} className='createImageQrCode' />
                         </div> :
                             <div>
                                 <img src={idle} />
                             </div>}
+                            <input style={{width:'12px',position:'absolute',left:'50px',top:'70px',zIndex:-1}} ref={invProRef} onBlur={()=>{setIsImageVisible(false)}} 
+                            onFocus={()=>{
+                                setIsImageVisible(true)  
+                                invProRef.current?.focus()
+                            }} 
+                            value={scanInp} onChange={(e)=>handelScanInp(e.target.value)} autoFocus/>
                     </div>
                     <div style={{ display: 'flex', marginTop: '5px' }}>
                         <input type='text' style={{ border: inputError && '1px solid red' }} className='enterBrachItemBox' value={inputValue}

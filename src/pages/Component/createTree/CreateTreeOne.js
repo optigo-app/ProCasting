@@ -65,14 +65,16 @@ export default function CreateTreeOne() {
 
 
     useEffect(() => {
-
         const today = new Date().toISOString().split('T')[0];
         setTodayDate(today)
         setIsImageVisible(true)
     }, [])
+
     useEffect(() => {
         setEditTreeImg(JSON.parse(localStorage.getItem('EditTreePage')))
     }, [])
+
+
     useEffect(() => {
     if(editTreeImg) setInputWeightValue('100')
     }, [editTreeImg])
@@ -80,21 +82,11 @@ export default function CreateTreeOne() {
 
     console.log('editrrr', editTreeImg);
 
-    // alert(location?.state?.editTree)
-    const handleScan = (data) => {
-
-        // if (isImageVisible === true) {
-        //     setEnteredValues([...enteredValues, data]);
-        // }
-        // setEnteredValues([...enteredValues, data]);
-
-    };
+    const handleScan = (data) => {};
 
     const handleError = (error) => {
         console.error('Error while scanning:', error);
     };
-
-
 
     const handleClickOpen = () => {
         setOpen(true);
@@ -110,12 +102,7 @@ export default function CreateTreeOne() {
     };
 
     const handleInputChangeHidden = (event) => {
-
         setInputValueHidden(event.target.value);
-
-        console.log("dattttaaaaaaaaaaaaaaa",event.target.value);
-       
-        
     };
 
     useEffect(()=>{
@@ -168,8 +155,11 @@ export default function CreateTreeOne() {
 
     const handleInputWeightChange = (event) => {
         const { value } = event.target;
+           
         if(value?.length){
             setTreeFlag(true)
+        }else{
+            setTreeFlag(false)
         }
         const newValue = value.replace(/\D/g, '').slice(0, 3);
         setInputWeightValue(newValue);
@@ -179,20 +169,13 @@ export default function CreateTreeOne() {
         window.location.reload();
     }
 
-    // const inputField = document.getElementById("hiddeninp");
-    // useEffect(()=>{
-    //     if (document.activeElement === inputField) {
-    //       console.log("Input field is currently focused.");
-    //     } else {
-    //       console.log("Input field is not focused.");
-      
-    //     }
-    // },[inputField,document.activeElement])
 
     console.log("ScanRef.current",ScanRef.current );
     console.log("treeFlag",treeFlag);
     const toggleImageVisibility = () => {
         // setIsImageVisible(!isImageVisible);
+        let safe=ScanRef.current
+        console.log("valueeeeeee",{safe,treeFlag})
         if (ScanRef.current && treeFlag) {
             ScanRef.current.focus();
         }
@@ -251,7 +234,7 @@ export default function CreateTreeOne() {
                                 </div>
                             </div>
                             <div style={{ display: 'flex', marginTop: '10px' }}>
-                                <input type='text' value={inputValue} style={{ border: inputError && '1px solid red' }} className='enterBrachItemBox' onChange={handleInputChange} onKeyDown={handleKeyDown} />
+                                <input type='text' value={inputValue} style={{ border: inputError && '1px solid red' }} className='enterBrachItemBox' onChange={handleInputChange} onKeyDown={handleKeyDown} autoFocus="false"/>
                                 <button style={{ height: '98%', width: '55px', marginLeft: '5px', fontSize: '20px', fontWeight: 600, cursor: 'pointer' }} onClick={handleGoButtonClick}>
                                     Go
                                 </button>
