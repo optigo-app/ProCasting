@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import './BurnOut.css'
 import { Dialog, DialogTitle, Drawer } from '@mui/material';
 import greenImges from '../../assets/green.png'
@@ -26,6 +26,8 @@ export default function BurnOut() {
     const [flashCode, setFlashCode] = useState('');
     const [open, setOpen] = useState(false);
     const [isImageVisible, setIsImageVisible] = useState(true);
+    const [scanInp, setScanInp] = useState('');
+    const invProRef = useRef(null)
 
     const handleScan = (data) => {
         setEnteredValues([...enteredValues, data]);
@@ -35,8 +37,29 @@ export default function BurnOut() {
         console.error('Error while scanning:', error);
     };
 
+    useEffect(() => {
+        if (scanInp?.length) {
+            setTimeout(() => {
+                if (!openYourBagDrawer && isImageVisible) {
+                    setEnteredValues([...enteredValues, { label: scanInp }]);
+                }
+            }, 500)
+        }
+    }, [scanInp])
+    setTimeout(() => {
+        if (scanInp?.length > 0) {
+            setScanInp('')
+        }
+    }, 510);
+    const handelScanInp = (target) => {
+        setScanInp(target)
+    }
+
     const toggleImageVisibility = () => {
-        setIsImageVisible(!isImageVisible);
+        // setIsImageVisible(!isImageVisible);
+        if (invProRef.current) {
+            invProRef.current.focus();
+        }
     };
 
 
@@ -171,16 +194,20 @@ export default function BurnOut() {
                 {blueImg && <button onClick={() => setOpenYourBagDrawer(true)} style={{ float: 'right', height: '50px', width: '120px' }}>Open Image</button>}
                 {orangeImg && <button onClick={() => setOpenYourBagDrawer(true)} style={{ float: 'right', height: '50px', width: '120px' }}>Open Image</button>}
             </div>
-            <div style={{ display: 'flex' , marginTop: '-10px'}}>
+            <div style={{ display: 'flex', marginTop: '-10px' }}>
                 <div className='BurnTopBox1'>
 
-                    <div onClick={toggleImageVisibility} style={{ width: 'fit-content' }}>
+                    <div onClick={toggleImageVisibility} style={{ width: 'fit-content', position: 'relative' }}>
                         {isImageVisible ? <div>
                             <img src={scaneCodeImage} className='createImageQrCode' />
                         </div> :
-                            <div>
+                            <div style={{display : 'flex' ,justifyContent: 'center'}}>
                                 <img src={idle} />
                             </div>}
+                        {!isImageVisible && <p style={{ fontWeight: 'bold', margin: '-5px 5px 15px 10px' }}> <span style={{ color: 'red' }}>Click</span> On The Image For Scan<span style={{ color: 'red' }}>*</span></p>}
+
+                        <input style={{ width: '12px', position: 'absolute', left: '80px', top: '75px', zIndex: -1 }} ref={invProRef} onBlur={() => { setIsImageVisible(false) }} onFocus={() => setIsImageVisible(true)} value={scanInp} onChange={(e) => handelScanInp(e.target.value)} autoFocus />
+
                     </div>
                     <div style={{ display: 'flex', marginTop: '5px' }}>
                         <input type='text' onKeyDown={handleKeyDown} style={{ border: inputError && '1px solid red' }} className='enterBrachItemBox' value={inputValue}
@@ -214,7 +241,7 @@ export default function BurnOut() {
                 <h2 className='brunFurnaceId'>furnace ID : F123</h2>
             </div>
 
-            <div style={{ display: 'flex',marginTop:'-15px', flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', marginTop: '-15px', flexWrap: 'wrap' }}>
                 {enteredValues.map((value, index) => (
                     <table key={index} style={{ backgroundColor: greenImg && '#b1d8b7' || blueImg && '#a396c8' || orangeImg && 'orange' || defaultImg && '#add8e6', margin: '20px' }}>
                         <tr>

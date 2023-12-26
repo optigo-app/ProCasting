@@ -331,7 +331,7 @@ export default function InvestMentFirst() {
         </div>
         <div style={{ display: "flex", marginTop: '0px' }}>
           <div className="investTopBox1">
-            <div onClick={toggleImageVisibility} style={{ width: 'fit-content', marginLeft: '30px',position:'relative' }}>
+            <div onClick={toggleImageVisibility} style={{ width: 'fit-content',position:'relative' }}>
               {isImageVisible ? <div>
                 <img src={scaneCodeImage} className='createImageQrCode' />
               </div> :
