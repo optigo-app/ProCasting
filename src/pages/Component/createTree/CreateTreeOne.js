@@ -124,12 +124,12 @@ export default function CreateTreeOne() {
             setInputError(true)
         } else {
             setInputError(false)
-            if(isImageVisible)setEnteredValues([...enteredValues, inputValue]);
+            if (isImageVisible) setEnteredValues([...enteredValues, inputValue]);
             setInputValue('');
         }
     };
 
-   
+
 
     const totalValues = enteredValues.length;
     const handleRemoveItem = (indexToRemove) => {
@@ -165,13 +165,13 @@ export default function CreateTreeOne() {
         setInputWeightValue(newValue);
     };
 
-    useEffect(()=>{
-        if(inputWightValue?.length){
+    useEffect(() => {
+        if (inputWightValue?.length) {
             setTreeFlag(false)
-        }else{
+        } else {
             setTreeFlag(true)
         }
-    },[])
+    }, [])
 
     const handleSaveNew = () => {
         window.location.reload();
@@ -187,8 +187,8 @@ export default function CreateTreeOne() {
     //     }
     // },[inputField,document.activeElement])
 
-    console.log("ScanRef.current",ScanRef.current );
-    console.log("inputWightValue",inputWightValue);
+    console.log("ScanRef.current", ScanRef.current);
+    console.log("inputWightValue", inputWightValue);
     const toggleImageVisibility = () => {
         // setIsImageVisible(!isImageVisible);
         let safe = ScanRef.current
@@ -247,6 +247,12 @@ export default function CreateTreeOne() {
                                 <div>
                                     {isImageVisible && <p style={{ fontWeight: 'bold', marginLeft: '-40px' }}> <span style={{ color: 'red' }}>Click</span> On The Image For Scan<span style={{ color: 'red' }}>*</span></p>}
                                     <input type='text' id="hiddeninp" ref={ScanRef} onBlur={() => { setIsImageVisible(true) }} onFocus={() => setIsImageVisible(false)} value={inputValueHidden} onChange={handleInputChangeHidden} style={{ width: '20px', position: 'absolute', top: '80px', left: '50px', zIndex: -1 }} />
+                                    <button style={{
+                                        position: "absolute",
+                                        left: "50px",
+                                        top: "70px",
+                                        zIndex: -1,
+                                    }}>c</button>
                                 </div>
                             </div>
                             <div style={{ display: 'flex', marginTop: '10px' }}>
