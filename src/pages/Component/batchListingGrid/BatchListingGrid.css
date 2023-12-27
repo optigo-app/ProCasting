@@ -53,7 +53,7 @@
     align-items: center;
 }
 
-@media screen and (max-width:1327px) {
+@media screen and (max-width:1624px) {
     .date{
         display: none;
     }
