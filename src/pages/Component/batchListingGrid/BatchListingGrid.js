@@ -304,7 +304,9 @@ const BatchListingGrid = () => {
                 border: "1px solid #e2e2e2",
                 borderRadius: "24px",
                 display: "flex",
+                // boxShadow: '2px 4px 3px #dbdbdb',
               }}
+              className="grid_search"
             >
               <div style={{ marginTop: "4px", marginLeft: "8px" }}>
                 <SearchIcon />

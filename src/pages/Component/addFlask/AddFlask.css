@@ -50,3 +50,18 @@
     /* color: white; */
     cursor: pointer;
 }
+
+.div-small{
+    position:relative;
+    display:flex;
+    flex-direction:column;
+}
+
+.div-small-text{
+    position:absolute;
+    bottom:0;
+    right:0;
+    color:#757585;
+    padding-right:4px;
+    padding-bottom:1.5px
+}

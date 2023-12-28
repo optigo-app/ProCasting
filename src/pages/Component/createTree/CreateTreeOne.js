@@ -131,13 +131,13 @@ export default function CreateTreeOne() {
         setInputWeightValue(newValue);
     };
 
-    useEffect(() => {
-        if (!inputWightValue) {
-            setTreeFlag(false)
-        } else {
-            setTreeFlag(true)
-        }
-    }, [inputWightValue])
+    // useEffect(() => {
+    //     if (!inputWightValue) {
+    //         setTreeFlag(false)
+    //     } else {
+    //         setTreeFlag(true)
+    //     }
+    // }, [inputWightValue])
 
     const handleSaveNew = () => {
         window.location.reload();
@@ -145,9 +145,18 @@ export default function CreateTreeOne() {
     
     const toggleImageVisibility = () => {
         let safe = ScanRef.current
-        if (ScanRef.current && treeFlag) {
+        if (!inputWightValue) {
+            setTreeFlag(true)
+            return
+        } else {
+            setTreeFlag(false)
+            return 
+        }
+        
+        if (ScanRef.current && !treeFlag) {
             ScanRef.current.focus();
         }
+
     };
 
     return (
@@ -230,8 +239,8 @@ export default function CreateTreeOne() {
                             />
                             <input type='text' placeholder='Batch' value={'AB'} style={{ marginTop: '15px' }} className='infoTextInputBatch' />
                             <span style={{ display: 'flex', flexDirection: 'column' }}>
-                                <input type='number' value={inputWightValue} style={{ marginTop: '15px', border: !treeFlag && '1px solid red' }} onChange={handleInputWeightChange} placeholder='Tree Weight' className='infoTextInputWight' />
-                                {!treeFlag && <small style={{ color: 'red', marginLeft: '6px' }}>enter tree weight*</small>}
+                                <input type='number' value={inputWightValue} style={{ marginTop: '15px', border: treeFlag && '1px solid red' }} onChange={handleInputWeightChange} placeholder='Tree Weight' className='infoTextInputWight' />
+                                {treeFlag && <small style={{ color: 'red', marginLeft: '6px' }}>enter tree weight*</small>}
                             </span>
 
                         </div>

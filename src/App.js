@@ -12,9 +12,12 @@ import BatchListingGrid from './pages/Component/batchListingGrid/BatchListingGri
 import ImageWebCam from './pages/Component/imageTag/ImageWebCam';
 import PrintQr from './pages/Component/printQr/PrintQr';
 import CreateTreeOne from './pages/Component/createTree/CreateTreeOne';
+import { ToastContainer } from 'react-toastify';
 
 function App() {
   return (
+    <>
+    <ToastContainer />
     <BrowserRouter>
       <Routes>
         <Route path='/' element={<Home />} />
@@ -30,8 +33,7 @@ function App() {
         <Route path='/printQr' element={<PrintQr />} />
       </Routes>
     </BrowserRouter>
-
-  
+    </>
   );
 }
 
