@@ -17,6 +17,7 @@ export default function Home() {
     const [open, setOpen] = useState(false);
     const [scannedValue, setScannedValue] = useState();
     const [scannedValueError, setScannedValueError] = useState(false);
+    const [editLocalVal, setEditLocalVal] = useState(false)
     const scanRef = useRef(null);
     const navigation = useNavigate();
 
@@ -31,6 +32,7 @@ export default function Home() {
         return () => {
             document.body.style.backgroundColor = '';
         };
+
     }, []);
 
     const handleScan = (data) => {
@@ -43,14 +45,16 @@ export default function Home() {
     };
 
     const handleClickOpen = () => {
+        setEditLocalVal(false)
         setOpen(true);
         localStorage.setItem('EditTreePage', false)
 
+
     };
     const handleClickOpenEdit = () => {
+        setEditLocalVal(true)
         setOpen(true);
         localStorage.setItem('EditTreePage', true)
-
     };
     const handleClose = () => {
         setOpen(false);
@@ -68,8 +72,12 @@ export default function Home() {
         }
     }
 
+    const printQR = (url) => {
+        window.open(url)
+    }
+
     return (
-        <div >
+        <div>
             <BarcodeScanner
                 onScan={handleScan}
                 onError={handleError}
@@ -80,14 +88,13 @@ export default function Home() {
                 aria-labelledby="alert-dialog-title"
                 aria-describedby="alert-dialog-description"
             >
-                <DialogTitle id="alert-dialog-title">
-                    {"SCAN TREE"}
+                <DialogTitle id="alert-dialog-title" style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    {"SCAN TREE"} {editLocalVal === false && <button onClick={() => printQR('/printQr')}>PRINT QR</button>}
                 </DialogTitle>
                 <DialogContent>
                     <DialogContentText id="alert-dialog-description" style={{ width: '300px' }}>
                         <img src={scaneCodeImage} className='createImageQrCode' />
                         <input type='text' autoFocus value={scannedValue} ref={scanRef} onChange={(text) => setScannedValue(text.target.value)} style={{ width: '2px', position: 'absolute', zIndex: '-1' }} />
-
                     </DialogContentText>
                     <div style={{ display: 'flex' }}>
                         <input type='text' disabled value={scannedValue} onChange={(text) => setScannedValue(text)} className='scaneTreeInputBox' />
@@ -98,6 +105,7 @@ export default function Home() {
                     <Button onClick={handleCloseContiue}>CONTINUE</Button>
                 </DialogActions>
             </Dialog>
+
             <p className='mainTitle'>PROCASTING</p>
             <div>
                 <div style={{ display: 'flex', justifyContent: 'center', marginTop: '50px' }}>

@@ -10,6 +10,10 @@ import BarcodeScanner from 'react-barcode-reader';
 import scaneCodeImage from '../../assets/scanBarcode.gif'
 import idle from '../../assets/idle.gif'
 
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
+
 export default function BurnOut() {
     const [inputValue, setInputValue] = useState('');
     const [enteredValues, setEnteredValues] = useState([]);
@@ -127,11 +131,14 @@ export default function BurnOut() {
             handleGoButtonClick();
         }
     };
+    const notify = () => toast.success("SAVED SUCCESSFULLY");
 
     const handleIssueJob = () => {
         if (enteredValues.length === 0) {
             alert('Enetr job first')
         } else {
+            // notify();
+
             setOpen(true);
         }
     }
@@ -228,9 +235,8 @@ export default function BurnOut() {
                         <p className='investDestilInputTitle'>Batch No:</p>
                         <input type='text' className='investDestilInput' value={enteredValues.length === 0 ? '' : enteredValues.length === 1 ? 'AB' : enteredValues.length === 2 ? 'BC' : 'CD'} />
                     </div>
-                    <button className='burnOutIssueBtn' onClick={handleIssueJob}>Issue Job</button>
+                    <button className='burnOutIssueBtn' onClick={handleIssueJob}>BurnOut Issue</button>
                 </div>
-
             </div>
             <div style={{ display: 'flex', justifyContent: 'center' }}>
                 <h2 className='brunFurnaceId'>furnace ID : F123</h2>
@@ -258,6 +264,7 @@ export default function BurnOut() {
                     </table>
                 ))}
             </div>
+            <p style={{position: 'absolute' , bottom :'10px' ,textAlign : 'center' ,width: '100%',color: '#a396c8' ,fontSize: '18px' ,fontWeight: 500}}>furnace Program number > #D (Diamond)  |   #W (WAX) |   #R1 Resin1    |    #R2 Resin2</p>
         </div>
     )
 }
