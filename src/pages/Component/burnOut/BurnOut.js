@@ -137,9 +137,9 @@ export default function BurnOut() {
         if (enteredValues.length === 0) {
             alert('Enetr job first')
         } else {
-            // notify();
-
-            setOpen(true);
+            notify();
+            window.location.reload();
+            // setOpen(true);
         }
     }
 
