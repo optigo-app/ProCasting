@@ -138,7 +138,9 @@ export default function BurnOut() {
             alert('Enetr job first')
         } else {
             notify();
-            window.location.reload();
+            setFlashCode('');
+            setEnteredValues([]);
+            // window.location.reload();
             // setOpen(true);
         }
     }
