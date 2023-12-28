@@ -127,36 +127,30 @@ export default function CreateTreeOne() {
         } else {
             setTreeFlag(false)
         }
-        const newValue = value.replace(/\D/g, '').slice(0, 3);
+        const newValue = value.replace(/\D/g, '').slice(0, 5);
         setInputWeightValue(newValue);
     };
 
-    // useEffect(() => {
-    //     if (!inputWightValue) {
-    //         setTreeFlag(false)
-    //     } else {
-    //         setTreeFlag(true)
-    //     }
-    // }, [inputWightValue])
+    useEffect(() => {
+        if (!inputWightValue) {
+            setTreeFlag(true)
+        } else {
+            setTreeFlag(false)
+        }
+    }, [inputWightValue])
 
     const handleSaveNew = () => {
         window.location.reload();
     }
     
     const toggleImageVisibility = () => {
-        let safe = ScanRef.current
-        if (!inputWightValue) {
-            setTreeFlag(true)
-            return
-        } else {
-            setTreeFlag(false)
-            return 
-        }
-        
+        // let safe = ScanRef.current
+       
+
         if (ScanRef.current && !treeFlag) {
             ScanRef.current.focus();
         }
-
+       
     };
 
     return (
