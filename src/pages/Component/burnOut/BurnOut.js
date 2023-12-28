@@ -140,6 +140,9 @@ export default function BurnOut() {
             notify();
             setFlashCode('');
             setEnteredValues([]);
+            setGreeImg(false);
+            setBlueImg(false);
+            setOrangImg(false);
             // window.location.reload();
             // setOpen(true);
         }
