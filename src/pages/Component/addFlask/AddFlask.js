@@ -163,46 +163,77 @@ export default function AddFlask() {
         </div>
         <div className="addFlaskDeatilMain">
           <div className="addDeatilMain">
-            {/* <p className='addFlaskTitle'>Flask ID</p> */}
-            <input
-              type="text"
-              placeholder="Flask ID"
-              value={enteredValues[0]?.length ? enteredValues[0] : ""}
-              className="addflaskInputID"
-            />
-            <input
-              type="text"
-              placeholder="Tree ID"
-              value={enteredValues[1]?.length ? enteredValues[1] : ""}
-              className="addflaskInputID"
-              style={{ marginLeft: "20px" }}
-            />
+            <div className="div-small">
+              <input
+                type="text"
+                placeholder="Flask ID"
+                value={enteredValues[0]?.length ? enteredValues[0] : ""}
+                className="addflaskInputID"
+              />
+              {enteredValues[0]?.length && (
+                <small className="div-small-text">Flask ID</small>
+              )}
+            </div>
+
+            <div className="div-small">
+              <input
+                type="text"
+                placeholder="Tree ID"
+                value={enteredValues[1]?.length ? enteredValues[1] : ""}
+                className="addflaskInputID"
+                style={{ marginLeft: "20px" }}
+              />
+              {enteredValues[1]?.length && (
+                <small className="div-small-text">Tree ID</small>
+              )}
+            </div>
+          </div>
+
+          <div className="addDeatilMain">
+            <div className="div-small">
+              <input
+                type="text"
+                className="addflaskInput"
+                value={enteredValues[0]?.length ? "2.8" : ""}
+              />
+              {enteredValues[0]?.length && (
+                <small className="div-small-text">diam.</small>
+              )}
+            </div>
+            <div className="div-small">
+              <input
+                type="text"
+                className="addflaskInput"
+                value={enteredValues[1]?.length ? "16" : ""}
+                style={{ marginLeft: "20px" }}
+              />
+              {enteredValues[1]?.length && (
+                <small className="div-small-text">diam.</small>
+              )}
+            </div>
           </div>
           <div className="addDeatilMain">
-            <input
-              type="text"
-              className="addflaskInput"
-              value={enteredValues[0]?.length ? "2.8" : ""}
-            />
-            <input
-              type="text"
-              className="addflaskInput"
-              value={enteredValues[1]?.length ? "16" : ""}
-              style={{ marginLeft: "20px" }}
-            />
-          </div>
-          <div className="addDeatilMain">
+          <div className="div-small">
             <input
               type="text"
               className="addflaskInput"
               value={enteredValues[0]?.length ? "1000" : ""}
             />
+            {enteredValues[0]?.length && (
+                <small className="div-small-text">cap.</small>
+              )}
+          </div>
+          <div className="div-small">
             <input
               type="text"
               className="addflaskInput"
-              value={enteredValues[1]?.length ? "100 Gram" : ""}
+              value={enteredValues[1]?.length ? "100 g" : ""}
               style={{ marginLeft: "20px" }}
             />
+            {enteredValues[1]?.length && (
+                <small className="div-small-text">cap.</small>
+              )}
+          </div>
           </div>
 
           <div

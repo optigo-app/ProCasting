@@ -9,6 +9,8 @@ import Countdown from "react-countdown";
 import BarcodeScanner from 'react-barcode-reader';
 import scaneCodeImage from '../../assets/scanBarcode.gif'
 import idle from '../../assets/idle.gif'
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function InvestMentFirst() {
 
@@ -31,6 +33,7 @@ export default function InvestMentFirst() {
   const [enteredTime, setEnteredTime] = useState('');
   const [eviIndex, setEviIndex] = useState([]);
   const [weightInp, setWeightInp] = useState('')
+  const [goBtnFlag, setGoBtnFlag] = useState(false)
   const invProRef = useRef(null)
 
   useEffect(() => {
@@ -75,10 +78,10 @@ export default function InvestMentFirst() {
   }, [enteredValues])
 
   useEffect(() => {
-    if (enteredValues?.length === 1) {
+    if (enteredValues?.length === 1 && goBtnFlag) {
       setOpenYourBagDrawer(true)
     }
-  }, [enteredValues])
+  }, [enteredValues,goBtnFlag])
 
   useEffect(() => {
     if (scanInp?.length) {
@@ -128,6 +131,7 @@ export default function InvestMentFirst() {
       setEnteredValues([...enteredValues, { label: inputValue }]);
       setInputValue('');
     }
+    setGoBtnFlag(true)
   };
 
   const handleInputChangen = (e) => {
@@ -156,6 +160,7 @@ export default function InvestMentFirst() {
   };
 
   const saveDataHandle = () => {
+    setGoBtnFlag(false)
     if (TDS === undefined || TDS === '') {
       alert('Enetr TDS')
     } else if (phValue === undefined || phValue === '') {
@@ -164,7 +169,7 @@ export default function InvestMentFirst() {
       const updateData = enteredValues?.map((ev, i) => {
         if (!ev["btncom"]) {
           ev["btncom"] = (
-            <button onClick={() => handleStartTime(i)} >Start Time</button>
+            <button onClick={() => handleStartTime(i,ev)} >Start Time</button>
           );
         }
         return ev
@@ -174,22 +179,29 @@ export default function InvestMentFirst() {
       setTDS('')
       setPhValue('')
     }
+
   }
 
-  const Completionist = () => {
+  const Completionist = ({ev}) => {
+
+    console.log("data++++++++",ev);
+
+    toast.error(`Time Over For [${ev.label}]`,{theme: "colored"})
+
     const d = new Date();
     let hour = d.getHours().toString().length === 1 ? `0${d.getHours()}` : d.getHours();
     let min = d.getMinutes().toString().length === 1 ? `0${d.getMinutes()}` : d.getMinutes();
     let sec = d.getSeconds().toString().length === 1 ? `0${d.getSeconds()}` : d.getSeconds()
     return `${hour}:${min}:${sec}`;
+    
   }
 
-  const handleStartTime = (evi) => {
+  const handleStartTime = (evi,ev) => {
     setEviIndex((pre) => [...pre, evi])
 
     const renderer = ({ hours, minutes, seconds, completed }) => {
       if (completed) {
-        return <Completionist />;
+        return <Completionist ev={ev} />;
       } else {
         return (
           <span>
@@ -200,7 +212,7 @@ export default function InvestMentFirst() {
     };
     const updatedData = enteredValues.map((d, index) => {
       if (!d.timer && evi === index) {
-        d.timer = <Countdown date={Date.now() + 30000} renderer={renderer} />;
+        d.timer = <Countdown date={Date.now() + 30000} renderer={renderer}  />;
       }
       return d;
     });
