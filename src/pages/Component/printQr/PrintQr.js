@@ -1,17 +1,15 @@
 import React from 'react'
 import QRCode from 'qrcode.react';
+import { useNavigate } from 'react-router-dom';
 
 export default function PrintQr() {
 
-    const containerStyle = {
-        width: '170px',
-        display: 'inline-block',
-        overflow: 'hidden',
-        alignItems: 'center'
-    };
+    const navigation = useNavigate();
 
-    const barcodeValue = '123456789012345678901234';
-
+    const handlePrint = () => {
+        window.print();
+        navigation('/')
+    }
     return (
         <div>
             <div style={{ display: 'flex', justifyContent: 'center' }}>
@@ -97,9 +95,14 @@ export default function PrintQr() {
                 </tbody>
 
                 <div style={{ width: '10%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <QRCode value="AB"  />
+                    <QRCode value="100" />
                 </div>
             </div>
+            <div style={{ display: 'flex', justifyContent: 'center' }}>
+                <button style={{ height: '40px', width: '100px' }} onClick={handlePrint}>PRINT QR</button>
+                {/* onClick={() => navigation('/createTree')} */}
+            </div>
+
         </div>
     )
 }

@@ -9,7 +9,8 @@ import Countdown from "react-countdown";
 import BarcodeScanner from 'react-barcode-reader';
 import scaneCodeImage from '../../assets/scanBarcode.gif'
 import idle from '../../assets/idle.gif'
-import { toast } from 'react-toastify';
+import RemoveCircleRoundedIcon from '@mui/icons-material/RemoveCircleRounded';
+import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 export default function InvestMentFirst() {
@@ -33,6 +34,7 @@ export default function InvestMentFirst() {
   const [enteredTime, setEnteredTime] = useState('');
   const [eviIndex, setEviIndex] = useState([]);
   const [weightInp, setWeightInp] = useState('')
+  const [saveData , setSaveData] = useState(false);
   const [goBtnFlag, setGoBtnFlag] = useState(false)
   const invProRef = useRef(null)
 
@@ -158,6 +160,7 @@ export default function InvestMentFirst() {
       handleGoButtonClick();
     }
   };
+  const notify = () => toast.success("SAVED SUCCESSFULLY");
 
   const saveDataHandle = () => {
     setGoBtnFlag(false)
@@ -166,6 +169,8 @@ export default function InvestMentFirst() {
     } else if (phValue === undefined || phValue === '') {
       alert('Enetr phValue')
     } else {
+      setSaveData(true);
+      notify();
       const updateData = enteredValues?.map((ev, i) => {
         if (!ev["btncom"]) {
           ev["btncom"] = (
@@ -219,9 +224,14 @@ export default function InvestMentFirst() {
     setEnteredValues(updatedData);
   }
 
+  const handleRemoveItem = (indexToRemove) => {
+    setEnteredValues(enteredValues.filter((_, index) => index !== indexToRemove));
+};
+
   const handelScanInp = (target) => {
     setScanInp(target)
   }
+
 
   return (
     <div>
@@ -230,6 +240,7 @@ export default function InvestMentFirst() {
         onError={handleError}
         facingMode="environment"
       />
+       <ToastContainer />
       <Dialog
         open={open}
         onClose={handleClose}
@@ -396,6 +407,11 @@ export default function InvestMentFirst() {
           <div
             style={{
               width: "30%",
+            }}
+          >
+          <div
+            style={{
+              width: "40%",
               overflow: "auto",
               height: "250px",
               display: "flex",
@@ -408,8 +424,10 @@ export default function InvestMentFirst() {
                 <p className="allInvestScanData" key={index}>
                   {value?.label}
                 </p>
+             {!saveData && <RemoveCircleRoundedIcon style={{ color: '#FF0000', cursor: 'pointer', fontSize: '30px' }} onClick={() => handleRemoveItem(index)} />}
               </div>
             ))}
+          </div>
           </div>
           <div>
             <div style={{ display: "flex", marginTop: "15px", alignItems: 'center', justifyContent: 'center' }}>
