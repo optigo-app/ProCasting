@@ -60,7 +60,7 @@ export default function UnlockAlloying() {
 
   const handleClose = () => {
     setOpen(false);
-    window.location.reload();
+    // window.location.reload();
   };
 
   const handleInputChange = (event) => {
@@ -125,7 +125,7 @@ export default function UnlockAlloying() {
           ALLOYING UNLOCK PROCESS
         </p>
       </div>
-      <div style={{ display: "flex" }}>
+      <div className="UnlockContainer">
         <div className="UnlockTopBox1">
           <div
             onClick={toggleImageVisibility}
@@ -198,7 +198,7 @@ export default function UnlockAlloying() {
           </div>
         </div>
 
-        <div style={{ marginTop: "10px" }}>
+        <div className="UnlockTopBox2">
           <div className="investDestilInputDiv">
             <p className="investDestilInputTitle">FLASH CODE:</p>
             <input
