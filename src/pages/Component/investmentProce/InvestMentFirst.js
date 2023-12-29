@@ -34,7 +34,7 @@ export default function InvestMentFirst() {
   const [enteredTime, setEnteredTime] = useState('');
   const [eviIndex, setEviIndex] = useState([]);
   const [weightInp, setWeightInp] = useState('')
-  const [saveData , setSaveData] = useState(false);
+  const [saveData, setSaveData] = useState(false);
   const [goBtnFlag, setGoBtnFlag] = useState(false)
   const invProRef = useRef(null)
 
@@ -83,7 +83,7 @@ export default function InvestMentFirst() {
     if (enteredValues?.length === 1 && goBtnFlag) {
       setOpenYourBagDrawer(true)
     }
-  }, [enteredValues,goBtnFlag])
+  }, [enteredValues, goBtnFlag])
 
   useEffect(() => {
     if (scanInp?.length) {
@@ -174,7 +174,7 @@ export default function InvestMentFirst() {
       const updateData = enteredValues?.map((ev, i) => {
         if (!ev["btncom"]) {
           ev["btncom"] = (
-            <button onClick={() => handleStartTime(i,ev)} >Start Time</button>
+            <button onClick={() => handleStartTime(i, ev)} >Start Time</button>
           );
         }
         return ev
@@ -187,21 +187,20 @@ export default function InvestMentFirst() {
 
   }
 
-  const Completionist = ({ev}) => {
+  const Completionist = ({ ev }) => {
 
-    console.log("data++++++++",ev);
+    console.log("data++++++++", ev);
 
-    toast.error(`Time Over For [${ev.label}]`,{theme: "colored"})
+    toast.error(`Time Over For [${ev.label}]`, { theme: "colored" })
 
     const d = new Date();
     let hour = d.getHours().toString().length === 1 ? `0${d.getHours()}` : d.getHours();
     let min = d.getMinutes().toString().length === 1 ? `0${d.getMinutes()}` : d.getMinutes();
     let sec = d.getSeconds().toString().length === 1 ? `0${d.getSeconds()}` : d.getSeconds()
     return `${hour}:${min}:${sec}`;
-    
   }
 
-  const handleStartTime = (evi,ev) => {
+  const handleStartTime = (evi, ev) => {
     setEviIndex((pre) => [...pre, evi])
 
     const renderer = ({ hours, minutes, seconds, completed }) => {
@@ -217,7 +216,7 @@ export default function InvestMentFirst() {
     };
     const updatedData = enteredValues.map((d, index) => {
       if (!d.timer && evi === index) {
-        d.timer = <Countdown date={Date.now() + 30000} renderer={renderer}  />;
+        d.timer = <Countdown date={Date.now() + 30000} renderer={renderer} />;
       }
       return d;
     });
@@ -226,7 +225,7 @@ export default function InvestMentFirst() {
 
   const handleRemoveItem = (indexToRemove) => {
     setEnteredValues(enteredValues.filter((_, index) => index !== indexToRemove));
-};
+  };
 
   const handelScanInp = (target) => {
     setScanInp(target)
@@ -240,7 +239,7 @@ export default function InvestMentFirst() {
         onError={handleError}
         facingMode="environment"
       />
-       <ToastContainer />
+      <ToastContainer />
       <Dialog
         open={open}
         onClose={handleClose}
@@ -278,72 +277,9 @@ export default function InvestMentFirst() {
           </div>
         </div>
       </Dialog>
-
-      <Drawer
-        open={openYourBagDrawer}
-        onClose={() => {
-          setOpenYourBagDrawer(false);
-        }}
-        anchor="right"
-        elevation={0}
-        className="searchCustomDrawer"
-        sx={{
-          "& .MuiBackdrop-root": { backgroundColor: "transparent" },
-          zIndex: 111,
-        }}
-      >
-        <div>
-          <div>
-            <IoMdClose
-              style={{
-                height: "40px",
-                color: "red",
-                width: "40px",
-                cursor: "pointer",
-              }}
-              onClick={() => setOpenYourBagDrawer(false)}
-            />
-          </div>
-          <img
-            src={
-              (greenImg && greenImges) ||
-              (blueImg && blueImges) ||
-              (orangeImg && orangeImges)
-            }
-            className="DrawerImg"
-          />
-        </div>
-      </Drawer>
       <div>
         <div className="TopBtnDivMainOne">
           <p style={{ margin: '0px', marginLeft: '10px', fontSize: '20px', fontWeight: 500 }}>INVESTMENT PROCESS</p>
-        </div>
-
-        <div style={{ height: "50px", position: 'absolute', right: '0px' }}>
-          {greenImg && (
-            <button
-              onClick={() => setOpenYourBagDrawer(true)}
-              style={{ float: "right", height: "50px", width: "120px" }}
-            >
-              Open Image
-            </button>
-          )}
-          {blueImg && (
-            <button
-              onClick={() => setOpenYourBagDrawer(true)}
-              style={{ float: "right", height: "50px", width: "120px" }}
-            >
-              Open Image
-            </button>
-          )}
-          {orangeImg && (
-            <button
-              onClick={() => setOpenYourBagDrawer(true)}
-              style={{ float: "right", height: "50px", width: "120px" }}
-            >
-              Open Image
-            </button>
-          )}
         </div>
         <div style={{ display: "flex", marginTop: '0px' }}>
           <div className="investTopBox1">
@@ -406,28 +342,29 @@ export default function InvestMentFirst() {
           </div>
           <div
             style={{
-              width: "30%",
+              width: "20%",
             }}
           >
-          <div
-            style={{
-              width: "40%",
-              overflow: "auto",
-              height: "250px",
-              display: "flex",
-              alignItems: "center",
-              flexDirection: "column",
-            }}
-          >
-            {enteredValues?.map((value, index) => (
-              <div className="allScanInvestdataMain">
-                <p className="allInvestScanData" key={index}>
-                  {value?.label}
-                </p>
-             {!saveData && <RemoveCircleRoundedIcon style={{ color: '#FF0000', cursor: 'pointer', fontSize: '30px' }} onClick={() => handleRemoveItem(index)} />}
-              </div>
-            ))}
-          </div>
+            <div
+              style={{
+                width: "70%",
+                overflow: "auto",
+                height: "250px",
+                display: "flex",
+                alignItems: "center",
+                flexDirection: "column",
+                marginTop: '20px'
+              }}
+            >
+              {enteredValues?.map((value, index) => (
+                <div className="allScanInvestdataMain">
+                  <p className="allInvestScanData" key={index}>
+                    {value?.label}
+                  </p>
+                  {!saveData && <RemoveCircleRoundedIcon style={{ color: '#FF0000', cursor: 'pointer', fontSize: '30px' }} onClick={() => handleRemoveItem(index)} />}
+                </div>
+              ))}
+            </div>
           </div>
           <div>
             <div style={{ display: "flex", marginTop: "15px", alignItems: 'center', justifyContent: 'center' }}>
@@ -477,9 +414,19 @@ export default function InvestMentFirst() {
               </button>
             </div>
           </div>
+          <div className='investSideFixedImg'>
+            <img
+              src={
+                (greenImg && greenImges) ||
+                (blueImg && blueImges) ||
+                (orangeImg && orangeImges)
+              }
+              className="DrawerImg"
+            />
+          </div>
         </div>
 
-        <div style={{ display: "flex", marginTop: '0px', flexWrap: "wrap" }}>
+        <div style={{ display: "flex", marginTop: '15px', flexWrap: "wrap" }}>
           {enteredValues?.map((value, index) => (
             <table
               key={index}
@@ -489,7 +436,7 @@ export default function InvestMentFirst() {
                   (blueImg && "#a396c8") ||
                   (orangeImg && "orange") ||
                   (defaultImg && "#add8e6"),
-                margin: "20px",
+                margin: "5px",
               }}
             >
               <tr>

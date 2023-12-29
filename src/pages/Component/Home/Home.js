@@ -15,6 +15,7 @@ import BarcodeScanner from 'react-barcode-reader';
 export default function Home() {
 
     const [open, setOpen] = useState(false);
+    const [openTree, setOpenTree] = useState(false);
     const [scannedValue, setScannedValue] = useState();
     const [scannedValueError, setScannedValueError] = useState(false);
     const [editLocalVal, setEditLocalVal] = useState(false)
@@ -76,6 +77,12 @@ export default function Home() {
         window.open(url)
     }
 
+    const handleClickOpenTree = () => {
+        setOpenTree(true);
+    };
+    const handleCloseTree = () => {
+        setOpenTree(false);
+    };
     return (
         <div>
             <BarcodeScanner
@@ -106,6 +113,32 @@ export default function Home() {
                 </DialogActions>
             </Dialog>
 
+
+            <Dialog
+                open={openTree}
+                onClose={handleCloseTree}
+                aria-labelledby="alert-dialog-title"
+                aria-describedby="alert-dialog-description"
+            >
+                <DialogTitle id="alert-dialog-title" style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    {"SELECT TREE"}
+                </DialogTitle>
+                <DialogContent style={{display: 'flex' }}>
+                    <div className='NoteMain'>
+                        <img src={Note} className='Noteimg' onClick={() => printQR('/printQr')} />
+                        <p className='NoteImgTitle'>NEW TREE</p>
+                    </div>
+                    <div className='NoteMain'>
+                        <img src={Note} className='Noteimg' onClick={handleClickOpen} />
+                        <p className='NoteImgTitle'>ADD TREE</p>
+                    </div>
+                    <div className='NoteMain'>
+                        <img src={Note} className='Noteimg' onClick={handleClickOpenEdit} />
+                        <p className='NoteImgTitle'>EDIT TREE</p>
+                    </div>
+                </DialogContent>
+            </Dialog>
+
             <p className='mainTitle'>PROCASTING</p>
             <div>
                 <div style={{ display: 'flex', justifyContent: 'center', marginTop: '50px' }}>
@@ -113,18 +146,28 @@ export default function Home() {
                 </div>
                 <div className='bothBtnDiv'>
                     <div className='NoteMain'>
-                        <img src={Note} className='Noteimg' onClick={handleClickOpen} />
-                        <p className='NoteImgTitle'>NEW TREE</p>
-                    </div>
-
-                    <div className='NoteMain'>
-                        <img src={Note} className='Noteimg' onClick={handleClickOpenEdit} />
-                        <p className='NoteImgTitle'>EDIT TREE</p>
+                        <img src={Note} className='Noteimg' onClick={handleClickOpenTree} />
+                        <p className='NoteImgTitle'>TREE</p>
                     </div>
 
                     <div className='NoteMain'>
                         <img src={Note} className='Noteimg' onClick={() => navigation('/addFlask')} />
                         <p className='NoteImgTitle'>BIND FLASK</p>
+                    </div>
+
+                    <div className='NoteMain'>
+                        <img src={Note} className='Noteimg' onClick={handleClickOpen} />
+                        <p className='NoteImgTitle'>INVESTMENT</p>
+                    </div>
+
+                    <div className='NoteMain'>
+                        <img src={Note} className='Noteimg' onClick={handleClickOpen} />
+                        <p className='NoteImgTitle'>BURN OUT</p>
+                    </div>
+
+                    <div className='NoteMain'>
+                        <img src={Note} className='Noteimg' onClick={handleClickOpen} />
+                        <p className='NoteImgTitle'>UNLOCK</p>
                     </div>
 
                     <div className='NoteMain'>
