@@ -96,7 +96,8 @@ export default function Home() {
                 aria-describedby="alert-dialog-description"
             >
                 <DialogTitle id="alert-dialog-title" style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    {"SCAN TREE"} {editLocalVal === false && <button onClick={() => printQR('/printQr')}>PRINT QR</button>}
+                    {"SCAN TREE"} 
+                    {/* {editLocalVal === false && <button onClick={() => printQR('/printQr')}>PRINT QR</button>} */}
                 </DialogTitle>
                 <DialogContent>
                     <DialogContentText id="alert-dialog-description" style={{ width: '300px' }}>
@@ -156,17 +157,17 @@ export default function Home() {
                     </div>
 
                     <div className='NoteMain'>
-                        <img src={Note} className='Noteimg' onClick={handleClickOpen} />
+                        <img src={Note} className='Noteimg' onClick={() => navigation('/investmentFirst')} />
                         <p className='NoteImgTitle'>INVESTMENT</p>
                     </div>
 
                     <div className='NoteMain'>
-                        <img src={Note} className='Noteimg' onClick={handleClickOpen} />
+                        <img src={Note} className='Noteimg' onClick={() => navigation('/burnOut')} />
                         <p className='NoteImgTitle'>BURN OUT</p>
                     </div>
 
                     <div className='NoteMain'>
-                        <img src={Note} className='Noteimg' onClick={handleClickOpen} />
+                        <img src={Note} className='Noteimg' onClick={() => navigation('/unlock')} />
                         <p className='NoteImgTitle'>UNLOCK</p>
                     </div>
 

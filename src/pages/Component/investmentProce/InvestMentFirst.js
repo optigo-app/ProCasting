@@ -36,6 +36,9 @@ export default function InvestMentFirst() {
   const [weightInp, setWeightInp] = useState('')
   const [saveData, setSaveData] = useState(false);
   const [goBtnFlag, setGoBtnFlag] = useState(false)
+  const [openDelete, setOpenDelete] = useState(false);
+  const [selectedIndex, setSelectedIndex] = useState(null);
+
   const invProRef = useRef(null)
 
   useEffect(() => {
@@ -224,12 +227,25 @@ export default function InvestMentFirst() {
   }
 
   const handleRemoveItem = (indexToRemove) => {
-    setEnteredValues(enteredValues.filter((_, index) => index !== indexToRemove));
+    setOpenDelete(true);
+    setSelectedIndex(indexToRemove);
   };
 
   const handelScanInp = (target) => {
     setScanInp(target)
   }
+
+  const handleConfirmation = () => {
+    setEnteredValues(enteredValues.filter((_, index) => index !== selectedIndex));
+    setOpenDelete(false);
+  };
+
+  const handleClickOpenDelete = () => {
+    setOpenDelete(false);
+  };
+  const handleCloseDelete = () => {
+    setOpenDelete(false);
+  };
 
 
   return (
@@ -275,6 +291,21 @@ export default function InvestMentFirst() {
               Done
             </button>
           </div>
+        </div>
+      </Dialog>
+
+      <Dialog
+        open={openDelete}
+        onClose={handleCloseDelete}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title" style={{ margin: '20px', paddingInline: '100px' }}>
+          {"ARE YOU SURE TO DELETE ?"}
+        </DialogTitle>
+        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '20px' }}>
+          <Button onClick={handleConfirmation}>YES</Button>
+          <Button onClick={handleClickOpenDelete}>NO</Button>
         </div>
       </Dialog>
       <div>
@@ -367,8 +398,8 @@ export default function InvestMentFirst() {
             </div>
           </div>
           <div>
-            <div style={{ display: "flex", marginTop: "15px", alignItems: 'center', justifyContent: 'center' }}>
-              <p className="investDestilInputTitleNew">Weight:</p>
+            <div className="investDestilInputDiv">
+              <p className="investDestilInputTitleNew">WEIGHT:</p>
               <input
                 type="text"
                 // value={
@@ -383,7 +414,7 @@ export default function InvestMentFirst() {
                 className="investDestilInput"
               />
             </div>
-            <div style={{ display: "flex", marginTop: "15px", alignItems: 'center', justifyContent: 'center' }}>
+            <div className="investDestilInputDiv">
               <p className="investDestilInputTitleNew">TDS:</p>
               <input
                 type="text"
@@ -392,8 +423,8 @@ export default function InvestMentFirst() {
                 onChange={(e) => setTDS(e.target.value)}
               />
             </div>
-            <div style={{ display: "flex", marginTop: "15px", alignItems: 'center', justifyContent: 'center' }}>
-              <p className="investDestilInputTitleNew">PHvalue:</p>
+            <div className="investDestilInputDiv">
+              <p className="investDestilInputTitleNew">PHVALUE:</p>
               <input
                 type="text"
                 className="investDestilInput"

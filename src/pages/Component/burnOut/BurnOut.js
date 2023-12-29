@@ -69,7 +69,7 @@ export default function BurnOut() {
             setTimeout(() => {
                 // if (!openYourBagDrawer && isImageVisible) {
                 if (isImageVisible) {
-                    setEnteredValues([...enteredValues, scanInp ]);
+                    setEnteredValues([...enteredValues, scanInp]);
 
                     setFlashCode(scanInp)
                 }
@@ -90,7 +90,7 @@ export default function BurnOut() {
     const handleError = (error) => {
         console.error('Error while scanning:', error);
     };
-   
+
     const handelScanInp = (target) => {
         setScanInp(target)
     }
@@ -168,33 +168,9 @@ export default function BurnOut() {
                     <Button onClick={handleClose}>SAVE</Button>
                 </div>
             </Dialog>
-            <Drawer
-                open={openYourBagDrawer}
-                // onClose={() => {
-                //     setOpenYourBagDrawer(false);
-                // }}
-                anchor="right"
-                elevation={0}
-                className="searchCustomDrawer"
-                sx={{
-                    "& .MuiBackdrop-root": { backgroundColor: "transparent" },
-                    zIndex: 111,
-                }}
-            >
-                <div>
-                    <div>
-                        <IoMdClose style={{ height: '40px', color: 'red', width: '40px', cursor: 'pointer' }} onClick={() => setOpenYourBagDrawer(false)} />
-                    </div>
-                    <img src={greenImg && greenImges || blueImg && blueImges || orangeImg && orangeImges} className='DrawerImg' />
-                </div>
-            </Drawer>
+
             <div className="TopBtnDivMainOne">
                 <p style={{ margin: '0px', marginLeft: '10px', fontSize: '20px', fontWeight: 500 }}>BURNOUT PROCESS</p>
-            </div>
-            <div style={{ height: "50px", position: 'absolute', right: '0px' }}>
-                {greenImg && <button onClick={() => setOpenYourBagDrawer(true)} style={{ float: 'right', height: '50px', width: '120px' }}>Open Image</button>}
-                {blueImg && <button onClick={() => setOpenYourBagDrawer(true)} style={{ float: 'right', height: '50px', width: '120px' }}>Open Image</button>}
-                {orangeImg && <button onClick={() => setOpenYourBagDrawer(true)} style={{ float: 'right', height: '50px', width: '120px' }}>Open Image</button>}
             </div>
             <div style={{ display: 'flex', marginTop: '-10px' }}>
                 <div className='BurnTopBox1'>
@@ -227,20 +203,30 @@ export default function BurnOut() {
                     </div>
                     <button style={{ marginTop: '20px', cursor: 'pointer', height: '35px', width: '100px' }} onClick={handleRefresh}>Clear All</button>
                 </div>
-                <div style={{ width: '20%', display: 'flex', flexDirection: 'column', marginRight: '20px', marginTop: '30px', alignItems: 'center' }}>
+                <div style={{ width: '19%', display: 'flex', flexDirection: 'column', marginLeft: '-40px', marginTop: '30px', alignItems: 'center' }}>
                     <p style={{ margin: '0px', fontSize: '20px', fontWeight: 500 }}>Flask Count</p>
                     <h1 className='burnCountFlask'>{enteredValues.length}</h1>
                 </div>
                 <div>
-                    <div style={{ display: 'flex', marginTop: '30px' }}>
-                        <p className='investDestilInputTitle'>Flash Code:</p>
+                    <div style={{ display: 'flex', marginTop: '30px' ,alignItems: 'center' }}>
+                        <p className='investDestilInputTitle'>FLASH CODE:</p>
                         <input type='text' className='investDestilInput' value={flashCode} />
                     </div>
-                    <div style={{ display: 'flex', marginTop: '15px' }}>
-                        <p className='investDestilInputTitle'>Batch No:</p>
+                    <div className="investDestilInputDiv">
+                        <p className='investDestilInputTitle'>BATCH NO:</p>
                         <input type='text' className='investDestilInput' value={enteredValues.length === 0 ? '' : enteredValues.length === 1 ? 'AB' : enteredValues.length === 2 ? 'BC' : 'CD'} />
                     </div>
                     <button className='burnOutIssueBtn' onClick={handleIssueJob}>BurnOut Issue</button>
+                </div>
+                <div className='investSideFixedImg'>
+                    <img
+                        src={
+                            (greenImg && greenImges) ||
+                            (blueImg && blueImges) ||
+                            (orangeImg && orangeImges)
+                        }
+                        className="DrawerImg"
+                    />
                 </div>
             </div>
             <div style={{ display: 'flex', justifyContent: 'center' }}>
@@ -269,7 +255,7 @@ export default function BurnOut() {
                     </table>
                 ))}
             </div>
-            <p style={{position: 'absolute' , bottom :'10px' ,textAlign : 'center' ,width: '100%',color: '#a396c8' ,fontSize: '18px' ,fontWeight: 500}}>furnace Program number > #D (Diamond)  |   #W (WAX) |   #R1 Resin1    |    #R2 Resin2</p>
+            <p style={{ position: 'absolute', bottom: '10px', textAlign: 'center', width: '100%', color: '#a396c8', fontSize: '18px', fontWeight: 500 }}>furnace Program number > #D (Diamond)  |   #W (WAX) |   #R1 Resin1    |    #R2 Resin2</p>
         </div>
     )
 }

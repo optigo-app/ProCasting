@@ -287,13 +287,13 @@ const BatchListingGrid = () => {
         </div>
 
         <div className="menu_responsive">
-          <div className="grid_head btn_group">
+          {/* <div className="grid_head btn_group">
             <button className="grid-btn" onClick={()=>navigation('/investmentFirst')}>
               INVESTMENT PROCESS
             </button>
             <button className="grid-btn" onClick={() => navigation('/burnOut')}>BURNOUT</button>
-            <button className="grid-btn" onClick={() => navigation('/unlock')}>UNLOCK ALLOYING</button>
-          </div>
+          </div> */}
+          <button className="grid-btn" onClick={() => navigation('/')}>HOME</button>
 
           <div className="grid_head date">{GridHeadDate()}</div>
 
