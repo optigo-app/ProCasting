@@ -127,7 +127,7 @@ export default function CreateTreeOne() {
         } else {
             setTreeFlag(false)
         }
-        const newValue = value.replace(/\D/g, '').slice(0, 5);
+        const newValue = value.replace(/\D/g,'').slice(0, 5);
         setInputWeightValue(newValue);
     };
 
