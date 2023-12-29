@@ -1,16 +1,38 @@
 
 
 .investTopBox1{
-    width: 25%;
+    width: auto;
     display: flex;
     align-items: center;
     flex-direction: column;
     margin-top: 20px;
 }
+
+.investTopBox22{
+ width:auto;
+}
+
+.investTopBox3{
+    width:auto;
+    display:flex;
+    align-items:center;
+    flex-direction:column;
+}
+
 .investSideFixedImg{
-    width: 29%;
-    position: absolute;
-    right: 0px;
+    /* width: 37%; */
+    /* position: absolute;
+    right: 0px; */
+}
+
+.invest_btn_div{
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.invest_btn{
+    padding:5px 10px;
 }
 .mainTitleBarCode{
     margin: 0px;
@@ -115,6 +137,10 @@
     padding: 10px;
 }
 
+.not{
+    padding: 5px;
+}
+
 
 .allScanInvestdataMain{
     display: flex;
@@ -136,7 +162,8 @@
 
 .DrawerImg{
     width: 100%;
-    height: 100%;
+    height: 80vh;
+    object-fit: cover;
 }
 
 .css-uyjz3f-MuiPaper-root-MuiDrawer-paper {
