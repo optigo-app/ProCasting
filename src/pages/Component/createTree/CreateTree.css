@@ -31,6 +31,17 @@
     padding-top: 5px;
     font-size: 20px;
     margin-inline: 10px;
+    /* background-color: #eceded; */
+}
+.FixedGoldColorText{
+    border: none;
+    margin: 0px;
+    font-size: 22px;
+    font-weight: 500;
+    width: 100%;
+    text-align: center;
+    padding-block: 10px;
+    background-color: lightyellow;
 }
 .infoTextInputBatch {
     height: 40px;
@@ -130,7 +141,7 @@ input[type='date']::-webkit-calender-picker-indicatore {
     overflow: auto;
     display: flex;
     flex-direction: column;
-    padding: 18px;
+    /* padding: 18px; */
 }
 
 .totalItemText {
@@ -304,7 +315,11 @@ input[type='date']::-webkit-calender-picker-indicatore {
     margin: 0px;
     padding: 0px 10px;
 }
-
+.homeRemarkDesc{
+    background-color: #6257e3;
+    color: white;
+    margin: 0px;
+}
 .addReamrkTextBox {
     height: 80px;
     width: 500px;

@@ -94,15 +94,20 @@
     font-weight: 700;
 }
 
+.investDestilInputDiv{
+    display: flex;
+    align-items: center;
+    margin-top: 15px;
+}
 .investDestilInputTitle{
-    font-size: 22px;
+    font-size: 19px;
     margin: 0px;
     display: flex;
     align-items: left;
     width: 150px;
 }
 .investDestilInputTitleNew{
-    font-size: 22px;
+    font-size: 20px;
     margin: 0px;
     display: flex;
     width: 100px;

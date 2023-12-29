@@ -225,10 +225,9 @@ export default function CreateTreeOne() {
                     </div>
                     <div style={{ display: 'flex' }}>
                         <p className='infoTextInputONe'>E0025(BOB THOMAS)</p>
-                        {totalValues !== 0 && <p className='infoTextInputONe'>GOLD 14K WHITE</p>}
                     </div>
                 </div>
-                <div style={{ display: 'flex', marginTop: '15px', flexWrap: 'wrap' }} className='body_container'>
+                <div style={{ display: 'flex', marginTop: '0px', flexWrap: 'wrap' }} className='body_container'>
                     <div className='scaneUploadMain'>
                         <div className='createORMain' >
                             <div onClick={toggleImageVisibility} style={{ width: 'fit-content', marginLeft: '30px', position: 'relative' }}>
@@ -285,6 +284,8 @@ export default function CreateTreeOne() {
                                 <p className='totalItemTextFail'>{'0'}</p>
 
                             </div>
+                        {totalValues !== 0 && <p className='FixedGoldColorText'>GOLD 14K WHITE</p>}
+
                             <div className='CreateDataMain'>
                                 {enteredValues.map((value, index) => (
                                     <div className='allScandataMain' >
@@ -306,7 +307,7 @@ export default function CreateTreeOne() {
                     </div>
                 </div>
                 <div className='createFooterMain'>
-                    {showEnteredValue && <p className='homeNoteDesc'><b>Remark : </b>{remark}</p>}
+                    {showEnteredValue && <p className='homeRemarkDesc'><b>Remark : </b>{remark}</p>}
 
                     <div className="bottomBtnDivMain">
                         <button className="showInfoBtn" onClick={handleMoreInfoShow}>

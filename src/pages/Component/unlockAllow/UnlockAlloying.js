@@ -199,16 +199,16 @@ export default function UnlockAlloying() {
         </div>
 
         <div className="UnlockTopBox2">
-          <div style={{ display: "flex", marginTop: "15px" }}>
-            <p className="investDestilInputTitle">Flash Code:</p>
+          <div className="investDestilInputDiv">
+            <p className="investDestilInputTitle">FLASH CODE:</p>
             <input
               type="text"
               className="investDestilInput"
               value={flashCode}
             />
           </div>
-          <div style={{ display: "flex", marginTop: "15px" }}>
-            <p className="investDestilInputTitle">Batch No:</p>
+          <div className="investDestilInputDiv">
+            <p className="investDestilInputTitle">BATCH NO:</p>
             <input
               type="text"
               className="investDestilInput"
@@ -223,23 +223,21 @@ export default function UnlockAlloying() {
               }
             />
           </div>
-          {/* <div style={{ display: 'flex', marginTop: '15px' }}>
-                        <p className='investDestilInputTitle'>Employee:</p>
-                        <input type='text' className='investDestilInput' />
-                    </div>
-                    <div style={{ display: 'flex', marginTop: '15px' }}>
-                        <p className='investDestilInputTitle'>Issue wight:</p>
-                        <input type='text' className='investDestilInput' />
-                    </div> */}
-          <div style={{ display: "flex", marginTop: "15px" }}>
-            <p className="investDestilInputTitle">Department:</p>
+          <div className="investDestilInputDiv">
+            <p className='investDestilInputTitle'>WEIGHT:</p>
+            <input type='text' disabled className='investDestilInput' style={{outline: 'none' ,backgroundColor: '#eceded'}}
+              value={enteredValues.length === 0 ? "" : "100"}
+            />
+          </div>
+          <div className="investDestilInputDiv">
+            <p className="investDestilInputTitle">DEPARTMENT:</p>
             <input
               type="text"
               value={enteredValues.length === 0 ? "" : "ALLOYING"}
               className="investDestilInput"
             />
           </div>
-          <div style={{ display: "flex", justifyContent: "center" }}>
+          <div style={{ display: "flex", justifyContent: "center", alignItems: 'center' }}>
             <button className="burnOutIssueBtn" onClick={handleClickOpen}>
               Unlock and Issue
             </button>

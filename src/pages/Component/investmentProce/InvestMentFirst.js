@@ -36,8 +36,11 @@ export default function InvestMentFirst() {
   const [eviIndex, setEviIndex] = useState([]);
   const [weightInp, setWeightInp] = useState("");
   const [saveData, setSaveData] = useState(false);
-  const invProRef = useRef(null);
+  const [goBtnFlag, setGoBtnFlag] = useState(false)
+  const [openDelete, setOpenDelete] = useState(false);
+  const [selectedIndex, setSelectedIndex] = useState(null);
 
+  const invProRef = useRef(null)
 
   useEffect(() => {
     if (greenImg) {
@@ -237,14 +240,26 @@ export default function InvestMentFirst() {
   };
 
   const handleRemoveItem = (indexToRemove) => {
-    setEnteredValues(
-      enteredValues.filter((_, index) => index !== indexToRemove)
-    );
+    setOpenDelete(true);
+    setSelectedIndex(indexToRemove);
   };
 
   const handelScanInp = (target) => {
-    setScanInp(target);
+    setScanInp(target)
+  }
+
+  const handleConfirmation = () => {
+    setEnteredValues(enteredValues.filter((_, index) => index !== selectedIndex));
+    setOpenDelete(false);
   };
+
+  const handleClickOpenDelete = () => {
+    setOpenDelete(false);
+  };
+  const handleCloseDelete = () => {
+    setOpenDelete(false);
+  };
+
 
   return (
     <div>
@@ -289,6 +304,21 @@ export default function InvestMentFirst() {
               Done
             </button>
           </div>
+        </div>
+      </Dialog>
+
+      <Dialog
+        open={openDelete}
+        onClose={handleCloseDelete}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title" style={{ margin: '20px', paddingInline: '100px' }}>
+          {"ARE YOU SURE TO DELETE ?"}
+        </DialogTitle>
+        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '20px' }}>
+          <Button onClick={handleConfirmation}>YES</Button>
+          <Button onClick={handleClickOpenDelete}>NO</Button>
         </div>
       </Dialog>
       <div>
