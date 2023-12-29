@@ -33,11 +33,14 @@ export default function CreateTreeOne() {
     const CurrentImageValue = useRecoilValue(CurrentImageState);
     const [inputWightValue, setInputWeightValue] = useState('');
     const [open, setOpen] = useState(false);
+    const [openDelete, setOpenDelete] = useState(false);
     const [treeFlag, setTreeFlag] = useState(false)
     const ScanRef = useRef(null)
     const [addLsit, setAddLsit] = useState(false);
     const [editTreeImg, setEditTreeImg] = useState(false)
-
+    const [remark, setReamrk] = useState(undefined);
+    const [showEnteredValue, setShowEnteredValue] = useState(false);
+    const [selectedIndex, setSelectedIndex] = useState(null);
 
     useEffect(() => {
         const today = new Date().toISOString().split('T')[0];
@@ -72,8 +75,29 @@ export default function CreateTreeOne() {
         setOpen(true);
     };
 
+
+    const handleClickOpenDelete = () => {
+        setOpenDelete(false);
+    };
+
+    const handleRemoveItem = (indexToRemove) => {
+        setOpenDelete(true);
+        setSelectedIndex(indexToRemove);
+        // setEnteredValues(enteredValues.filter((_, index) => index !== indexToRemove));
+    };
+
+    const handleConfirmation = () => {
+        setEnteredValues(enteredValues.filter((_, index) => index !== selectedIndex));
+        setOpenDelete(false);
+    };
+
+
     const handleClose = () => {
         setOpen(false);
+        setShowEnteredValue(true);
+    };
+    const handleCloseDelete = () => {
+        setOpenDelete(false);
     };
 
     const handleInputChange = (event) => {
@@ -101,9 +125,7 @@ export default function CreateTreeOne() {
     };
 
     const totalValues = enteredValues.length;
-    const handleRemoveItem = (indexToRemove) => {
-        setEnteredValues(enteredValues.filter((_, index) => index !== indexToRemove));
-    };
+
 
     const handleKeyDown = (event) => {
         if (event.key === 'Enter') {
@@ -142,15 +164,18 @@ export default function CreateTreeOne() {
     const handleSaveNew = () => {
         window.location.reload();
     }
-    
+
     const toggleImageVisibility = () => {
         // let safe = ScanRef.current
-       
+
 
         if (ScanRef.current && !treeFlag) {
             ScanRef.current.focus();
         }
-       
+
+    };
+    const handleChange = (event) => {
+        setReamrk(event.target.value); // Update the remark state with the textarea value
     };
 
     return (
@@ -166,11 +191,26 @@ export default function CreateTreeOne() {
                 </DialogTitle>
                 <DialogContent>
                     <DialogContentText id="alert-dialog-description">
-                        <textarea type='text' placeholder='Enter Remark' className='addReamrkTextBox' />
+                        <textarea type='text' onChange={handleChange} placeholder='Enter Remark' className='addReamrkTextBox' />
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleClose}>ADD</Button>
+                </DialogActions>
+            </Dialog>
+
+            <Dialog
+                open={openDelete}
+                onClose={handleCloseDelete}
+                aria-labelledby="alert-dialog-title"
+                aria-describedby="alert-dialog-description"
+            >
+                <DialogTitle id="alert-dialog-title" style={{margin: '20px' , paddingInline: '100px'}}>
+                    {"ARE YOU SURE TO DELETE ?"}
+                </DialogTitle>
+                <DialogActions style={{display: 'flex' , justifyContent: 'center'}}>
+                    <Button onClick={handleConfirmation}>YES</Button>
+                    <Button onClick={handleClickOpenDelete}>NO</Button>
                 </DialogActions>
             </Dialog>
 
@@ -265,8 +305,9 @@ export default function CreateTreeOne() {
                         </div>
                     </div>
                 </div>
-
                 <div className='createFooterMain'>
+                    {showEnteredValue && <p className='homeNoteDesc'><b>Remark : </b>{remark}</p>}
+
                     <div className="bottomBtnDivMain">
                         <button className="showInfoBtn" onClick={handleMoreInfoShow}>
                             Show Info
@@ -277,12 +318,12 @@ export default function CreateTreeOne() {
                         >
                             Print QR
                         </button>
-                        <button
+                        {/* <button
                             className="showInfoBtn"
                             onClick={() => navigation("/batchListingGrid")}
                         >
                             Show List
-                        </button>
+                        </button> */}
                         <button
                             className="showInfoBtn"
                             onClick={handleSaveNew}
