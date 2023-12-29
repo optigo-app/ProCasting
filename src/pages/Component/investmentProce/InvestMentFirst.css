@@ -1,11 +1,16 @@
 
 
 .investTopBox1{
-    width: 30%;
+    width: 25%;
     display: flex;
     align-items: center;
     flex-direction: column;
     margin-top: 20px;
+}
+.investSideFixedImg{
+    width: 29%;
+    position: absolute;
+    right: 0px;
 }
 .mainTitleBarCode{
     margin: 0px;
