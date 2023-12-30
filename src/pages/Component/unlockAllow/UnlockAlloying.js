@@ -7,15 +7,32 @@ import DialogContent from "@mui/material/DialogContent";
 import BarcodeScanner from "react-barcode-reader";
 import scaneCodeImage from "../../assets/scanBarcode.gif";
 import idle from "../../assets/idle.gif";
+import RemoveCircleRoundedIcon from "@mui/icons-material/RemoveCircleRounded";
+
 
 export default function UnlockAlloying() {
   const [inputValue, setInputValue] = useState("");
   const [inputValueHidden, setInputValueHidden] = useState("");
+  const [inputValueHiddenPopup, setInputValueHiddenPopup] = useState("");
   const [enteredValues, setEnteredValues] = useState([]);
+  const [enteredValuesPopup, setEnteredValuesPopup] = useState([]);
   const [inputError, setInputError] = useState(false);
-  const [flashCode, setFlashCode] = useState("");
+  const [flashCode, setFlashCode] = useState(undefined);
   const [open, setOpen] = useState(false);
   const [isImageVisible, setIsImageVisible] = useState(true);
+  const [isImageVisiblePopup, setIsImageVisiblePopup] = useState(true);
+  const [shotTableBtn, setShowTableBtn] = useState(false);
+  const [showTable, setShowTable] = useState(false);
+
+
+  const [openDelete, setOpenDelete] = useState(false);
+  const [selectedIndex, setSelectedIndex] = useState(null);
+  const [openPoupuNumber, setOpenPopupNumber] = useState(undefined);
+  const [firtstTableData, setFirstTableData] = useState([]);
+  const [secondTableData, setSecondTableData] = useState([]);
+  const [thirdTableData, setThirdTableData] = useState([]);
+  const [fourthTableData, setFourthTableData] = useState([]);
+
   const scanRef = useRef(null);
 
   useEffect(() => {
@@ -32,6 +49,7 @@ export default function UnlockAlloying() {
     }, 500);
   }, [inputValueHidden]);
 
+
   setTimeout(() => {
     if (inputValueHidden.length) {
       setInputValueHidden("");
@@ -39,7 +57,24 @@ export default function UnlockAlloying() {
   }, 510);
 
   useEffect(() => {
+    console.log('inout', inputValueHiddenPopup);
+    setTimeout(() => {
+      if (inputValueHiddenPopup.length) {
+        setEnteredValuesPopup([...enteredValuesPopup, inputValueHiddenPopup]);
+      }
+    }, 500);
+  }, [inputValueHiddenPopup]);
+
+
+  setTimeout(() => {
+    if (inputValueHiddenPopup.length) {
+      setInputValueHiddenPopup("");
+    }
+  }, 510);
+
+  useEffect(() => {
     setEnteredValues([]);
+    setEnteredValuesPopup([]);
   }, []);
 
   const handleScan = (data) => { };
@@ -55,12 +90,39 @@ export default function UnlockAlloying() {
   };
 
   const handleClickOpen = () => {
+
+    if (flashCode === '' || flashCode === undefined) {
+      alert('SCANE JOB FIRST')
+    } else {
+      // setOpen(true);
+      setShowTableBtn(true)
+    }
+
+  };
+
+  const handleOpenPopup = (val) => {
     setOpen(true);
+    setOpenPopupNumber(val)
+
+  }
+  const generateFormattedString = (data) => {
+    // return `(${data.map(value => `(${value})`).join(', ')})`;
   };
 
   const handleClose = () => {
+
+    if (openPoupuNumber === 1) {
+
+      setFirstTableData([...firtstTableData, enteredValuesPopup]);
+    } else if (openPoupuNumber === 2) {
+      setSecondTableData([...secondTableData, enteredValuesPopup]);
+    } else if (openPoupuNumber === 3) {
+      setThirdTableData([...thirdTableData, enteredValuesPopup]);
+    } else if (openPoupuNumber === 4) {
+      setFourthTableData([...fourthTableData, enteredValuesPopup]);
+    }
     setOpen(false);
-    // window.location.reload();
+    setEnteredValuesPopup([])
   };
 
   const handleInputChange = (event) => {
@@ -72,6 +134,11 @@ export default function UnlockAlloying() {
     setInputValueHidden(event.target.value);
     setFlashCode(event.target.value);
   };
+
+  const handleInputChangeHiddenPopup = (event) => {
+    setInputValueHiddenPopup(event.target.value);
+  };
+
   const handleGoButtonClick = () => {
     if (inputValue === "" || inputValue === undefined) {
       setInputError(true);
@@ -88,6 +155,23 @@ export default function UnlockAlloying() {
     }
   };
 
+  const handleConfirmation = () => {
+    setFirstTableData(firtstTableData.filter((_, index) => index !== selectedIndex));
+    setOpenDelete(false);
+  };
+
+  const handleRemoveItem = (indexToRemove) => {
+    setOpenDelete(true);
+    setSelectedIndex(indexToRemove);
+  };
+
+  const handleClickOpenDelete = () => {
+    setOpenDelete(false);
+  };
+  const handleCloseDelete = () => {
+    setOpenDelete(false);
+  };
+
   return (
     <div>
       <BarcodeScanner
@@ -95,22 +179,98 @@ export default function UnlockAlloying() {
         onError={handleError}
         facingMode="environment"
       />
+
+      <Dialog
+        open={openDelete}
+        onClose={handleCloseDelete}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title" style={{ margin: '20px', paddingInline: '100px' }}>
+          {"ARE YOU SURE TO DELETE ?"}
+        </DialogTitle>
+        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '20px' }}>
+          <Button onClick={handleConfirmation}>YES</Button>
+          <Button onClick={handleClickOpenDelete}>NO</Button>
+        </div>
+      </Dialog>
+
+
       <Dialog
         open={open}
         onClose={handleClose}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
-        <DialogTitle id="alert-dialog-title">
-          {"UNLOCK SUCCESSFULLY"}
+        <p style={{ fontSize: '20px', margin: '10px', fontWeight: 500 }}>SCANE JOB</p>
+        <DialogTitle style={{ display: 'flex', height: '400px', width: '500px' }}>
+          <div
+            onClick={toggleImageVisibility}
+            style={{ width: "fit-content", position: "relative", marginLeft: !isImageVisiblePopup && "46px" }}
+          >
+            {isImageVisiblePopup ? (
+              <div>
+                <img src={scaneCodeImage} className="createImageQrCode" />
+              </div>
+            ) : (
+              <div>
+                <img src={idle} />
+              </div>
+            )}
+            {!isImageVisiblePopup && (
+              <p style={{ fontSize: '15px', fontWeight: "bold", marginLeft: "-40px", marginTop: '-10px' }}>
+                {" "}
+                <span style={{ color: "red" }}>Click</span> On The Image For
+                Scan<span style={{ color: "red" }}>*</span>
+              </p>
+            )}
+            <input
+              type="text"
+              value={inputValueHiddenPopup}
+              onChange={handleInputChangeHiddenPopup}
+              style={{
+                width: "20px",
+                position: "absolute",
+                left: "50px",
+                top: "70px",
+                zIndex: -1,
+              }}
+              ref={scanRef}
+              onBlur={() => {
+                setIsImageVisiblePopup(false);
+              }}
+              onFocus={() => setIsImageVisiblePopup(true)}
+              autoFocus
+            />
+            <button style={{
+              position: "absolute",
+              left: "50px",
+              top: "70px",
+              zIndex: -1,
+            }}>c</button>
+          </div>
+          <div style={{ width: '250px', height: '350px', overflow: 'auto', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            {enteredValuesPopup?.map((value, index) => (
+              <div className="allScanInvestdataMain">
+                <p className="allInvestScanData" key={index}>
+                  {value}
+                </p>
+                <RemoveCircleRoundedIcon
+                  style={{
+                    color: "#FF0000",
+                    cursor: "pointer",
+                    fontSize: "30px",
+                  }}
+                  onClick={() => handleRemoveItem(index)}
+                />
+              </div>
+            ))}
+          </div>
         </DialogTitle>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description"></DialogContentText>
-        </DialogContent>
         <div style={{ display: "flex", justifyContent: "center" }}>
-          <Button onClick={handleClose} style={{ margin: "-20px 0px 20px" }}>
-            DONE
-          </Button>
+          <button onClick={handleClose} style={{ margin: "-20px 0px 20px" }}>
+            ADD TO TABLE
+          </button>
         </div>
       </Dialog>
       <div className="TopBtnDivMainOne">
@@ -149,7 +309,7 @@ export default function UnlockAlloying() {
             )}
             <input
               type="text"
-              value={inputValueHidden}
+              value={inputValueHiddenPopup}
               onChange={handleInputChangeHidden}
               style={{
                 width: "20px",
@@ -225,7 +385,7 @@ export default function UnlockAlloying() {
           </div>
           <div className="investDestilInputDiv">
             <p className='investDestilInputTitle'>WEIGHT:</p>
-            <input type='text' disabled className='investDestilInput' style={{outline: 'none' ,backgroundColor: '#eceded'}}
+            <input type='text' disabled className='investDestilInput' style={{ outline: 'none', backgroundColor: '#eceded' }}
               value={enteredValues.length === 0 ? "" : "100"}
             />
           </div>
@@ -243,6 +403,68 @@ export default function UnlockAlloying() {
             </button>
           </div>
         </div>
+      </div>
+      <div>
+        {shotTableBtn && <button onClick={() => setShowTable(true)} style={{ marginInline: '17%', }}>MOVE TO TABLE</button>}
+        {showTable && <div style={{ display: 'flex', marginInline: '16%' }}>
+
+          <div className='tableDataMain' onClick={() => handleOpenPopup(1)}>
+            <div style={{ display: 'flex' }}>
+              <p style={{
+                fontSize: '55px',
+                color: '#ff5757',
+                fontWeight: 700,
+                margin: '10px'
+              }}>AB</p>
+              <p className="UnlockformDataTable">
+                {firtstTableData.join(', ')}
+              </p>
+            </div>
+          </div>
+
+          <div className='tableDataMain' onClick={() => handleOpenPopup(2)}>
+            <div style={{ display: 'flex' }}>
+              <p style={{
+                fontSize: '55px',
+                color: '#ff5757',
+                fontWeight: 700,
+                margin: '10px'
+              }}>BC</p>
+              <p className="UnlockformDataTable">
+                {secondTableData.join(', ')}
+              </p>
+            </div>
+          </div>
+
+          <div className='tableDataMain' onClick={() => handleOpenPopup(3)}>
+          <div style={{ display: 'flex' }}>
+              <p style={{
+                fontSize: '55px',
+                color: '#ff5757',
+                fontWeight: 700,
+                margin: '10px'
+              }}>CD</p>
+              <p className="UnlockformDataTable">
+                {thirdTableData.join(', ')}
+              </p>
+            </div>
+          </div>
+
+          <div className='tableDataMain' onClick={() => handleOpenPopup(4)}>
+          <div style={{ display: 'flex' }}>
+              <p style={{
+                fontSize: '55px',
+                color: '#ff5757',
+                fontWeight: 700,
+                margin: '10px'
+              }}>DE</p>
+              <p className="UnlockformDataTable">
+                {fourthTableData.join(', ')}
+              </p>
+            </div>
+          </div>
+
+        </div>}
       </div>
     </div>
   );
