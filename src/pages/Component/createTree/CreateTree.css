@@ -366,9 +366,9 @@ input[type='date']::-webkit-calender-picker-indicatore {
     width: 65%;
 }
 
-::-webkit-scrollbar {
+/* ::-webkit-scrollbar {
     /* width: 5px; */
-  }
+  /* }  */
   
   /* Track */
   ::-webkit-scrollbar-track {

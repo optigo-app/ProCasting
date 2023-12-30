@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useCallback, useMemo } from "react";
 import "./InvestMentFirst.css";
 import { Button, Dialog, DialogTitle, Drawer } from "@mui/material";
 import greenImges from "../../assets/green.png";
@@ -14,6 +14,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 export default function InvestMentFirst() {
+
   const [inputValue, setInputValue] = useState("");
   const [enteredValues, setEnteredValues] = useState([]);
   const [open, setOpen] = useState(false);
@@ -29,7 +30,6 @@ export default function InvestMentFirst() {
   const [phValue, setPhValue] = useState(undefined);
   const [showTimmerBtn, setShowTimmerBtn] = useState(false);
   const [showTimmer, setShowTimmer] = useState(false);
-
   const [scanInp, setScanInp] = useState("");
   const [isImageVisible, setIsImageVisible] = useState(true);
   const [enteredTime, setEnteredTime] = useState("");
@@ -39,6 +39,7 @@ export default function InvestMentFirst() {
   const [goBtnFlag, setGoBtnFlag] = useState(false)
   const [openDelete, setOpenDelete] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(null);
+  const [isImgUpload,setIsImgUpload] = useState(false)
 
   const invProRef = useRef(null)
 
@@ -85,8 +86,6 @@ export default function InvestMentFirst() {
       setDefaultImg(true);
     }
   }, [enteredValues]);
-
-
 
   useEffect(() => {
     if (scanInp?.length) {
@@ -162,6 +161,7 @@ export default function InvestMentFirst() {
       handleGoButtonClick();
     }
   };
+
   const notify = () => toast.success("SAVED SUCCESSFULLY");
 
   const saveDataHandle = () => {
@@ -174,24 +174,26 @@ export default function InvestMentFirst() {
     } else {
       setSaveData(true);
       notify();
-      // const updateData = enteredValues?.map((ev, i) => {
-      //   if (!ev["btncom"]) {
-      //     ev["btncom"] = (
-      //       <button onClick={() => handleStartTime(i, ev)}>Start Time</button>
-      //     );
-      //   }
-      //   return ev;
-      // });
-      // setEnteredValues(updateData);
+      const updateData = enteredValues?.map((ev, i) => {
+        if (!ev["ImgBtn"]) {
+          ev["ImgBtn"] = (
+            <button onClick={()=>setIsImgUpload(true)}>Upload Image</button>
+          );
+        }
+        return ev;
+      });
+      setEnteredValues(updateData);
       setShowTimmerBtn(true)
       setTDS("");
       setPhValue("");
     }
   };
 
-  const Completionist = () => {
+  let TimeNotify = () => toast.error(`Time is Over!!!!`, { theme: "colored" });
 
-    toast.error(`Time is Over!!!!`, { theme: "colored" });
+  const Completionist = useCallback(() => {
+
+    TimeNotify();
 
     const d = new Date();
 
@@ -208,21 +210,21 @@ export default function InvestMentFirst() {
         ? `0${d.getSeconds()}`
         : d.getSeconds();
 
-    return <div>{`Gloss of completion time : ${hour}:${min}:${sec}`}</div>;
+    return <div style={{textTransform:'uppercase'}}> Gloss of completion time : <span style={{fontWeight:'bold'}}>{hour}:{min}:{sec}</span></div>;
 
-  };
+  },[]);
 
-  const renderer = ({ minutes, seconds, completed }) => {
+  const renderer = useCallback(({ minutes, seconds, completed }) => {
     if (completed && showTimmer) {
       return <Completionist />;
     } else {
       return (
-        <span>
-          {minutes}:{seconds}
+        <span style={{textAlign:'center'}}>
+          GLOSS OFF TIMER : <span style={{fontWeight:'bold'}}>{minutes}:{seconds}</span>
         </span>
       );
     }
-  };
+  },[showTimmer]);
 
   
 
@@ -251,6 +253,9 @@ export default function InvestMentFirst() {
   const handleConfirmation = () => {
     setEnteredValues(enteredValues.filter((_, index) => index !== selectedIndex));
     setOpenDelete(false);
+    if(enteredValues.length === 1 ){
+      window.location.reload();
+    }
   };
 
   const handleClickOpenDelete = () => {
@@ -321,6 +326,13 @@ export default function InvestMentFirst() {
           <Button onClick={handleClickOpenDelete}>NO</Button>
         </div>
       </Dialog>
+      
+      <Dialog
+      open={isImgUpload}
+      onClose={()=>setIsImgUpload(false)}
+      >
+        
+      </Dialog>
       <div>
         <div className="TopBtnDivMainOne">
           <p
@@ -337,7 +349,7 @@ export default function InvestMentFirst() {
         <div style={{ display: "flex", marginTop: "0px",justifyContent:'space-around' }}>
           <div
             style={{ 
-              width: "70%", 
+              width: "65%", 
               display: "flex", 
               flexDirection: "column", 
               marginLeft:'10px'
@@ -346,9 +358,9 @@ export default function InvestMentFirst() {
             <div
               style={{
                 display: "flex",
-                width: "100%",
-                gap:'50px',
-                justifyContent: "space-around",
+                // width: "80%",
+                gap:'80px',
+                // justifyContent: "space-around",
               }}
             >
               <div className="investTopBox1">
@@ -494,7 +506,7 @@ export default function InvestMentFirst() {
                 >
                   <p className="investDestilInputTitleNew">Weight:</p>
                   <input
-                    type="text"
+                    type="number"
                     // value={
                     //   (greenImg && "3000") ||
                     //   (blueImg && "3000") ||
@@ -517,7 +529,7 @@ export default function InvestMentFirst() {
                 >
                   <p className="investDestilInputTitleNew">TDS:</p>
                   <input
-                    type="text"
+                    type="number"
                     className="investDestilInput"
                     value={TDS}
                     onChange={(e) => setTDS(e.target.value)}
@@ -533,7 +545,7 @@ export default function InvestMentFirst() {
                 >
                   <p className="investDestilInputTitleNew">PHvalue:</p>
                   <input
-                    type="text"
+                    type="number"
                     className="investDestilInput"
                     value={phValue}
                     onChange={(e) => setPhValue(e.target.value)}
@@ -558,7 +570,7 @@ export default function InvestMentFirst() {
             </div>
 
             <div
-              style={{ display: "flex", marginTop: "15px", flexWrap: "wrap",flexDirection:'column'}}
+              style={{ display: "flex", marginTop: "8px", flexWrap: "wrap",flexDirection:'column'}}
             >
               {showTimmerBtn && <div className="invest_btn_div">
                 {!showTimmer
@@ -567,7 +579,7 @@ export default function InvestMentFirst() {
                  Start Time 
                 </button>
                 : 
-                <div style={{color:'red',fontSize:'24px',fontWeight:'bold',backgroundColor:'#060600',width:'100%',textAlign:'center'}}>
+                <div style={{color:'#800000',fontSize:'24px',backgroundColor:'#efefef',width:'100%',padding:'6px'}}>
                   <Countdown date={Date.now() + 30000} renderer={renderer} />
                 </div>
                 }
@@ -586,6 +598,9 @@ export default function InvestMentFirst() {
                   }}
                 >
                   <tr>
+                    <th className="not">{value?.label}</th>
+                  </tr>
+                  <tr>
                     <th className="investTableRow">
                       Batch No:{index === 0 && "AB"}
                       {index === 1 && "BC"}
@@ -599,26 +614,24 @@ export default function InvestMentFirst() {
                     <th className="investTableRow">150 Grams </th>
                   </tr>
                   <tr>
-                    <th className="investTableRow">
+                    <th className={`investTableRow ${!showTimmerBtn && 'sett' }`}>
                       {(greenImg && "Wax Setting") ||
                         (blueImg && "Regular") ||
                         (orangeImg && "RPT")}
                     </th>
                   </tr>
-                  <tr>
-                    <th className="not">{value?.label}</th>
-                  </tr>
-                  {/* <tr>
+                  
+                 {showTimmerBtn && <tr>
                     <th
                       className="btncom"
                       style={{
                         display: eviIndex?.includes(index) ? "none" : "block",
                       }}
                     >
-                      {value?.btncom}
+                      {value?.ImgBtn}
                     </th>
-                  </tr>
-                  <tr>
+                  </tr>}
+                  {/* <tr>
                     <th style={{ color: "red" }}>{value?.timer}</th>
                   </tr> */}
                 </table>
