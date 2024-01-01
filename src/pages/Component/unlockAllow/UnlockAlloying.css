@@ -1,26 +1,26 @@
-.UnlockContainer{
+.UnlockContainer {
     display: flex;
 }
 
-.UnlockTopBox1{
-    width: 50%;
+.UnlockTopBox1 {
+    width: 40%;
     display: flex;
     align-items: center;
     flex-direction: column;
     margin-top: 30px;
 }
 
-.UnlockTopBox2{
+.UnlockTopBox2 {
     margin-top: 10px;
     display: flex;
-    width:50%;
+    width: 50%;
     justify-content: center;
     align-items: center;
     flex-direction: column;
 }
 
 
-.unlockRight{
+.unlockRight {
     height: 60px;
     padding-inline: 30px;
     border-radius: 20px;
@@ -30,11 +30,11 @@
     justify-content: center;
     align-items: center;
     margin: 0px;
-    background-color:  #d6eaba;
+    background-color: #d6eaba;
 }
 
 
-.burnOutIssueBtn{
+.burnOutIssueBtn {
     height: 55px;
     width: fit-content;
     padding-inline: 30px;
@@ -43,21 +43,92 @@
     cursor: pointer;
 }
 
+.unlockTableTH {
+    height: 40px;
+    border: 1px solid;
+    padding-inline: 20px;
+}
+
+
+.tableDataMain {
+    background-color: #f1f1f1;
+    width: fit-content;
+    border-radius: 20px;
+    margin: 10px;
+    cursor: pointer;
+    width: 300px;
+    height: 100px;
+}
+
+.UnlockformDataTable {
+    font-size: 18px;
+    font-weight: 600;
+    color: #cb6ce6;
+    display: flex;
+    align-items: end;
+    margin-block: 25px;
+    margin: 0px 20px 10px;
+    white-space: normal;
+    word-break: break-word;
+
+}
+
+.unlovcDestilInput {
+
+    /* background-color: #d9d9d8; */
+    background-color: white;
+    border: 1px solid #d9d9d8;
+    /* height: 45px;*/
+    width: 200px;
+    font-size: 20px;
+    padding: 12px;
+    border-radius: 8px;
+}
+
+.unlockTimeRemaining {
+    margin: 0px;
+    font-weight: 500;
+    color: rgb(222, 15, 63);
+
+}
+
+
+.unlockTableTitle {
+    font-size: 44px;
+    font-size: 40px;
+    color: #ff5757;
+    font-weight: 700;
+    margin: 10px 0px 2px;
+}
+
+.unlockTableTitleNum {
+    font-size: 40px;
+    font-weight: 700;
+    margin: -10px 0px;
+    color: rgb(222, 15, 63);
+}
+
+.unlockTableTitleText {
+    font-size: 12px;
+    font-weight: 600;
+    margin: 6px 0px 0px 0px;
+    width: 80px;
+}
 
 @media screen and (max-width:718px) {
-    .UnlockContainer{
+    .UnlockContainer {
         display: flex;
         flex-wrap: wrap;
     }
-    .UnlockTopBox1{
-        width:100%
+
+    .UnlockTopBox1 {
+        width: 100%
     }
-    .UnlockTopBox2{
-        width:100%;
+
+    .UnlockTopBox2 {
+        width: 100%;
         margin-top: 20px;
         display: flex;
 
     }
 }
-
-
