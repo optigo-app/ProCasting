@@ -210,11 +210,11 @@ export default function BurnOut() {
                 <div>
                     <div style={{ display: 'flex', marginTop: '30px' ,alignItems: 'center' }}>
                         <p className='investDestilInputTitle'>FLASH CODE:</p>
-                        <input type='text' className='investDestilInput' value={flashCode} />
+                        <input type='text' className='burnoutInput' value={flashCode} />
                     </div>
                     <div className="investDestilInputDiv">
                         <p className='investDestilInputTitle'>BATCH NO:</p>
-                        <input type='text' className='investDestilInput' value={enteredValues.length === 0 ? '' : enteredValues.length === 1 ? 'AB' : enteredValues.length === 2 ? 'BC' : 'CD'} />
+                        <input type='text' className='burnoutInput' value={enteredValues.length === 0 ? '' : enteredValues.length === 1 ? 'AB' : enteredValues.length === 2 ? 'BC' : 'CD'} />
                     </div>
                     <button className='burnOutIssueBtn' onClick={handleIssueJob}>BurnOut Issue</button>
                 </div>
@@ -255,7 +255,7 @@ export default function BurnOut() {
                     </table>
                 ))}
             </div>
-            <p style={{ position: 'absolute', bottom: '10px', textAlign: 'center', width: '100%', color: '#a396c8', fontSize: '18px', fontWeight: 500 }}>furnace Program number > #D (Diamond)  |   #W (WAX) |   #R1 Resin1    |    #R2 Resin2</p>
+            <p style={{ position: 'absolute', bottom: '10px', textAlign: 'center', width: '100%', color: '#a396c8', fontSize: '18px', fontWeight: 500 }}>{"furnace Program number > #D (Diamond)  |   #W (WAX) |   #R1 Resin1    |    #R2 Resin2"}</p>
         </div>
     )
 }
