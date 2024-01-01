@@ -30,7 +30,7 @@
 .invest_btn_div{
     display: flex;
     justify-content: center;
-    margin-top: 20px;
+    margin-top: 15px;
 }
 
 .invest_btn{
@@ -114,7 +114,7 @@
     display: flex;
     width: 100px;
 }
-.investDestilInput{
+.investDestilInput1{
 
     /* background-color: #d9d9d8; */
     background-color: white;
@@ -126,7 +126,7 @@
     border-radius: 8px;
 }
 
-input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-spin-button{
+.investDestilInput1::-webkit-outer-spin-button,.investDestilInput1::-webkit-inner-spin-button{
     -webkit-appearance: none;
     margin: 0;
 }
