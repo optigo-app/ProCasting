@@ -115,6 +115,7 @@ export default function HomeOne() {
                 onClose={handleClose}
                 aria-labelledby="alert-dialog-title"
                 aria-describedby="alert-dialog-description"
+                className='scanTreeDilogMain'
 
             >
                 <p style={{ display: 'flex', fontWeight: 500, fontSize: '35px', margin: '20px 20px 0px 20px', justifyContent: 'space-between' }}>
@@ -143,23 +144,27 @@ export default function HomeOne() {
                 aria-labelledby="alert-dialog-title"
                 aria-describedby="alert-dialog-description"
             >
-                <DialogTitle id="alert-dialog-title" style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    {"SELECT TREE"}
-                </DialogTitle>
-                <DialogContent style={{ display: 'flex' }}>
-                    <div className='NoteMain'>
-                        <img src={Note} className='Noteimg' onClick={() => printQR('/printQr')} />
-                        <p className='NoteImgTitle'>NEW TREE</p>
-                    </div>
-                    <div className='NoteMain'>
-                        <img src={Note} className='Noteimg' onClick={handleClickOpen} />
-                        <p className='NoteImgTitle'>ADD TREE</p>
-                    </div>
-                    <div className='NoteMain'>
-                        <img src={Note} className='Noteimg' onClick={handleClickOpenEdit} />
-                        <p className='NoteImgTitle'>EDIT TREE</p>
-                    </div>
-                </DialogContent>
+                <div style={{ backgroundColor: 'white' }}>
+
+                    <DialogTitle id="alert-dialog-title" style={{ display: 'flex', justifyContent: 'space-between' }}>
+                        {"SELECT TREE"}
+                    </DialogTitle>
+                    <DialogContent style={{ display: 'flex' }}>
+                        <div className='NoteMain'>
+                            <img src={Note} className='Noteimg' onClick={() => printQR('/printQr')} />
+                            <p className='NoteImgTitle'>NEW TREE</p>
+                        </div>
+                        <div className='NoteMain'>
+                            <img src={Note} className='Noteimg' onClick={handleClickOpen} />
+                            <p className='NoteImgTitle'>ADD TREE</p>
+                        </div>
+                        <div className='NoteMain'>
+                            <img src={Note} className='Noteimg' onClick={handleClickOpenEdit} />
+                            <p className='NoteImgTitle'>EDIT TREE</p>
+                        </div>
+                    </DialogContent>
+                </div>
+
             </Dialog>
             <div className='HomeOneMain'>
 
