@@ -3,6 +3,9 @@ import "./AddFlask.css";
 import BarcodeScanner from "react-barcode-reader";
 import scaneCodeImage from "../../assets/scanBarcode.gif";
 import idle from "../../assets/idle.gif";
+import { useNavigate } from "react-router-dom";
+import topLogo from '../../assets/oraillogo.png'
+
 
 export default function AddFlask() {
   const [inputValue, setInputValue] = useState("");
@@ -12,6 +15,7 @@ export default function AddFlask() {
   const [scanInp, setScanInp] = useState("");
   const [isImageVisible, setIsImageVisible] = useState(true);
   const invProRef = useRef(null);
+  const naviagtion = useNavigate();
 
   useEffect(() => {
     invProRef.current.focus();
@@ -82,7 +86,16 @@ export default function AddFlask() {
   return (
     <div>
       <BarcodeScanner onScan={handleScan} onError={handleError} />
-      <p className="mainTitle">PROCASTING-TREE BIND WITH FLASK</p>
+      <div className="TopBtnDivMainOneV2">
+        <p className="headerV2Title">
+          PROCASTING-TREE BIND WITH FLASK
+        </p>
+        <div style={{ display: 'flex', alignItems: 'center' }} onClick={() => naviagtion('/')}>
+          <img src={topLogo} style={{ width: '75px' }} />
+          <p style={{ fontSize: '25px', opacity: '0.6', margin: '0px 10px', fontWeight: 500 }}><span style={{ color: '#00FFFF', opacity: '1' }}>Pro</span>Casting</p>
+        </div>
+      </div>
+      {/* <p className="mainTitle">PROCASTING-TREE BIND WITH FLASK</p> */}
       <div className="addFLaskMain">
         <div className="addFlaskQRMAin">
           <div
@@ -213,27 +226,27 @@ export default function AddFlask() {
             </div>
           </div>
           <div className="addDeatilMain">
-          <div className="div-small">
-            <input
-              type="text"
-              className="addflaskInput"
-              value={enteredValues[0]?.length ? "1000" : ""}
-            />
-            {enteredValues[0]?.length && (
+            <div className="div-small">
+              <input
+                type="text"
+                className="addflaskInput"
+                value={enteredValues[0]?.length ? "1000" : ""}
+              />
+              {enteredValues[0]?.length && (
                 <small className="div-small-text">cap.</small>
               )}
-          </div>
-          <div className="div-small">
-            <input
-              type="text"
-              className="addflaskInput"
-              value={enteredValues[1]?.length ? "100 g" : ""}
-              style={{ marginLeft: "20px" }}
-            />
-            {enteredValues[1]?.length && (
+            </div>
+            <div className="div-small">
+              <input
+                type="text"
+                className="addflaskInput"
+                value={enteredValues[1]?.length ? "100 g" : ""}
+                style={{ marginLeft: "20px" }}
+              />
+              {enteredValues[1]?.length && (
                 <small className="div-small-text">cap.</small>
               )}
-          </div>
+            </div>
           </div>
 
           <div

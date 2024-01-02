@@ -16,6 +16,8 @@ import uploadcloud from '../../assets/uploadCloud.png'
 import { useRecoilValue } from "recoil";
 import { CurrentImageState } from "../../recoil/Recoil";
 import ImageWebCam from "../imageTag/ImageWebCam";
+import topLogo from '../../assets/oraillogo.png'
+import { useNavigate } from "react-router-dom";
 
 export default function InvestMentFirst() {
 
@@ -44,15 +46,16 @@ export default function InvestMentFirst() {
   const [goBtnFlag, setGoBtnFlag] = useState(false)
   const [openDelete, setOpenDelete] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(null);
-  const [isImgUpload,setIsImgUpload] = useState(false)
-  const [isImgShow,setIsImgShow] = useState(false)
-  const [fileBase64,setFileBase64] = useState('')
+  const [isImgUpload, setIsImgUpload] = useState(false)
+  const [isImgShow, setIsImgShow] = useState(false)
+  const [fileBase64, setFileBase64] = useState('')
 
   const invProRef = useRef(null)
   const fileInputRef = useRef(null);
-
-  console.log("enteredValues",enteredValues)
-  console.log("enteredValueseviIndex",eviIndex)
+  const naviagtion = useNavigate();
+  
+  console.log("enteredValues", enteredValues)
+  console.log("enteredValueseviIndex", eviIndex)
 
   useEffect(() => {
     if (greenImg) {
@@ -66,13 +69,13 @@ export default function InvestMentFirst() {
     }
   }, [greenImg, blueImg, orangeImg, weight, defaultImg]);
 
-  useEffect(()=>{
-    if(!enteredValues[0]?.length){
+  useEffect(() => {
+    if (!enteredValues[0]?.length) {
       setGreeImg(false);
       setBlueImg(false);
       setOrangImg(false);
     }
-  },[enteredValues])
+  }, [enteredValues])
 
   useEffect(() => {
     if (enteredValues[0]?.label === "F1") {
@@ -118,7 +121,7 @@ export default function InvestMentFirst() {
     enteredValues.length > 0 && setWeightInp("2000");
   }, []);
 
-  const handleScan = (data) => {};
+  const handleScan = (data) => { };
 
   const handleError = (error) => {
     console.error("Error while scanning:", error);
@@ -178,10 +181,10 @@ export default function InvestMentFirst() {
   const saveDataHandle = () => {
     if (TDS === undefined || TDS === "") {
       alert("Enetr TDS");
-      
+
     } else if (phValue === undefined || phValue === "") {
       alert("Enetr phValue");
-      return 
+      return
     } else {
       setSaveData(true);
       notify();
@@ -196,7 +199,7 @@ export default function InvestMentFirst() {
             className="invest_upload_btn"
             >
               Upload Image
-          </button>
+            </button>
           );
         }
         return ev;
@@ -229,23 +232,23 @@ export default function InvestMentFirst() {
         ? `0${d.getSeconds()}`
         : d.getSeconds();
 
-    return <div style={{textTransform:'uppercase'}}> Gloss of completion time : <span style={{fontWeight:'bold'}}>{hour}:{min}:{sec}</span></div>;
+    return <div style={{ textTransform: 'uppercase' }}> Gloss of completion time : <span style={{ fontWeight: 'bold' }}>{hour}:{min}:{sec}</span></div>;
 
-  },[]);
+  }, []);
 
   const renderer = useCallback(({ minutes, seconds, completed }) => {
     if (completed && showTimmer) {
       return <Completionist />;
     } else {
       return (
-        <span style={{textAlign:'center'}}>
-          GLOSS OFF TIMER : <span style={{fontWeight:'bold'}}>{minutes}:{seconds}</span>
+        <span style={{ textAlign: 'center' }}>
+          GLOSS OFF TIMER : <span style={{ fontWeight: 'bold' }}>{minutes}:{seconds}</span>
         </span>
       );
     }
-  },[showTimmer]);
+  }, [showTimmer]);
 
-  
+
 
   const handleStartTime = () => {
     setShowTimmer(true);
@@ -272,7 +275,7 @@ export default function InvestMentFirst() {
   const handleConfirmation = () => {
     setEnteredValues(enteredValues.filter((_, index) => index !== selectedIndex));
     setOpenDelete(false);
-    if(enteredValues.length === 1 ){
+    if (enteredValues.length === 1) {
       window.location.reload();
     }
   };
@@ -306,13 +309,13 @@ export default function InvestMentFirst() {
   //   }
 
   // };
-  
+
   // const handleButtonClick = () => {
   //   fileInputRef.current.click();
   // };
 
-  useEffect(()=>{
-    if(CurrentImageValue.length>0){
+  useEffect(() => {
+    if (CurrentImageValue.length > 0) {
       const updatedData = enteredValues.map((d, index) => {
         if (eviIndex === index) {
           d.ImgUrl = CurrentImageValue
@@ -320,10 +323,10 @@ export default function InvestMentFirst() {
         return d;
       });
       setEnteredValues(updatedData);
-      
+
       setIsImgUpload(false)
     }
-  },[CurrentImageValue])
+  }, [CurrentImageValue])
 
   return (
     <div>
@@ -493,17 +496,15 @@ export default function InvestMentFirst() {
       </Dialog>
 
       <div>
-        <div className="TopBtnDivMainOne">
-          <p
-            style={{
-              margin: "0px",
-              marginLeft: "10px",
-              fontSize: "20px",
-              fontWeight: 500,
-            }}
-          >
-            INVESTMENT PROCESS
-          </p>
+        <div className="TopBtnDivMainOneV2">
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <p className='headerV2Title' > INVESTMENT PROCESS</p>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center' }} onClick={() => naviagtion('/')}>
+            <img src={topLogo} style={{ width: '75px', }} />
+            <p style={{ fontSize: '25px', opacity: '0.6', margin: '0px 10px', fontWeight: 700, color: '#000435' }}>ProCasting</p>
+            {/* <p className='infoTextInputONe'>E0025(BOB THOMAS)</p> */}
+          </div>
         </div>
         <div
           style={{
@@ -542,7 +543,6 @@ export default function InvestMentFirst() {
                       <img
                         src={scaneCodeImage}
                         className="createImageQrCode"
-                        style={{ marginRight: "25px" }}
                       />
                     </div>
                   ) : (
@@ -622,13 +622,8 @@ export default function InvestMentFirst() {
                     cursor: "pointer",
                     height: "35px",
                     width: "100px",
-                    backgroundColor:'#dbdbdb',
-                    outline:'none',
-                    border:'none',
-                    borderRadius:'20px',
-                    fontWeight:600,
-                    fontSize:'16px'
                   }}
+                  className="homeNoteTitleV2"
                   onClick={handleRefresh}
                 >
                   Clear All
@@ -731,8 +726,10 @@ export default function InvestMentFirst() {
                   }}
                 >
                   <button
-                    className="investAddGlassBtn"
+                    // className="investAddGlassBtn"
                     onClick={saveDataHandle}
+                  className="homeNoteTitleV2"
+
                   >
                     Save
                   </button>
@@ -817,6 +814,7 @@ export default function InvestMentFirst() {
                     </tr>
 
                     {!value?.ImgUrl && (
+                      // {!CurrentImageValue && (
                       // {!CurrentImageValue && (
                       <tr>
                         <th className="btncom">{value?.ImgBtn}</th>

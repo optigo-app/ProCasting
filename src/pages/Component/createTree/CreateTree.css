@@ -8,20 +8,31 @@
 
 .saveEndNewBtn {
     border: none;
-    height: 45px;
-    width: 220px;
+    width: 140px;
     cursor: pointer;
-    background-color: #b8b8b8;
-    border-radius: 10px;
+    background-color: #dbdbdb;
+    border-radius: 20px;
     text-align: center;
-    font-size: 22px;
-    font-weight: 500;
+    font-size: 16px;
+    font-weight: 600;
     margin-top: 15px;
+    padding: 8px;
+}
+.homeNoteTitleV2{
+    border: none;
+    width: 135px;
+    cursor: pointer;
+    background-color: #dbdbdb;
+    border-radius: 20px;
+    text-align: center;
+    font-size: 16px;
+    font-weight: 600;
+    padding: 8px;
 }
 
 .createGoBtn {
     height: 98%;
-    width: 55px;
+    width: 47px;
     margin-left: 5px;
     font-size: 20px;
     font-weight: 600;
@@ -36,9 +47,9 @@
     width: 130px;
     font-size: 16px;
     font-weight: 700;
-    background-color: #b8b8b8;
+    background-color: #dbdbdb;
     border: none;
-    border-radius: 10px;
+    border-radius: 20px;
 }
 
 
@@ -99,16 +110,18 @@
     border: none;
     margin: 0px;
     font-size: 22px;
-    font-weight: 500;
+    font-weight: 700;
     width: 100%;
     text-align: center;
     padding-block: 10px;
-    background-color: lightyellow;
+    color: #000080;
+
+    /* background-color: lightyellow; */
 }
 
 .infoTextInputBatch {
-    height: 40px;
-    width: 203px;
+    height: 35px;
+    width: 150px;
     font-weight: 500;
     margin: 0px;
     background-color: #d9d9d8;
@@ -117,20 +130,20 @@
     margin: 2px;
     padding-left: 5px;
     padding-top: 5px;
-    font-size: 25px;
+    font-size: 21px;
     margin-inline: 5px;
     border-radius: 5px;
 }
 
 .infoTextInputWight {
-    height: 40px;
-    width: 203px;
+    height: 35px;
+    width: 150px;
     border: none;
     background-color: 'white';
     margin: 2px;
     padding-left: 5px;
     padding-top: 5px;
-    font-size: 25px;
+    font-size: 21px;
     margin-inline: 5px;
     border: 1px solid #b8b8b8;
     border-radius: 5px;
@@ -138,7 +151,7 @@
 }
 
 .infoTextInputWight::placeholder {
-    font-size: 25px !important;
+    font-size: 21px !important;
     margin: 10px !important;
     font-weight: 600;
     color: #a2a2a2;
@@ -179,13 +192,13 @@ input[type='date']::-webkit-calender-picker-indicatore {
 .createORMain {
     display: flex;
     flex-direction: column;
-    margin: 0px 0px 0px 50px;
+    margin: 15px 0px 0px 50px;
     width: 45%;
 }
 
 .enterBrachItemBox {
     height: 45px;
-    width: 150px;
+    width: 127px;
     font-size: 18px;
     border: none;
     background-color: #d9d9d8;
@@ -196,7 +209,7 @@ input[type='date']::-webkit-calender-picker-indicatore {
     display: flex;
     flex-direction: column;
     align-items: center;
-    height: 390px;
+    height: 470px;
 }
 
 .CreateDataMain {
@@ -204,7 +217,7 @@ input[type='date']::-webkit-calender-picker-indicatore {
     overflow: auto;
     display: flex;
     flex-direction: column;
-    /* padding: 18px; */
+    padding-inline: 18px;
 }
 
 .totalItemText {
@@ -296,7 +309,7 @@ input[type='date']::-webkit-calender-picker-indicatore {
 }
 
 .uplodedImageProfile {
-    width: 85%;
+    width: 70%;
     margin-left: -10px;
 }
 
@@ -401,7 +414,7 @@ input[type='date']::-webkit-calender-picker-indicatore {
 }
 
 .homeRemarkDesc {
-    background-color: #FFAFA3;
+    background-color: #dbdbdb;
     /* color: white; */
     margin: 0px;
     padding: 0px 10px;

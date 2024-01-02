@@ -24,7 +24,7 @@ import { Carousel } from 'react-responsive-carousel'
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
 
 const fullScreenStyle = {
-    minHeight: '100vh',
+    // minHeight: '100vh',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
@@ -105,7 +105,7 @@ export default function HomeOne() {
         setOpenTree(false);
     };
     return (
-        <div style={fullScreenStyle}>
+        <div>
             <BarcodeScanner
                 onScan={handleScan}
                 onError={handleError}
@@ -121,9 +121,9 @@ export default function HomeOne() {
                     {"Scan Tree"}
                     {/* {editLocalVal === false && <button onClick={() => printQR('/printQr')}>PRINT QR</button>} */}
                 </p>
-                <p style={{ marginInline: '20px',width:'400px', fontSize: '18px', color: 'black', marginTop: '0px', marginBottom: '0px' }}>Scan this tree then get the value it's set the auto then click the continue button end create tree</p>
+                <p style={{ marginInline: '20px', width: '400px', fontSize: '18px', color: 'black', marginTop: '0px', marginBottom: '0px' }}>Scan this tree then get the value it's set the auto then click the continue button end create tree</p>
                 <div className='homePopupMainBox'>
-                    <DialogContentText id="alert-dialog-description" style={{paddingTop: '30px'}}>
+                    <DialogContentText id="alert-dialog-description" style={{ paddingTop: '30px' }}>
                         <img src={scaneCodeImage} className='createImageQrCode' />
                         <input type='text' autoFocus value={scannedValue} ref={scanRef} onChange={(text) => setScannedValue(text.target.value)} style={{ width: '2px', position: 'absolute', zIndex: '-1' }} />
                     </DialogContentText>
@@ -218,8 +218,6 @@ export default function HomeOne() {
                             </div>
                         </Carousel>
                     </div>
-
-                    {/* <img src={Logo} className='logoImgHomeOne' /> */}
                 </div>
             </div>
             {/* <p className='mainTitle'>PROCASTING</p>

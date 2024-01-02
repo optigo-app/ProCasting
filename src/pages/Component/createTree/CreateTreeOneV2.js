@@ -234,7 +234,11 @@ export default function CreateTreeOneV2() {
                 <div className="TopBtnDivMainOneV2">
                     <div style={{ display: 'flex', alignItems: 'center' }}>
                         <CgProfile style={{ height: '30px', width: '30px', marginLeft: '15px' }} onClick={handleClick} />
+
+
+
                         <p className='headerV2Title' >CREATE NEW BATCH</p>
+                        
                         <Menu
                             id="basic-menu"
                             anchorEl={anchorEl}
@@ -244,18 +248,22 @@ export default function CreateTreeOneV2() {
                                 'aria-labelledby': 'basic-button',
                             }}
                         >
-                            <div style={{ display: 'flex' }}>
+                            <div style={{  }}>
                                 {/* <CgProfile style={{ height: '25px', width: '25px', marginLeft: '15px' }} /> */}
-                                <p style={{ margin: '0px 5px', fontWeight: 500, margin: '7px', fontSize: '20px' }}>E0025(BOB THOMAS)</p>
+                                <p style={{ margin: '0px 5px',color:'#b8b8b8' ,fontWeight: 500, margin: '7px', fontSize: '20px' }}>Bob Thomas</p>
+                                <p style={{ margin: '0px 5px',color:'#b8b8b8', fontWeight: 500, margin: '7px',textAlign:'center', fontSize:'20px' }}>E0025</p>
                             </div>
                             {/* <MenuItem onClick={handleClose}>E0025</MenuItem> */}
                             {/* <MenuItem onClick={handleClose}>My account</MenuItem>
                             <MenuItem onClick={handleClose}>Logout</MenuItem> */}
                         </Menu>
                     </div>
+                    <div>
+                    {totalValues !== 0 && <p className='FixedGoldColorText'>GOLD 14K WHITE</p>}
+                    </div>
                     <div style={{ display: 'flex', alignItems: 'center' }}>
-                        <img src={topLogo} style={{ width: '75px', opacity: '0.2' }} />
-                        <p style={{ fontSize: '25px', opacity: '0.6', margin: '0px 10px', fontWeight: 500 }}><span style={{ color: '#00FFFF', opacity: '1' }}>Pro</span>Casting</p>
+                        <img src={topLogo} style={{ width: '75px',}} />
+                        <p style={{ fontSize: '25px', opacity: '0.6', margin: '0px 10px', fontWeight: 700,color:'#000435' }}>ProCasting</p>
                         {/* <p className='infoTextInputONe'>E0025(BOB THOMAS)</p> */}
                     </div>
                 </div>
@@ -282,7 +290,7 @@ export default function CreateTreeOneV2() {
                             </div>
                             <div style={{ display: 'flex', marginTop: '10px' }}>
                                 <input type='text' value={inputValue} style={{ border: inputError && '1px solid red' }} className='enterBrachItemBox' onChange={handleInputChange} onKeyDown={handleKeyDown} />
-                                <button className='createGoBtn'  onClick={handleGoButtonClick} >
+                                <button className='createGoBtn' onClick={handleGoButtonClick} >
                                     Go
                                 </button>
                             </div>
@@ -294,11 +302,11 @@ export default function CreateTreeOneV2() {
                                     border: "1px solid #b8b8b8",
                                     borderRadius: '5px',
                                     outline: "none",
-                                    width: "210px",
-                                    height: "42px",
+                                    width: "150px",
+                                    height: "35px",
                                     color: 'black',
                                     backgroundColor: 'white',
-                                    fontSize: '25px',
+                                    fontSize: '21px',
                                     marginTop: '15px'
                                 }}
                             />
@@ -321,7 +329,6 @@ export default function CreateTreeOneV2() {
                                 <p className='totalItemTextFail'>{'0'}</p>
 
                             </div>
-                            {totalValues !== 0 && <p className='FixedGoldColorText'>GOLD 14K WHITE</p>}
 
                             <div className='CreateDataMain'>
                                 {enteredValues.map((value, index) => (
@@ -337,20 +344,20 @@ export default function CreateTreeOneV2() {
                         <img src={CurrentImageValue ? CurrentImageValue : editTreeImg === true ? EditTreeImg : castingTree} className={CurrentImageValue ? 'uplodedImage' : editTreeImg === true ? 'uploadDefaultImg' : 'uplodedImageProfile'} />
                         <div style={{ marginTop: '5px', display: 'flex', justifyContent: 'space-around' }}>
                             <button className='uploadImageBtnV2' onClick={() => setCamFlag(true)} >{editTreeImg === true ? 'Edit Tree' : 'Upload Tree'}</button>
-                            <p className="homeNoteTitle" style={{ margin: '0px', fontSize: '23px' }} onClick={handleClickOpen}>
+                            <button className="homeNoteTitleV2" onClick={handleClickOpen}>
                                 Remark
-                            </p>
+                            </button>
                         </div>
                     </div>
                 </div>
                 <button className="showInfoBtn" onClick={handleMoreInfoShow}>
-                   <IoInformationCircleSharp style={{color: 'white' ,height: '25px' ,width: '25px' ,marginLeft: '-7px' }}/>
+                    <IoInformationCircleSharp style={{ color: 'white', height: '25px', width: '25px', marginLeft: '-7px' }} />
                 </button>
                 <button
                     className="printQRBtn"
                     onClick={() => navigation("/printQr")}
                 >
-                    <IoPrint style={{color: 'white' ,height: '25px' ,width: '25px' ,marginLeft: '-7px'}}/>
+                    <IoPrint style={{ color: 'white', height: '25px', width: '25px', marginLeft: '-7px' }} />
                 </button>
                 <div className='createFooterMain'>
                     {showEnteredValue && <p className='homeRemarkDesc'><b>Remark : </b>{remark}</p>}

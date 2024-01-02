@@ -1,8 +1,13 @@
 import React, { useEffect } from 'react'
 import './BatchListing.css'
 import { BsThreeDotsVertical } from "react-icons/bs";
+import topLogo from '../../assets/oraillogo.png'
+import { useNavigate } from 'react-router-dom';
+
 
 export default function BatchListing() {
+    
+    const navigation = useNavigate();
 
     useEffect(() => {
         document.body.style.backgroundColor = 'white';
@@ -13,9 +18,18 @@ export default function BatchListing() {
 
     return (
         <div className='batchMain'>
-            <p className='mainTitle' >PROCASTING-DASHBOARD</p>
+            <div className="TopBtnDivMainOneV2">
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <p className='headerV2Title' >PROCASTING-DASHBOARD</p>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center' ,cursor: 'pointer' }} onClick={() => navigation('/')}>
+                    <img src={topLogo} style={{ width: '75px', }} />
+                    <p style={{ fontSize: '25px', opacity: '0.6', margin: '0px 10px', fontWeight: 700, color: '#000435' }}>ProCasting</p>
+                    {/* <p className='infoTextInputONe'>E0025(BOB THOMAS)</p> */}
+                </div>
+            </div>
 
-            <div style={{display : 'flex' ,flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', flexWrap: 'wrap' }}>
                 <div className='batchLsitBoxMain'>
                     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                         <div style={{ display: 'flex', alignItems: 'center', padding: '5px' }}>

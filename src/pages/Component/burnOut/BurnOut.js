@@ -9,9 +9,11 @@ import Button from '@mui/material/Button';
 import BarcodeScanner from 'react-barcode-reader';
 import scaneCodeImage from '../../assets/scanBarcode.gif'
 import idle from '../../assets/idle.gif'
+import topLogo from '../../assets/oraillogo.png'
 
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { useNavigate } from 'react-router-dom';
 
 
 export default function BurnOut() {
@@ -28,7 +30,8 @@ export default function BurnOut() {
     const [isImageVisible, setIsImageVisible] = useState(true);
     const [scanInp, setScanInp] = useState('');
     const invProRef = useRef(null)
-
+    const navigation = useNavigate();
+    
     useEffect(() => {
         if (enteredValues[0] === 'F1') {
             setGreeImg(true)
@@ -175,99 +178,50 @@ export default function BurnOut() {
           </div>
         </Dialog>
 
-        <div className="TopBtnDivMainOne">
-          <p
-            style={{
-              margin: "0px",
-              marginLeft: "10px",
-              fontSize: "20px",
-              fontWeight: 500,
-            }}
-          >
-            BURNOUT PROCESS
-          </p>
-        </div> 
-        <div className='burn_main_container' style={{display:'flex'}}>
-          <div className="left_container" style={{width:'75%'}}>
-            <div style={{ display: "flex", marginTop: "-10px",justifyContent:'space-evenly' }}>
-              <div className="BurnTopBox1">
-                <div
-                  onClick={toggleImageVisibility}
-                  style={{ width: "fit-content", position: "relative" }}
-                >
-                  {isImageVisible ? (
-                    <div>
-                      <img src={scaneCodeImage} className="createImageQrCode" />
-                    </div>
-                  ) : (
-                    <div style={{ display: "flex", justifyContent: "center" }}>
-                      <img src={idle} />
-                    </div>
-                  )}
-                  {!isImageVisible && (
-                    <p
-                      style={{
-                        fontWeight: "bold",
-                        margin: "-5px 5px 15px 10px",
-                      }}
-                    >
-                      {" "}
-                      <span style={{ color: "red" }}>Click</span> On The Image
-                      For Scan<span style={{ color: "red" }}>*</span>
-                    </p>
-                  )}
-
-                  <input
-                    style={{
-                      width: "12px",
-                      position: "absolute",
-                      left: "80px",
-                      top: "75px",
-                      zIndex: -1,
-                    }}
-                    ref={invProRef}
-                    onBlur={() => {
-                      setIsImageVisible(false);
-                    }}
-                    onFocus={() => setIsImageVisible(true)}
-                    value={scanInp}
-                    onChange={(e) => handelScanInp(e.target.value)}
-                    autoFocus
-                  />
-                  <button
-                    style={{
-                      position: "absolute",
-                      left: "85px",
-                      top: "70px",
-                      zIndex: -1,
-                    }}
-                  >
-                    c
-                  </button>
+            {/* <div className="TopBtnDivMainOne">
+                <p style={{ margin: '0px', marginLeft: '10px', fontSize: '20px', fontWeight: 500 }}>BURNOUT PROCESS</p>
+            </div> */}
+            <div className="TopBtnDivMainOneV2">
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <p className='headerV2Title' >BURNOUT PROCESS</p>
                 </div>
-                <div style={{ display: "flex", marginTop: "5px" }}>
-                  <input
-                    type="text"
-                    onKeyDown={handleKeyDown}
-                    style={{ border: inputError && "1px solid red" }}
-                    className="enterBrachItemBox"
-                    value={inputValue}
-                    onChange={handleInputChange}
-                  />
-                  {/* <input type='text' className='enterBrachItemBox' value={inputValue}
-                                onChange={handleInputChange} /> */}
-                  <button
-                    style={{
-                      height: "47px",
-                      width: "50px",
-                      fontSize: "20px",
-                      fontWeight: 600,
-                      cursor: "pointer",
-                    }}
-                    onClick={handleGoButtonClick}
-                  >
-                    Go
-                  </button>
+                <div style={{ display: 'flex', alignItems: 'center' }} onClick={() => navigation('/')}>
+                    <img src={topLogo} style={{ width: '75px', }} />
+                    <p style={{ fontSize: '25px', opacity: '0.6', margin: '0px 10px', fontWeight: 700, color: '#000435' }}>ProCasting</p>
+                    {/* <p className='infoTextInputONe'>E0025(BOB THOMAS)</p> */}
+                </div>
+            </div>
+
+            <div style={{ display: 'flex', marginTop: '-10px' }}>
+                <div className='BurnTopBox1'>
+
+                    <div onClick={toggleImageVisibility} style={{ width: 'fit-content', position: 'relative' }}>
+                        {isImageVisible ? <div>
+                            <img src={scaneCodeImage} className='createImageQrCode' />
+                        </div> :
+                            <div style={{ display: 'flex', justifyContent: 'center' }}>
+                                <img src={idle} />
+                            </div>}
+                        {!isImageVisible && <p style={{ fontWeight: 'bold', margin: '-5px 5px 15px 10px' }}> <span style={{ color: 'red' }}>Click</span> On The Image For Scan<span style={{ color: 'red' }}>*</span></p>}
+
+                        <input style={{ width: '12px', position: 'absolute', left: '80px', top: '75px', zIndex: -1 }} ref={invProRef} onBlur={() => { setIsImageVisible(false) }} onFocus={() => setIsImageVisible(true)} value={scanInp} onChange={(e) => handelScanInp(e.target.value)} autoFocus />
+                        <button style={{
+                            position: "absolute",
+                            left: "85px",
+                            top: "70px",
+                            zIndex: -1,
+                        }}>c</button>
+                    </div>
+                    <div style={{ display: 'flex', marginTop: '5px' }}>
+                        <input type='text' onKeyDown={handleKeyDown} style={{ border: inputError && '1px solid red' }} className='enterBrachItemBox' value={inputValue}
+                            onChange={handleInputChange} />
+                        {/* <input type='text' className='enterBrachItemBox' value={inputValue}
+                            onChange={handleInputChange} /> */}
+                        <button style={{ height: '47px', width: '50px', fontSize: '20px', fontWeight: 600, cursor: 'pointer' }} onClick={handleGoButtonClick}>
+                            Go
+                        </button>
+                    </div>
+                    <button   className="homeNoteTitleV2" style={{ marginTop: '20px', cursor: 'pointer', height: '35px', width: '100px' }} onClick={handleRefresh}>Clear All</button>
                 </div>
                 <button
                   style={{
@@ -311,26 +265,20 @@ export default function BurnOut() {
                     value={flashCode}
                   />
                 </div>
-                <div className="investDestilInputDiv">
-                  <p className="investDestilInputTitle">BATCH NO:</p>
-                  <input
-                    type="text"
-                    className="burnoutInput"
-                    value={
-                      enteredValues.length === 0
-                        ? ""
-                        : enteredValues.length === 1
-                        ? "AB"
-                        : enteredValues.length === 2
-                        ? "BC"
-                        : "CD"
-                    }
-                  />
+                <div style={{ width: '19%', display: 'flex', flexDirection: 'column', marginLeft: '-40px', marginTop: '30px', alignItems: 'center' }}>
+                    <p style={{ margin: '0px', fontSize: '20px', fontWeight: 500 }}>Flask Count</p>
+                    <h1 className='burnCountFlask'>{enteredValues.length}</h1>
                 </div>
-                <button className="burnOutIssueBtn" onClick={handleIssueJob}>
-                  BurnOut Issue
-                </button>
-              </div>
+                <div className='investSideFixedImg'>
+                    <img
+                        src={
+                            (greenImg && greenImges) ||
+                            (blueImg && blueImges) ||
+                            (orangeImg && orangeImges)
+                        }
+                        className="DrawerImg"
+                    />
+                </div>
             </div>
 
             <div style={{ display: "flex", justifyContent: "center" }}>
