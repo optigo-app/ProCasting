@@ -89,7 +89,7 @@ export default function HomeOne() {
         } else {
             setScannedValueError(false)
             setScannedValue('AB')
-            navigation('/createTreeOne')
+            navigation('/createTreeOneV2')
             // navigation(editTree === false ? '/createTreeOne' : '/createTreeOne', { state: { editTree: editTree ? 'true' : 'false' } })
         }
     }

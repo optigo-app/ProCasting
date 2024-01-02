@@ -149,113 +149,261 @@ export default function BurnOut() {
     }
 
     return (
-        <div>
-            <BarcodeScanner
-                onScan={handleScan}
-                onError={handleError}
-                facingMode="environment"
+      <div>
+        <BarcodeScanner
+          onScan={handleScan}
+          onError={handleError}
+          facingMode="environment"
+        />
+        <Dialog
+          open={open}
+          // onClose={handleClose}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+          <DialogTitle id="alert-dialog-title" style={{ marginInline: "45px" }}>
+            {"SAVE THE FLASK PROCESS"}
+          </DialogTitle>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              marginBottom: "20px",
+            }}
+          >
+            <Button onClick={handleClose}>SAVE</Button>
+          </div>
+        </Dialog>
+
+        <div className="TopBtnDivMainOne">
+          <p
+            style={{
+              margin: "0px",
+              marginLeft: "10px",
+              fontSize: "20px",
+              fontWeight: 500,
+            }}
+          >
+            BURNOUT PROCESS
+          </p>
+        </div> 
+        <div className='burn_main_container' style={{display:'flex'}}>
+          <div className="left_container" style={{width:'75%'}}>
+            <div style={{ display: "flex", marginTop: "-10px",justifyContent:'space-evenly' }}>
+              <div className="BurnTopBox1">
+                <div
+                  onClick={toggleImageVisibility}
+                  style={{ width: "fit-content", position: "relative" }}
+                >
+                  {isImageVisible ? (
+                    <div>
+                      <img src={scaneCodeImage} className="createImageQrCode" />
+                    </div>
+                  ) : (
+                    <div style={{ display: "flex", justifyContent: "center" }}>
+                      <img src={idle} />
+                    </div>
+                  )}
+                  {!isImageVisible && (
+                    <p
+                      style={{
+                        fontWeight: "bold",
+                        margin: "-5px 5px 15px 10px",
+                      }}
+                    >
+                      {" "}
+                      <span style={{ color: "red" }}>Click</span> On The Image
+                      For Scan<span style={{ color: "red" }}>*</span>
+                    </p>
+                  )}
+
+                  <input
+                    style={{
+                      width: "12px",
+                      position: "absolute",
+                      left: "80px",
+                      top: "75px",
+                      zIndex: -1,
+                    }}
+                    ref={invProRef}
+                    onBlur={() => {
+                      setIsImageVisible(false);
+                    }}
+                    onFocus={() => setIsImageVisible(true)}
+                    value={scanInp}
+                    onChange={(e) => handelScanInp(e.target.value)}
+                    autoFocus
+                  />
+                  <button
+                    style={{
+                      position: "absolute",
+                      left: "85px",
+                      top: "70px",
+                      zIndex: -1,
+                    }}
+                  >
+                    c
+                  </button>
+                </div>
+                <div style={{ display: "flex", marginTop: "5px" }}>
+                  <input
+                    type="text"
+                    onKeyDown={handleKeyDown}
+                    style={{ border: inputError && "1px solid red" }}
+                    className="enterBrachItemBox"
+                    value={inputValue}
+                    onChange={handleInputChange}
+                  />
+                  {/* <input type='text' className='enterBrachItemBox' value={inputValue}
+                                onChange={handleInputChange} /> */}
+                  <button
+                    style={{
+                      height: "47px",
+                      width: "50px",
+                      fontSize: "20px",
+                      fontWeight: 600,
+                      cursor: "pointer",
+                    }}
+                    onClick={handleGoButtonClick}
+                  >
+                    Go
+                  </button>
+                </div>
+                <button
+                  style={{
+                    marginTop: "20px",
+                    cursor: "pointer",
+                    height: "35px",
+                    width: "100px",
+                  }}
+                  onClick={handleRefresh}
+                >
+                  Clear All
+                </button>
+              </div>
+              <div
+                style={{
+                  width: "19%",
+                  display: "flex",
+                  flexDirection: "column",
+                  marginLeft: "-40px",
+                  marginTop: "30px",
+                  alignItems: "center",
+                }}
+              >
+                <p style={{ margin: "0px", fontSize: "20px", fontWeight: 500 }}>
+                  Flask Count
+                </p>
+                <h1 className="burnCountFlask">{enteredValues.length}</h1>
+              </div>
+              <div>
+                <div
+                  style={{
+                    display: "flex",
+                    marginTop: "30px",
+                    alignItems: "center",
+                  }}
+                >
+                  <p className="investDestilInputTitle">FLASH CODE:</p>
+                  <input
+                    type="text"
+                    className="burnoutInput"
+                    value={flashCode}
+                  />
+                </div>
+                <div className="investDestilInputDiv">
+                  <p className="investDestilInputTitle">BATCH NO:</p>
+                  <input
+                    type="text"
+                    className="burnoutInput"
+                    value={
+                      enteredValues.length === 0
+                        ? ""
+                        : enteredValues.length === 1
+                        ? "AB"
+                        : enteredValues.length === 2
+                        ? "BC"
+                        : "CD"
+                    }
+                  />
+                </div>
+                <button className="burnOutIssueBtn" onClick={handleIssueJob}>
+                  BurnOut Issue
+                </button>
+              </div>
+            </div>
+
+            <div style={{ display: "flex", justifyContent: "center" }}>
+              <h2 className="brunFurnaceId">furnace ID : F123</h2>
+            </div>
+
+            <div style={{ display: "flex", flexWrap: "wrap" }}>
+              {enteredValues.map((value, index) => (
+                <table
+                  key={index}
+                  style={{
+                    backgroundColor:
+                      (greenImg && "#b1d8b7") ||
+                      (blueImg && "#a396c8") ||
+                      (orangeImg && "orange") ||
+                      (defaultImg && "#add8e6"),
+                    margin: "20px",
+                  }}
+                >
+                  <tr>
+                    <th className="investTableRow">
+                      Batch No:{index === 0 && "AB"}
+                      {index === 1 && "BC"}
+                      {index === 2 && "CD"}{" "}
+                    </th>
+                  </tr>
+                  <tr>
+                    <th className="investTableRow">78 Jobs </th>
+                  </tr>
+                  <tr>
+                    <th className="investTableRow">150 Grams </th>
+                  </tr>
+
+                  <tr>
+                    <th className="investTableRow">
+                      {(greenImg && "Wax Setting") ||
+                        (blueImg && "Regular") ||
+                        (orangeImg && "RPT")}
+                    </th>
+                  </tr>
+                  {/* <tr>
+                                <th className='investTableRow'>Flask ID</th>
+                            </tr> */}
+                </table>
+              ))}
+            </div>
+          </div>
+          <div className="investSideFixedImg" >
+            <img
+              src={
+                (greenImg && greenImges) ||
+                (blueImg && blueImges) ||
+                (orangeImg && orangeImges)
+              }
+            //   style={{paddingRight:'10px'}}
+              className="DrawerImg"
             />
-            <Dialog
-                open={open}
-                // onClose={handleClose}
-                aria-labelledby="alert-dialog-title"
-                aria-describedby="alert-dialog-description"
-            >
-                <DialogTitle id="alert-dialog-title" style={{ marginInline: '45px' }}>
-                    {"SAVE THE FLASK PROCESS"}
-                </DialogTitle>
-                <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '20px' }}>
-                    <Button onClick={handleClose}>SAVE</Button>
-                </div>
-            </Dialog>
-
-            <div className="TopBtnDivMainOne">
-                <p style={{ margin: '0px', marginLeft: '10px', fontSize: '20px', fontWeight: 500 }}>BURNOUT PROCESS</p>
-            </div>
-            <div style={{ display: 'flex', marginTop: '-10px' }}>
-                <div className='BurnTopBox1'>
-
-                    <div onClick={toggleImageVisibility} style={{ width: 'fit-content', position: 'relative' }}>
-                        {isImageVisible ? <div>
-                            <img src={scaneCodeImage} className='createImageQrCode' />
-                        </div> :
-                            <div style={{ display: 'flex', justifyContent: 'center' }}>
-                                <img src={idle} />
-                            </div>}
-                        {!isImageVisible && <p style={{ fontWeight: 'bold', margin: '-5px 5px 15px 10px' }}> <span style={{ color: 'red' }}>Click</span> On The Image For Scan<span style={{ color: 'red' }}>*</span></p>}
-
-                        <input style={{ width: '12px', position: 'absolute', left: '80px', top: '75px', zIndex: -1 }} ref={invProRef} onBlur={() => { setIsImageVisible(false) }} onFocus={() => setIsImageVisible(true)} value={scanInp} onChange={(e) => handelScanInp(e.target.value)} autoFocus />
-                        <button style={{
-                            position: "absolute",
-                            left: "85px",
-                            top: "70px",
-                            zIndex: -1,
-                        }}>c</button>
-                    </div>
-                    <div style={{ display: 'flex', marginTop: '5px' }}>
-                        <input type='text' onKeyDown={handleKeyDown} style={{ border: inputError && '1px solid red' }} className='enterBrachItemBox' value={inputValue}
-                            onChange={handleInputChange} />
-                        {/* <input type='text' className='enterBrachItemBox' value={inputValue}
-                            onChange={handleInputChange} /> */}
-                        <button style={{ height: '47px', width: '50px', fontSize: '20px', fontWeight: 600, cursor: 'pointer' }} onClick={handleGoButtonClick}>
-                            Go
-                        </button>
-                    </div>
-                    <button style={{ marginTop: '20px', cursor: 'pointer', height: '35px', width: '100px' }} onClick={handleRefresh}>Clear All</button>
-                </div>
-                <div style={{ width: '19%', display: 'flex', flexDirection: 'column', marginLeft: '-40px', marginTop: '30px', alignItems: 'center' }}>
-                    <p style={{ margin: '0px', fontSize: '20px', fontWeight: 500 }}>Flask Count</p>
-                    <h1 className='burnCountFlask'>{enteredValues.length}</h1>
-                </div>
-                <div>
-                    <div style={{ display: 'flex', marginTop: '30px' ,alignItems: 'center' }}>
-                        <p className='investDestilInputTitle'>FLASH CODE:</p>
-                        <input type='text' className='burnoutInput' value={flashCode} />
-                    </div>
-                    <div className="investDestilInputDiv">
-                        <p className='investDestilInputTitle'>BATCH NO:</p>
-                        <input type='text' className='burnoutInput' value={enteredValues.length === 0 ? '' : enteredValues.length === 1 ? 'AB' : enteredValues.length === 2 ? 'BC' : 'CD'} />
-                    </div>
-                    <button className='burnOutIssueBtn' onClick={handleIssueJob}>BurnOut Issue</button>
-                </div>
-                <div className='investSideFixedImg'>
-                    <img
-                        src={
-                            (greenImg && greenImges) ||
-                            (blueImg && blueImges) ||
-                            (orangeImg && orangeImges)
-                        }
-                        className="DrawerImg"
-                    />
-                </div>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'center' }}>
-                <h2 className='brunFurnaceId'>furnace ID : F123</h2>
-            </div>
-
-            <div style={{ display: 'flex', marginTop: '-20px', flexWrap: 'wrap' }}>
-                {enteredValues.map((value, index) => (
-                    <table key={index} style={{ backgroundColor: greenImg && '#b1d8b7' || blueImg && '#a396c8' || orangeImg && 'orange' || defaultImg && '#add8e6', margin: '20px' }}>
-                        <tr>
-                            <th className='investTableRow'>Batch No:{index === 0 && 'AB'}{index === 1 && 'BC'}{index === 2 && 'CD'} </th>
-                        </tr>
-                        <tr>
-                            <th className='investTableRow'>78 Jobs </th>
-                        </tr>
-                        <tr>
-                            <th className='investTableRow'>150 Grams </th>
-                        </tr>
-
-                        <tr>
-                            <th className='investTableRow'>{greenImg && 'Wax Setting' || blueImg && 'Regular' || orangeImg && 'RPT'}</th>
-                        </tr>
-                        {/* <tr>
-                            <th className='investTableRow'>Flask ID</th>
-                        </tr> */}
-                    </table>
-                ))}
-            </div>
-            <p style={{ position: 'absolute', bottom: '10px', textAlign: 'center', width: '100%', color: '#a396c8', fontSize: '18px', fontWeight: 500 }}>{"furnace Program number > #D (Diamond)  |   #W (WAX) |   #R1 Resin1    |    #R2 Resin2"}</p>
+          </div>
         </div>
-    )
+        <p
+          style={{
+            bottom: "10px",
+            textAlign: "center",
+            width: "100%",
+            color: "#a396c8",
+            fontSize: "18px",
+            fontWeight: 500,
+          }}
+        >
+          {
+            "furnace Program number > #D (Diamond)  |   #W (WAX) |   #R1 Resin1    |    #R2 Resin2"
+          }
+        </p>
+      </div>
+    );
 }
