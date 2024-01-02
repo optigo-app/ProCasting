@@ -58,16 +58,16 @@
     background-color: #f1f1f1;
     width: fit-content;
     border-radius: 20px;
-    margin: 10px;
+    margin: 2.5px;
     cursor: pointer;
     width: 300px;
-    height: 100px;
+    height: 117px;
 }
 
 .UnlockformDataTable {
     font-size: 18px;
     font-weight: 600;
-    color: #cb6ce6;
+    color: #004080;
     display: flex;
     align-items: end;
     margin-block: 25px;
@@ -98,9 +98,8 @@
 
 
 .unlockTableTitle {
-    font-size: 44px;
     font-size: 40px;
-    color: #ff5757;
+    color: #800000;
     font-weight: 700;
     margin: 10px 0px 2px;
 }
@@ -117,6 +116,7 @@
     font-weight: 600;
     margin: 6px 0px 0px 0px;
     width: 80px;
+    text-align: center;
 }
 
 @media screen and (max-width:718px) {

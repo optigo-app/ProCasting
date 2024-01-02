@@ -12,6 +12,10 @@ import idle from "../../assets/idle.gif";
 import RemoveCircleRoundedIcon from "@mui/icons-material/RemoveCircleRounded";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import uploadcloud from '../../assets/uploadCloud.png'
+import { useRecoilValue } from "recoil";
+import { CurrentImageState } from "../../recoil/Recoil";
+import ImageWebCam from "../imageTag/ImageWebCam";
 
 export default function InvestMentFirst() {
 
@@ -25,6 +29,7 @@ export default function InvestMentFirst() {
   const [blueImg, setBlueImg] = useState(false);
   const [orangeImg, setOrangImg] = useState(false);
   const [defaultImg, setDefaultImg] = useState(false);
+  const CurrentImageValue = useRecoilValue(CurrentImageState);
   const [weight, setWeight] = useState(false);
   const [TDS, setTDS] = useState(undefined);
   const [phValue, setPhValue] = useState(undefined);
@@ -40,8 +45,14 @@ export default function InvestMentFirst() {
   const [openDelete, setOpenDelete] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(null);
   const [isImgUpload,setIsImgUpload] = useState(false)
+  const [isImgShow,setIsImgShow] = useState(false)
+  const [fileBase64,setFileBase64] = useState('')
 
   const invProRef = useRef(null)
+  const fileInputRef = useRef(null);
+
+  console.log("enteredValues",enteredValues)
+  console.log("enteredValueseviIndex",eviIndex)
 
   useEffect(() => {
     if (greenImg) {
@@ -177,7 +188,13 @@ export default function InvestMentFirst() {
       const updateData = enteredValues?.map((ev, i) => {
         if (!ev["ImgBtn"]) {
           ev["ImgBtn"] = (
-            <button onClick={()=>setIsImgUpload(true)}>Upload Image</button>
+            <button 
+            onClick={()=>{
+              setIsImgUpload(true)
+              setEviIndex(i)
+            }}>
+              Upload Image
+          </button>
           );
         }
         return ev;
@@ -261,10 +278,50 @@ export default function InvestMentFirst() {
   const handleClickOpenDelete = () => {
     setOpenDelete(false);
   };
+
   const handleCloseDelete = () => {
     setOpenDelete(false);
   };
 
+  // const handleFileUpload = (event) => {
+  //   const file = event.target.files[0]; 
+
+  //   if (file) {
+  //     const reader = new FileReader();
+  //     reader.onloadend = () => {
+  //       const base64String = reader.result;
+  //       const updatedData = enteredValues.map((d, index) => {
+  //         if (eviIndex === index) {
+  //           d.ImgUrl = base64String
+  //         }
+  //         return d;
+  //       });
+  //       setEnteredValues(updatedData);
+  //       setFileBase64(base64String)
+  //       // console.log('Base64 representation:', base64String);
+  //     };
+  //     reader.readAsDataURL(file);
+  //   }
+
+  // };
+  
+  // const handleButtonClick = () => {
+  //   fileInputRef.current.click();
+  // };
+
+  useEffect(()=>{
+    if(CurrentImageValue.length>0){
+      const updatedData = enteredValues.map((d, index) => {
+        if (eviIndex === index) {
+          d.ImgUrl = CurrentImageValue
+        }
+        return d;
+      });
+      setEnteredValues(updatedData);
+      
+      setIsImgUpload(false)
+    }
+  },[CurrentImageValue])
 
   return (
     <div>
@@ -274,6 +331,11 @@ export default function InvestMentFirst() {
         facingMode="environment"
       />
       <ToastContainer />
+
+      <Dialog fullWidth open={isImgUpload} onClose={() => setIsImgUpload(false)}>
+        <ImageWebCam />
+      </Dialog>
+
       <Dialog
         open={open}
         onClose={handleClose}
@@ -295,6 +357,7 @@ export default function InvestMentFirst() {
               }}
               value={enteredTime}
               onChange={handleInputChangen}
+              className="investinput"
             />
             <button
               style={{
@@ -318,21 +381,111 @@ export default function InvestMentFirst() {
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
-        <DialogTitle id="alert-dialog-title" style={{ margin: '20px', paddingInline: '100px' }}>
+        <DialogTitle
+          id="alert-dialog-title"
+          style={{ margin: "20px", paddingInline: "100px" }}
+        >
           {"ARE YOU SURE TO DELETE ?"}
         </DialogTitle>
-        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '20px' }}>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            marginBottom: "20px",
+          }}
+        >
           <Button onClick={handleConfirmation}>YES</Button>
           <Button onClick={handleClickOpenDelete}>NO</Button>
         </div>
       </Dialog>
-      
+
+      {/* <Dialog 
+        className="uploadImage" 
+        open={isImgUpload} 
+        onClose={() =>{
+          setIsImgUpload(false)
+          setTimeout(()=>{
+            setFileBase64('')
+          },150)
+        }}
+        >
+        <div
+          style={{
+            width: "360px",
+            height: "390px",
+            display: "flex",
+            justifyContent: "space-between",
+            flexDirection: "column",
+            alignItems: "center",
+            padding: "20px",
+          }}
+        >
+          <img src={!fileBase64.length ? uploadcloud : fileBase64 } style={{ width: "100%",height:'100%',objectFit: "contain" }} />
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              position: "relative",
+            }}
+          >
+            <input
+              type="file"
+              id="fileInput"
+              accept="image/*"
+              style={{ display: "none" }}
+              ref={fileInputRef}
+              onChange={(e) => handleFileUpload(e)}
+            />
+            <label htmlFor="fileInput">
+              <button onClick={handleButtonClick}>Upload</button>
+            </label>
+          </div>
+        </div>
+      </Dialog> */}
+
       <Dialog
-      open={isImgUpload}
-      onClose={()=>setIsImgUpload(false)}
+        className="showImage"
+        open={isImgShow}
+        onClose={() => setIsImgShow(false)}
       >
-        
+        <div
+          style={{
+            width: "auto",
+            height: "auto",
+            display: "flex",
+            justifyContent: "space-between",
+            flexDirection: "column",
+            alignItems: "center",
+            padding: "20px",
+          }}
+        >
+          <img
+            // src={enteredValues[eviIndex]?.ImgUrl}
+            src={fileBase64}
+            style={{ width: "100%", objectFit: "cover" }}
+          />
+          {/* <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              position: "relative",
+            }}
+          >
+            <input
+              type="file"
+              id="fileInput"
+              accept="image/*"
+              style={{ display: "none" }}
+              ref={fileInputRef}
+              onChange={(e) => handleFileUpload(e)}
+            />
+            <label htmlFor="fileInput">
+              <button onClick={handleButtonClick}>Change Image</button>
+            </label>
+          </div> */}
+        </div>
       </Dialog>
+
       <div>
         <div className="TopBtnDivMainOne">
           <p
@@ -346,20 +499,26 @@ export default function InvestMentFirst() {
             INVESTMENT PROCESS
           </p>
         </div>
-        <div style={{ display: "flex", marginTop: "0px",justifyContent:'space-around' }}>
+        <div
+          style={{
+            display: "flex",
+            marginTop: "0px",
+            justifyContent: "space-around",
+          }}
+        >
           <div
-            style={{ 
-              width: "65%", 
-              display: "flex", 
-              flexDirection: "column", 
-              marginLeft:'10px'
+            style={{
+              width: "65%",
+              display: "flex",
+              flexDirection: "column",
+              marginLeft: "10px",
             }}
           >
             <div
               style={{
                 display: "flex",
                 // width: "80%",
-                gap:'80px',
+                gap: "80px",
                 // justifyContent: "space-around",
               }}
             >
@@ -516,7 +675,7 @@ export default function InvestMentFirst() {
                     // }
                     value={weightInp}
                     onChange={(e) => setWeightInp(e.target.value)}
-                    className="investDestilInput"
+                    className="investDestilInput1"
                   />
                 </div>
                 <div
@@ -530,7 +689,7 @@ export default function InvestMentFirst() {
                   <p className="investDestilInputTitleNew">TDS:</p>
                   <input
                     type="number"
-                    className="investDestilInput"
+                    className="investDestilInput1"
                     value={TDS}
                     onChange={(e) => setTDS(e.target.value)}
                   />
@@ -546,7 +705,7 @@ export default function InvestMentFirst() {
                   <p className="investDestilInputTitleNew">PHvalue:</p>
                   <input
                     type="number"
-                    className="investDestilInput"
+                    className="investDestilInput1"
                     value={phValue}
                     onChange={(e) => setPhValue(e.target.value)}
                   />
@@ -570,72 +729,107 @@ export default function InvestMentFirst() {
             </div>
 
             <div
-              style={{ display: "flex", marginTop: "8px", flexWrap: "wrap",flexDirection:'column'}}
+              style={{
+                display: "flex",
+                flexWrap: "wrap",
+                flexDirection: "column",
+              }}
             >
-              {showTimmerBtn && <div className="invest_btn_div">
-                {!showTimmer
-                ? 
-                <button className="invest_btn" onClick={()=>handleStartTime()}>
-                 Start Time 
-                </button>
-                : 
-                <div style={{color:'#800000',fontSize:'24px',backgroundColor:'#efefef',width:'100%',padding:'6px'}}>
-                  <Countdown date={Date.now() + 30000} renderer={renderer} />
-                </div>
-                }
-              </div>}
-              <div style={{ display: "flex", marginTop: "15px", flexWrap: "wrap"}}>
-              {enteredValues?.map((value, index) => (
-                <table
-                  key={index}
-                  style={{
-                    backgroundColor:
-                      (greenImg && "#b1d8b7") ||
-                      (blueImg && "#a396c8") ||
-                      (orangeImg && "orange") ||
-                      (defaultImg && "#add8e6"),
-                    margin: "5px",
-                  }}
-                >
-                  <tr>
-                    <th className="not">{value?.label}</th>
-                  </tr>
-                  <tr>
-                    <th className="investTableRow">
-                      Batch No:{index === 0 && "AB"}
-                      {index === 1 && "BC"}
-                      {index === 2 && "CD"}{" "}
-                    </th>
-                  </tr>
-                  <tr>
-                    <th className="investTableRow">78 Jobs </th>
-                  </tr>
-                  <tr>
-                    <th className="investTableRow">150 Grams </th>
-                  </tr>
-                  <tr>
-                    <th className={`investTableRow ${!showTimmerBtn && 'sett' }`}>
-                      {(greenImg && "Wax Setting") ||
-                        (blueImg && "Regular") ||
-                        (orangeImg && "RPT")}
-                    </th>
-                  </tr>
-                  
-                 {showTimmerBtn && <tr>
-                    <th
-                      className="btncom"
+              {showTimmerBtn && (
+                <div className="invest_btn_div">
+                  {!showTimmer ? (
+                    <button
+                      className="invest_btn"
+                      onClick={() => handleStartTime()}
+                    >
+                      Start Time
+                    </button>
+                  ) : (
+                    <div
                       style={{
-                        display: eviIndex?.includes(index) ? "none" : "block",
+                        color: "#800000",
+                        fontSize: "24px",
+                        backgroundColor: "#efefef",
+                        width: "100%",
+                        padding: "6px",
                       }}
                     >
-                      {value?.ImgBtn}
-                    </th>
-                  </tr>}
-                  {/* <tr>
+                      <Countdown
+                        date={Date.now() + 30000}
+                        renderer={renderer}
+                      />
+                    </div>
+                  )}
+                </div>
+              )}
+              <div
+                style={{ display: "flex", marginTop: "5px", flexWrap: "wrap" }}
+              >
+                {enteredValues?.map((value, index) => (
+                  <table
+                    key={index}
+                    style={{
+                      backgroundColor:
+                        (greenImg && "#b1d8b7") ||
+                        (blueImg && "#a396c8") ||
+                        (orangeImg && "orange") ||
+                        (defaultImg && "#add8e6"),
+                      margin: "5px",
+                    }}
+                  >
+                    <tr>
+                      <th className="not">{value?.label}</th>
+                    </tr>
+                    <tr>
+                      <th className="investTableRow">
+                        Batch No:{index === 0 && "AB"}
+                        {index === 1 && "BC"}
+                        {index === 2 && "CD"}{" "}
+                      </th>
+                    </tr>
+                    <tr>
+                      <th className="investTableRow">78 Jobs </th>
+                    </tr>
+                    <tr>
+                      <th className="investTableRow">150 Grams </th>
+                    </tr>
+                    <tr>
+                      <th
+                        className={`investTableRow ${!showTimmerBtn && "sett"}`}
+                      >
+                        {(greenImg && "Wax Setting") ||
+                          (blueImg && "Regular") ||
+                          (orangeImg && "RPT")}
+                      </th>
+                    </tr>
+
+                    {!value?.ImgUrl && (
+                    // {!CurrentImageValue && (
+                      <tr>
+                        <th className="btncom">{value?.ImgBtn}</th>
+                      </tr>
+                    )}
+                    {value?.ImgUrl && (
+                      <tr>
+                        <th className="btncom">
+                          <button
+                            onClick={() => {
+                              setIsImgShow(true);
+                              setEviIndex(index);
+                              setFileBase64(value?.ImgUrl)
+                            }}
+                          >
+                            Show Image
+                          </button>
+                        </th>
+                      </tr>
+                    )}
+
+                    {/* <tr>
                     <th style={{ color: "red" }}>{value?.timer}</th>
                   </tr> */}
-                </table>
-              ))}
+                  </table>
+                ))}
               </div>
             </div>
           </div>
