@@ -192,7 +192,9 @@ export default function InvestMentFirst() {
             onClick={()=>{
               setIsImgUpload(true)
               setEviIndex(i)
-            }}>
+            }}
+            className="invest_upload_btn"
+            >
               Upload Image
           </button>
           );
@@ -332,7 +334,11 @@ export default function InvestMentFirst() {
       />
       <ToastContainer />
 
-      <Dialog fullWidth open={isImgUpload} onClose={() => setIsImgUpload(false)}>
+      <Dialog
+        fullWidth
+        open={isImgUpload}
+        onClose={() => setIsImgUpload(false)}
+      >
         <ImageWebCam />
       </Dialog>
 
@@ -616,6 +622,12 @@ export default function InvestMentFirst() {
                     cursor: "pointer",
                     height: "35px",
                     width: "100px",
+                    backgroundColor:'#dbdbdb',
+                    outline:'none',
+                    border:'none',
+                    borderRadius:'20px',
+                    fontWeight:600,
+                    fontSize:'16px'
                   }}
                   onClick={handleRefresh}
                 >
@@ -735,33 +747,34 @@ export default function InvestMentFirst() {
                 flexDirection: "column",
               }}
             >
-              {showTimmerBtn && (
-                <div className="invest_btn_div">
+              {showTimmerBtn && <div className="invest_btn_div">
+                <div
+                  style={{
+                    color: "#800000",
+                    fontSize: "24px",
+                    backgroundColor: "#efefef",
+                    width: "100%",
+                    padding: "6px",
+                  }}
+                >
                   {!showTimmer ? (
+                    <div style={{display:'flex',alignItems:'center',height:'30px'}}>
+                      
+                    <p>Process Compeleted Start Gloss Of Time :</p>
+                    &nbsp;
                     <button
                       className="invest_btn"
                       onClick={() => handleStartTime()}
                     >
                       Start Time
                     </button>
-                  ) : (
-                    <div
-                      style={{
-                        color: "#800000",
-                        fontSize: "24px",
-                        backgroundColor: "#efefef",
-                        width: "100%",
-                        padding: "6px",
-                      }}
-                    >
-                      <Countdown
-                        date={Date.now() + 30000}
-                        renderer={renderer}
-                      />
                     </div>
+                  ) : (
+                    <Countdown date={Date.now() + 30000} renderer={renderer} />
                   )}
                 </div>
-              )}
+              </div>}
+
               <div
                 style={{ display: "flex", marginTop: "5px", flexWrap: "wrap" }}
               >
@@ -804,7 +817,7 @@ export default function InvestMentFirst() {
                     </tr>
 
                     {!value?.ImgUrl && (
-                    // {!CurrentImageValue && (
+                      // {!CurrentImageValue && (
                       <tr>
                         <th className="btncom">{value?.ImgBtn}</th>
                       </tr>
@@ -816,8 +829,9 @@ export default function InvestMentFirst() {
                             onClick={() => {
                               setIsImgShow(true);
                               setEviIndex(index);
-                              setFileBase64(value?.ImgUrl)
+                              setFileBase64(value?.ImgUrl);
                             }}
+                            className="invest_upload_btn"
                           >
                             Show Image
                           </button>

@@ -34,7 +34,12 @@
 }
 
 .invest_btn{
+    height: 30px;
     padding:5px 10px;
+    border:none;
+    outline: none;
+    background-color: #b8b8b8;
+    border-radius: 10px;
 }
 .mainTitleBarCode{
     margin: 0px;
@@ -131,8 +136,14 @@
     margin: 0;
 }
 .investAddGlassBtn{
-    height: 40px;
-    width: 150px;
+    height: 35px;
+    width: 100px;
+    border:none;
+    outline:none;
+    background-color: #dbdbdd;
+    font-size: 16px;
+    font-weight: 600;
+    border-radius: 20px;
 }
 
 .investStartBtn{
@@ -188,6 +199,19 @@
 .css-uyjz3f-MuiPaper-root-MuiDrawer-paper {
     box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px !important;
     width: 35%;
+}
+
+.invest_upload_btn{
+    height: 27px;
+    width: 100px;
+    border:none;
+    outline:none;
+    background-color: black;
+    font-size: 12px;
+    color:white;
+    font-weight: 600;
+    border-radius: 20px;
+    margin:3px;
 }
 
 /* .btncom:active{
