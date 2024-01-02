@@ -53,7 +53,7 @@ export default function InvestMentFirst() {
   const invProRef = useRef(null)
   const fileInputRef = useRef(null);
   const naviagtion = useNavigate();
-  
+
   console.log("enteredValues", enteredValues)
   console.log("enteredValueseviIndex", eviIndex)
 
@@ -191,12 +191,12 @@ export default function InvestMentFirst() {
       const updateData = enteredValues?.map((ev, i) => {
         if (!ev["ImgBtn"]) {
           ev["ImgBtn"] = (
-            <button 
-            onClick={()=>{
-              setIsImgUpload(true)
-              setEviIndex(i)
-            }}
-            className="invest_upload_btn"
+            <button
+              onClick={() => {
+                setIsImgUpload(true)
+                setEviIndex(i)
+              }}
+              className="invest_upload_btn"
             >
               Upload Image
             </button>
@@ -591,31 +591,12 @@ export default function InvestMentFirst() {
                     c
                   </button>
                 </div>
-                <div style={{ display: "flex", marginTop: "5px" }}>
-                  <input
-                    type="text"
-                    onKeyDown={handleKeyDown}
-                    style={{ border: inputError && "1px solid red" }}
-                    className="enterBrachItemBox"
-                    value={inputValue}
-                    onChange={handleInputChange}
-                    disabled={showTimmerBtn}
-                  />
-                  <button
-                    style={{
-                      height: "47px",
-                      width: "50px",
-                      fontSize: "20px",
-                      fontWeight: 600,
-                      cursor: "pointer",
-                    }}
-                    onClick={handleGoButtonClick}
-                    disabled={showTimmerBtn}
-                  >
+                <div style={{ display: 'flex', marginTop: '10px' }}>
+                  <input type='text' value={inputValue} style={{ border: inputError && '1px solid red' }} className='enterBrachItemBox' onChange={handleInputChange} onKeyDown={handleKeyDown} />
+                  <button className='createGoBtn' onClick={handleGoButtonClick} >
                     Go
                   </button>
                 </div>
-
                 <button
                   style={{
                     marginTop: "20px",
@@ -728,7 +709,7 @@ export default function InvestMentFirst() {
                   <button
                     // className="investAddGlassBtn"
                     onClick={saveDataHandle}
-                  className="homeNoteTitleV2"
+                    className="homeNoteTitleV2"
 
                   >
                     Save
@@ -755,16 +736,16 @@ export default function InvestMentFirst() {
                   }}
                 >
                   {!showTimmer ? (
-                    <div style={{display:'flex',alignItems:'center',height:'30px'}}>
-                      
-                    <p>Process Compeleted Start Gloss Of Time :</p>
-                    &nbsp;
-                    <button
-                      className="invest_btn"
-                      onClick={() => handleStartTime()}
-                    >
-                      Start Time
-                    </button>
+                    <div style={{ display: 'flex', alignItems: 'center', height: '30px' }}>
+
+                      <p>Process Compeleted Start Gloss Of Time :</p>
+                      &nbsp;
+                      <button
+                        className="invest_btn"
+                        onClick={() => handleStartTime()}
+                      >
+                        Start Time
+                      </button>
                     </div>
                   ) : (
                     <Countdown date={Date.now() + 30000} renderer={renderer} />

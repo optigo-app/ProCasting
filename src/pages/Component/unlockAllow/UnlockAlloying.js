@@ -421,27 +421,9 @@ export default function UnlockAlloying() {
               zIndex: -1,
             }}>c</button>
           </div>
-          <div style={{ display: "flex", marginTop: "5px" }}>
-            <input
-              type="text"
-              style={{ border: inputError && "1px solid red" }}
-              className="enterBrachItemBox"
-              value={inputValue}
-              onChange={handleInputChange}
-              onKeyDown={handleKeyDown}
-            />
-
-            <button
-              style={{
-                height: "98%",
-                width: "55px",
-                marginLeft: "5px",
-                fontSize: "20px",
-                fontWeight: 600,
-                cursor: "pointer",
-              }}
-              onClick={handleGoButtonClick}
-            >
+          <div style={{ display: 'flex', marginTop: '10px' }}>
+            <input type='text' value={inputValue} style={{ border: inputError && '1px solid red' }} className='enterBrachItemBox' onChange={handleInputChange} onKeyDown={handleKeyDown} />
+            <button className='createGoBtn' onClick={handleGoButtonClick} >
               Go
             </button>
           </div>
