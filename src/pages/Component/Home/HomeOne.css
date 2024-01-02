@@ -1,0 +1,175 @@
+.HomeOneMain {
+    display: flex;
+    height: 100%;
+}
+
+.homeSideBar1 {
+    background-color: #f1f1f1;
+    height: 100%;
+    width: 20%;
+    position: fixed;
+    left: 0;
+    top: 0;
+
+}
+
+.homeOneSider1TitleMain {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    height: 60vh;
+    margin-top: 20px;
+}
+
+.homeOneSider1Title {
+    background-color: #b8b8b8;
+    padding: 5px 20px;
+    margin: 0 20px;
+    border-radius: 10px;
+    text-align: center;
+    font-size: 22px;
+    font-weight: 500;
+}
+
+.homeSideBar2{
+    width: 80%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 20%;
+    height: 100%;
+    position: fixed;
+    left: 0;
+    top: 0;
+
+}
+.logoImgHomeOne{
+    width: 55%;
+
+}
+.caurImg{
+    width: 100%;
+    object-fit: fill;
+    height: 100%;
+}
+
+.css-1t1j96h-MuiPaper-root-MuiDialog-paper{
+    background-color: #f1f1f1!important;
+}
+
+.homePopupContineBtn{
+    height: 50px;
+    width: 180px;
+    background-color: black;
+    color: white;
+    font-size: 20px;
+    font-weight: 500;
+    border-radius: 10px;
+    outline: none;
+    border: none;
+}
+
+
+
+
+
+
+
+.mainTitle {
+    margin: 0px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 50px;
+    background-color: lightyellow;
+    width: 100%;
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.logoImg {
+    width: 30%;
+}
+
+.NoteMain {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.Noteimg {
+    width: 70%;
+}
+
+.NoteImgTitle {
+    font-size: 18px;
+    font-weight: 500;
+    margin: 0px;
+}
+
+.bothBtnDiv {
+    position: absolute;
+    bottom: 20%;
+    display: flex;
+    background-color: white;
+}
+
+.scaneTreeInputBox {
+    width: 150px;
+    font-size: 25px;
+    font-weight: 500;
+    margin: 0px;
+    text-align: center;
+    background-color: #d9d9d8;
+    outline: none;
+    border: none;
+}
+.scaneTreeInputBox:disabled{
+    background-color: #f1f1f1;
+}
+.homePopupMainBox{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-top: 50px;
+        background-color: white;
+        margin-inline: 30px;
+        margin-bottom: 20px;
+        border-radius: 24px;
+}
+
+
+
+
+
+.homeNewTree {
+    height: 40px;
+    width: 120px;
+    background-color: #eceded;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    margin-inline: 5%;
+}
+
+.homeEditTree {
+    height: 40px;
+    width: 120px;
+    background-color: #eceded;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    margin-inline: 5%;
+
+}
+
+@media screen and (max-width:1400px) {
+
+    .logoImg {
+        width: 15% !important;
+    }
+
+    .Noteimg {
+        width: 40%;
+    }
+}
