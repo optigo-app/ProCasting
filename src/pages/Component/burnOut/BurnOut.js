@@ -245,27 +245,9 @@ export default function BurnOut() {
                                     c
                                 </button>
                             </div>
-                            <div style={{ display: "flex", marginTop: "5px" }}>
-                                <input
-                                    type="text"
-                                    onKeyDown={handleKeyDown}
-                                    style={{ border: inputError && "1px solid red" }}
-                                    className="enterBrachItemBox"
-                                    value={inputValue}
-                                    onChange={handleInputChange}
-                                />
-                                {/* <input type='text' className='enterBrachItemBox' value={inputValue}
-                                onChange={handleInputChange} /> */}
-                                <button
-                                    style={{
-                                        height: "47px",
-                                        width: "50px",
-                                        fontSize: "20px",
-                                        fontWeight: 600,
-                                        cursor: "pointer",
-                                    }}
-                                    onClick={handleGoButtonClick}
-                                >
+                            <div style={{ display: 'flex', marginTop: '10px' }}>
+                                <input type='text' value={inputValue} style={{ border: inputError && '1px solid red' }} className='enterBrachItemBox' onChange={handleInputChange} onKeyDown={handleKeyDown} />
+                                <button className='createGoBtn' onClick={handleGoButtonClick} >
                                     Go
                                 </button>
                             </div>
@@ -281,7 +263,7 @@ export default function BurnOut() {
                                 Clear All
                             </button>
                         </div>
-                       
+
                         <div>
                             <div
                                 style={{
