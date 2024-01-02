@@ -49,7 +49,7 @@
 
 .menu_responsive{
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     gap:12px;
     align-items: center;
 }
