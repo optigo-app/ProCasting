@@ -5,6 +5,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import MenuRoundedIcon from '@mui/icons-material/MenuRounded';
 import { Divider, Drawer } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import topLogo from '../../assets/oraillogo.png'
 
 const BatchListingGrid = () => {
 
@@ -293,8 +294,11 @@ const BatchListingGrid = () => {
             </button>
             <button className="grid-btn" onClick={() => navigation('/burnOut')}>BURNOUT</button>
           </div> */}
-          <button className="grid-btn" onClick={() => navigation('/')}>HOME</button>
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <p className='headerV2Title' >BATCH LIST</p>
+          </div>
 
+          <div style={{display:'flex'}}>
           <div className="grid_head date">{GridHeadDate()}</div>
 
           <div className="grid_head_search">
@@ -328,6 +332,12 @@ const BatchListingGrid = () => {
           </div>
 
           <div className="grid_head select_metaltype">{GridHeadSelect()}</div>
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'center' ,cursor: 'pointer' }} onClick={() => navigation('/')}>
+                    <img src={topLogo} style={{ width: '75px', }} />
+                    <p style={{ fontSize: '25px', opacity: '0.6', margin: '0px 10px', fontWeight: 700, color: '#000435' }}>ProCasting</p>
+                </div>
         </div>
       </div>
 
