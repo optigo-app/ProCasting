@@ -10,6 +10,7 @@ import idle from "../../assets/idle.gif";
 import RemoveCircleRoundedIcon from "@mui/icons-material/RemoveCircleRounded";
 import Countdown from "react-countdown";
 import { toast } from "react-toastify";
+import topLogo from '../../assets/oraillogo.png'
 
 
 export default function UnlockAlloying() {
@@ -167,7 +168,7 @@ export default function UnlockAlloying() {
     setOpen(false);
     setEnteredValuesPopup([]);
   };
-  console.log('fistTsbl....',firtstTableData);
+  console.log('fistTsbl....', firtstTableData);
 
   const handleClose = () => {
     setOpen(false);
@@ -359,17 +360,14 @@ export default function UnlockAlloying() {
           </button>
         </div>
       </Dialog>
-      <div className="TopBtnDivMainOne">
-        <p
-          style={{
-            margin: "0px",
-            marginLeft: "10px",
-            fontSize: "20px",
-            fontWeight: 500,
-          }}
-        >
+      <div className="TopBtnDivMainOneV2">
+        <p className="headerV2Title">
           ALLOYING UNLOCK PROCESS
         </p>
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+          <img src={topLogo} style={{ width: '75px', opacity: '0.2' }} />
+          <p style={{ fontSize: '25px', opacity: '0.6', margin: '0px 10px', fontWeight: 500 }}><span style={{ color: '#00FFFF', opacity: '1' }}>Pro</span>Casting</p>
+        </div>
       </div>
 
       {/* <button onClick={handelclick}>{realTime ? "pause" : "start"}</button> */}
