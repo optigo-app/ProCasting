@@ -30,7 +30,7 @@ export default function UnlockAlloying() {
 
   const [openDelete, setOpenDelete] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(null);
-  const [openPoupuNumber, setOpenPopupNumber] = useState(undefined);
+  const [openPoupuNumber, setOpenPopupNumber] = useState();
   const [firtstTableData, setFirstTableData] = useState([]);
   const [secondTableData, setSecondTableData] = useState([]);
   const [thirdTableData, setThirdTableData] = useState([]);
@@ -61,7 +61,7 @@ export default function UnlockAlloying() {
   }, 510);
 
   useEffect(() => {
-    console.log('inout', inputValueHiddenPopup);
+    // console.log('inout', inputValueHiddenPopup);
     setTimeout(() => {
       if (inputValueHiddenPopup.length) {
         setEnteredValuesPopup([...enteredValuesPopup, inputValueHiddenPopup]);
@@ -115,32 +115,57 @@ export default function UnlockAlloying() {
     // return `(${data.map(value => `(${value})`).join(', ')})`;
   };
 
+  // useEffect(()=>{
+  //   let updateTable = (firtstTableData || []).map((data, index) => {
+  //     if (data && !data.timer) {
+  //       return { ...data, timer: <Countdown date={Date.now() + 30000} renderer={renderer} /> };
+  //     }
+  //     return data;
+  //   });
+  //   setFirstTableData((prev)=>[...prev,updateTable])
+  // },[])
+
 
 
   const handleAddData = () => {
+    if (openPoupuNumber === 1 ) {
+      let timer = <span style={{fontSize:'25px',color:'red'}}><Countdown date={Date.now() + 30000} renderer={renderer} /></span>
+      setFirstTableData((prev) => [
+        ...prev,
+        { flaskID: enteredValuesPopup, timer },
+      ]);
 
-    if (openPoupuNumber === 1 && enteredValuesPopup.length !== 0) {
+      // setShowTimmer(true);
+    } 
+    else if (openPoupuNumber === 2) {
+      let timer = <span style={{fontSize:'25px',color:'red'}}><Countdown date={Date.now() + 30000} renderer={renderer} /></span>
+      setSecondTableData((prev) => [
+        ...prev,
+        { flaskID: enteredValuesPopup, timer },
+      ]);
 
-      setFirstTableData([...firtstTableData, enteredValuesPopup]);
-      // handelclick();
-      // let updateTable = firtstTableData.map((data , index) => {
-      //   if(!data.timer && openPoupuNumber === index){
-      //     data.timer = <Countdown date={Date.now() + 30000} renderer={renderer} />
-      //   }
-      //   return data;
-      // })
-      // setFirstTableData(updateTable);
-      setShowTimmer(true);
+      // setShowTimmer(true);
+    } 
+    else if (openPoupuNumber === 3) {
+      let timer = <span style={{fontSize:'25px',color:'red'}}><Countdown date={Date.now() + 30000} renderer={renderer} /></span>
+      setThirdTableData((prev) => [
+        ...prev,
+        { flaskID: enteredValuesPopup, timer },
+      ]);
 
-    } else if (openPoupuNumber === 2) {
-      setSecondTableData([...secondTableData, enteredValuesPopup]);
-    } else if (openPoupuNumber === 3) {
-      setThirdTableData([...thirdTableData, enteredValuesPopup]);
-    } else if (openPoupuNumber === 4) {
-      setFourthTableData([...fourthTableData, enteredValuesPopup]);
+      // setShowTimmer(true);
+    } 
+    else if (openPoupuNumber === 4) {
+      let timer = <span style={{fontSize:'25px',color:'red'}}><Countdown date={Date.now() + 30000} renderer={renderer} /></span>
+      setFourthTableData((prev) => [
+        ...prev,
+        { flaskID: enteredValuesPopup, timer },
+      ]);
+
+      // setShowTimmer(true);
     }
     setOpen(false);
-    setEnteredValuesPopup([])
+    setEnteredValuesPopup([]);
   };
   console.log('fistTsbl....',firtstTableData);
 
@@ -197,18 +222,17 @@ export default function UnlockAlloying() {
   };
 
 
-  const renderer = useCallback(({ minutes, seconds, completed }) => {
-    if (completed && showTimmer) {
+  const renderer = ({ minutes, seconds, completed }) => {
+    if (completed) {
       return <Completionist />;
     } else {
       return (
         <span style={{ textAlign: 'center' }}>
           <span style={{ fontWeight: 'bold' }}>{seconds}</span>
-          {/* GLOSS OFF TIMER : <span style={{ fontWeight: 'bold' }}>{minutes}:{seconds}</span> */}
         </span>
       );
     }
-  }, [showTimmer]);
+  };
 
   let TimeNotify = () => toast.error(`Time is Over!!!!`, { theme: "colored" });
 
@@ -231,7 +255,7 @@ export default function UnlockAlloying() {
         ? `0${d.getSeconds()}`
         : d.getSeconds();
 
-    return <div style={{ textTransform: 'uppercase' }}> Gloss of completion time : <span style={{ fontWeight: 'bold' }}>{hour}:{min}:{sec}</span></div>;
+    return <div style={{ textTransform: 'uppercase' }}><span style={{ fontWeight: 'bold' }}>{hour}:{min}:{sec}</span></div>;
 
   }, []);
 
@@ -240,7 +264,6 @@ export default function UnlockAlloying() {
       <BarcodeScanner
         onScan={handleScan}
         onError={handleError}
-        facingMode="environment"
       />
 
       <Dialog
@@ -432,6 +455,7 @@ export default function UnlockAlloying() {
               type="text"
               className="unlovcDestilInput"
               value={flashCode}
+              onChange={(e)=>setFlashCode(e.target.value)}
             />
           </div>
           <div className="investDestilInputDiv">
@@ -471,13 +495,19 @@ export default function UnlockAlloying() {
           </div>
         </div>
       </div>
-      <div style={{ marginTop: '-30px' }}>
-        {shotTableBtn && <button onClick={() => setShowTable(true)} style={{ marginInline: '18%', height: '45px', marginTop: '-50px', width: '200px', }}>MOVE TO TABLE</button>}
+      <div>
+        {shotTableBtn && <button onClick={() => {
+          setShowTable(true)
+          setShowTableBtn(false)
+          }} 
+          style={{ marginInline: '18%', height: '45px', marginTop: '-50px', width: '200px', }}>
+            MOVE TO TABLE
+          </button>}
         {showTable &&
-          <div style={{ display: 'flex', justifyContent: 'space-around', marginTop: '10px' }}>
+          <div style={{ display: 'flex', justifyContent:'center', marginTop: '10px' }}>
 
             {firtstTableData?.length === 0 ? <div className='tableDataMain' onClick={() => handleOpenPopup(1)}>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-around',borderBottom: firtstTableData?.length && '1px solid #e1e1e1',paddingBottom:firtstTableData?.length && '5px'}}>
                 <p className="unlockTableTitle">TABLE 1</p>
                 {firtstTableData?.length !== 0 &&
                   <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -494,26 +524,23 @@ export default function UnlockAlloying() {
               <div style={{ display: 'flex', flexDirection: 'column' }}>
                 {firtstTableData.map((data, index) =>
                   <div className='tableDataMain' onClick={() => handleOpenPopup(1)}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-around' }}>
                       <p className="unlockTableTitle">TABLE 1</p>
-                      {firtstTableData?.length !== 0 &&
-                        <div style={{ display: 'flex', alignItems: 'center' }}>
-                          {/* <p className="unlockTableTitleNum">{time}</p> */}
-                          <Countdown date={Date.now() + 30000} renderer={renderer} />
+                      <div style={{ display: 'flex', alignItems: 'center',flexDirection:'column',justifyContent:'center',marginTop:'12px'}}>
+                          {data?.timer}
 
                           <p className="unlockTableTitleText">Minutes Remaining</p>
                         </div>
-                      }
                     </div>
                     <p className="UnlockformDataTable">
-                      {firtstTableData?.length !== 0 && data.join(', ')}
+                      {firtstTableData?.length !== 0 && data.flaskID?.join(', ')}
                     </p>
                   </div>)}
               </div>
             }
 
             {secondTableData?.length === 0 ? <div className='tableDataMain' onClick={() => handleOpenPopup(2)}>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-around' }}>
                 <p className="unlockTableTitle">TABLE 2</p>
                 {secondTableData?.length !== 0 &&
                   <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -530,24 +557,23 @@ export default function UnlockAlloying() {
               <div style={{ display: 'flex', flexDirection: 'column' }}>
                 {secondTableData.map((data, index) =>
                   <div className='tableDataMain' onClick={() => handleOpenPopup(2)}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-around' }}>
                       <p className="unlockTableTitle">TABLE 2</p>
-                      {secondTableData?.length !== 0 &&
-                        <div style={{ display: 'flex', alignItems: 'center' }}>
-                          <p className="unlockTableTitleNum" >10</p>
+                      <div style={{ display: 'flex', alignItems: 'center',flexDirection:'column',justifyContent:'center',marginTop:'12px'}}>
+                          {data?.timer}
+
                           <p className="unlockTableTitleText">Minutes Remaining</p>
                         </div>
-                      }
                     </div>
                     <p className="UnlockformDataTable">
-                      {secondTableData?.length !== 0 && data.join(', ')}
+                      {secondTableData?.length !== 0 && data.flaskID?.join(', ')}
                     </p>
                   </div>)}
               </div>
             }
 
             {thirdTableData?.length === 0 ? <div className='tableDataMain' onClick={() => handleOpenPopup(3)}>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-around' }}>
                 <p className="unlockTableTitle">TABLE 3</p>
                 {thirdTableData?.length !== 0 &&
                   <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -564,17 +590,16 @@ export default function UnlockAlloying() {
               <div style={{ display: 'flex', flexDirection: 'column' }}>
                 {thirdTableData.map((data, index) =>
                   <div className='tableDataMain' onClick={() => handleOpenPopup(3)}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-around' }}>
                       <p className="unlockTableTitle">TABLE 3</p>
-                      {thirdTableData?.length !== 0 &&
-                        <div style={{ display: 'flex', alignItems: 'center' }}>
-                          <p className="unlockTableTitleNum">10</p>
+                      <div style={{ display: 'flex', alignItems: 'center',flexDirection:'column',justifyContent:'center',marginTop:'12px'}}>
+                          {data?.timer}
+
                           <p className="unlockTableTitleText">Minutes Remaining</p>
                         </div>
-                      }
                     </div>
                     <p className="UnlockformDataTable">
-                      {thirdTableData?.length !== 0 && data.join(', ')}
+                      {thirdTableData?.length !== 0 && data.flaskID?.join(', ')}
                     </p>
                   </div>)}
               </div>
@@ -582,7 +607,7 @@ export default function UnlockAlloying() {
 
 
             {fourthTableData?.length === 0 ? <div className='tableDataMain' onClick={() => handleOpenPopup(4)}>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-around' }}>
                 <p className="unlockTableTitle">TABLE 4</p>
                 {fourthTableData?.length !== 0 &&
                   <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -599,17 +624,16 @@ export default function UnlockAlloying() {
               <div style={{ display: 'flex', flexDirection: 'column' }}>
                 {fourthTableData.map((data, index) =>
                   <div className='tableDataMain' onClick={() => handleOpenPopup(4)}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-around' }}>
                       <p className="unlockTableTitle">TABLE 4</p>
-                      {fourthTableData?.length !== 0 &&
-                        <div style={{ display: 'flex', alignItems: 'center' }}>
-                          <p className="unlockTableTitleNum">10</p>
+                      <div style={{ display: 'flex', alignItems: 'center',flexDirection:'column',justifyContent:'center',marginTop:'12px'}}>
+                          {data?.timer}
+
                           <p className="unlockTableTitleText">Minutes Remaining</p>
                         </div>
-                      }
                     </div>
                     <p className="UnlockformDataTable">
-                      {fourthTableData?.length !== 0 && data.join(', ')}
+                      {fourthTableData?.length !== 0 && data.flaskID?.join(', ')}
                     </p>
                   </div>)}
               </div>

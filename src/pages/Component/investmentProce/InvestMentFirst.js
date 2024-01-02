@@ -13,6 +13,9 @@ import RemoveCircleRoundedIcon from "@mui/icons-material/RemoveCircleRounded";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import uploadcloud from '../../assets/uploadCloud.png'
+import { useRecoilValue } from "recoil";
+import { CurrentImageState } from "../../recoil/Recoil";
+import ImageWebCam from "../imageTag/ImageWebCam";
 
 export default function InvestMentFirst() {
 
@@ -26,6 +29,7 @@ export default function InvestMentFirst() {
   const [blueImg, setBlueImg] = useState(false);
   const [orangeImg, setOrangImg] = useState(false);
   const [defaultImg, setDefaultImg] = useState(false);
+  const CurrentImageValue = useRecoilValue(CurrentImageState);
   const [weight, setWeight] = useState(false);
   const [TDS, setTDS] = useState(undefined);
   const [phValue, setPhValue] = useState(undefined);
@@ -279,31 +283,45 @@ export default function InvestMentFirst() {
     setOpenDelete(false);
   };
 
-  const handleFileUpload = (event) => {
-    const file = event.target.files[0]; 
+  // const handleFileUpload = (event) => {
+  //   const file = event.target.files[0]; 
 
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const base64String = reader.result;
-        const updatedData = enteredValues.map((d, index) => {
-          if (eviIndex === index) {
-            d.ImgUrl = base64String
-          }
-          return d;
-        });
-        setEnteredValues(updatedData);
-        setFileBase64(base64String)
-        // console.log('Base64 representation:', base64String);
-      };
-      reader.readAsDataURL(file);
-    }
+  //   if (file) {
+  //     const reader = new FileReader();
+  //     reader.onloadend = () => {
+  //       const base64String = reader.result;
+  //       const updatedData = enteredValues.map((d, index) => {
+  //         if (eviIndex === index) {
+  //           d.ImgUrl = base64String
+  //         }
+  //         return d;
+  //       });
+  //       setEnteredValues(updatedData);
+  //       setFileBase64(base64String)
+  //       // console.log('Base64 representation:', base64String);
+  //     };
+  //     reader.readAsDataURL(file);
+  //   }
 
-  };
+  // };
   
-  const handleButtonClick = () => {
-    fileInputRef.current.click();
-  };
+  // const handleButtonClick = () => {
+  //   fileInputRef.current.click();
+  // };
+
+  useEffect(()=>{
+    if(CurrentImageValue.length>0){
+      const updatedData = enteredValues.map((d, index) => {
+        if (eviIndex === index) {
+          d.ImgUrl = CurrentImageValue
+        }
+        return d;
+      });
+      setEnteredValues(updatedData);
+      
+      setIsImgUpload(false)
+    }
+  },[CurrentImageValue])
 
   return (
     <div>
@@ -313,6 +331,11 @@ export default function InvestMentFirst() {
         facingMode="environment"
       />
       <ToastContainer />
+
+      <Dialog fullWidth open={isImgUpload} onClose={() => setIsImgUpload(false)}>
+        <ImageWebCam />
+      </Dialog>
+
       <Dialog
         open={open}
         onClose={handleClose}
@@ -376,7 +399,7 @@ export default function InvestMentFirst() {
         </div>
       </Dialog>
 
-      <Dialog 
+      {/* <Dialog 
         className="uploadImage" 
         open={isImgUpload} 
         onClose={() =>{
@@ -418,13 +441,17 @@ export default function InvestMentFirst() {
             </label>
           </div>
         </div>
-      </Dialog>
+      </Dialog> */}
 
-      <Dialog className="showImage" open={isImgShow} onClose={() => setIsImgShow(false)}>
+      <Dialog
+        className="showImage"
+        open={isImgShow}
+        onClose={() => setIsImgShow(false)}
+      >
         <div
           style={{
-            width: "360px",
-            height: "360px",
+            width: "auto",
+            height: "auto",
             display: "flex",
             justifyContent: "space-between",
             flexDirection: "column",
@@ -432,8 +459,12 @@ export default function InvestMentFirst() {
             padding: "20px",
           }}
         >
-          <img src={enteredValues[eviIndex]?.ImgUrl} style={{ width: "90%", objectFit: "cover" }} />
-          <div
+          <img
+            // src={enteredValues[eviIndex]?.ImgUrl}
+            src={fileBase64}
+            style={{ width: "100%", objectFit: "cover" }}
+          />
+          {/* <div
             style={{
               display: "flex",
               justifyContent: "center",
@@ -451,7 +482,7 @@ export default function InvestMentFirst() {
             <label htmlFor="fileInput">
               <button onClick={handleButtonClick}>Change Image</button>
             </label>
-          </div>
+          </div> */}
         </div>
       </Dialog>
 
@@ -772,7 +803,8 @@ export default function InvestMentFirst() {
                       </th>
                     </tr>
 
-                    {showTimmerBtn && !value?.ImgUrl && (
+                    {!value?.ImgUrl && (
+                    // {!CurrentImageValue && (
                       <tr>
                         <th className="btncom">{value?.ImgBtn}</th>
                       </tr>
@@ -780,12 +812,14 @@ export default function InvestMentFirst() {
                     {value?.ImgUrl && (
                       <tr>
                         <th className="btncom">
-                          <button 
-                            onClick={()=>{
-                              setIsImgShow(true)
-                              setEviIndex(index)
-                            }}>
-                              Show Image
+                          <button
+                            onClick={() => {
+                              setIsImgShow(true);
+                              setEviIndex(index);
+                              setFileBase64(value?.ImgUrl)
+                            }}
+                          >
+                            Show Image
                           </button>
                         </th>
                       </tr>
