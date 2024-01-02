@@ -51,3 +51,10 @@
     font-size: 20px;
 
 }
+.burnDestilInputTitle{
+    font-size: 19px;
+    margin: 0px;
+    display: flex;
+    align-items: left;
+    width: 130px;
+}

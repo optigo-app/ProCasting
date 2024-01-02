@@ -9,9 +9,11 @@ import Button from '@mui/material/Button';
 import BarcodeScanner from 'react-barcode-reader';
 import scaneCodeImage from '../../assets/scanBarcode.gif'
 import idle from '../../assets/idle.gif'
+import topLogo from '../../assets/oraillogo.png'
 
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { useNavigate } from 'react-router-dom';
 
 
 export default function BurnOut() {
@@ -28,7 +30,8 @@ export default function BurnOut() {
     const [isImageVisible, setIsImageVisible] = useState(true);
     const [scanInp, setScanInp] = useState('');
     const invProRef = useRef(null)
-
+    const navigation = useNavigate();
+    
     useEffect(() => {
         if (enteredValues[0] === 'F1') {
             setGreeImg(true)
@@ -169,9 +172,20 @@ export default function BurnOut() {
                 </div>
             </Dialog>
 
-            <div className="TopBtnDivMainOne">
+            {/* <div className="TopBtnDivMainOne">
                 <p style={{ margin: '0px', marginLeft: '10px', fontSize: '20px', fontWeight: 500 }}>BURNOUT PROCESS</p>
+            </div> */}
+            <div className="TopBtnDivMainOneV2">
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <p className='headerV2Title' >BURNOUT PROCESS</p>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center' }} onClick={() => navigation('/')}>
+                    <img src={topLogo} style={{ width: '75px', }} />
+                    <p style={{ fontSize: '25px', opacity: '0.6', margin: '0px 10px', fontWeight: 700, color: '#000435' }}>ProCasting</p>
+                    {/* <p className='infoTextInputONe'>E0025(BOB THOMAS)</p> */}
+                </div>
             </div>
+
             <div style={{ display: 'flex', marginTop: '-10px' }}>
                 <div className='BurnTopBox1'>
 
@@ -201,22 +215,23 @@ export default function BurnOut() {
                             Go
                         </button>
                     </div>
-                    <button style={{ marginTop: '20px', cursor: 'pointer', height: '35px', width: '100px' }} onClick={handleRefresh}>Clear All</button>
+                    <button   className="homeNoteTitleV2" style={{ marginTop: '20px', cursor: 'pointer', height: '35px', width: '100px' }} onClick={handleRefresh}>Clear All</button>
+                </div>
+               
+                <div>
+                    <div style={{ display: 'flex', marginTop: '30px' ,alignItems: 'center' }}>
+                        <p className='burnDestilInputTitle'>FLASH CODE:</p>
+                        <input type='text' className='burnoutInput' value={flashCode} />
+                    </div>
+                    <div className="investDestilInputDiv">
+                        <p className='burnDestilInputTitle'>BATCH NO:</p>
+                        <input type='text' className='burnoutInput' value={enteredValues.length === 0 ? '' : enteredValues.length === 1 ? 'AB' : enteredValues.length === 2 ? 'BC' : 'CD'} />
+                    </div>
+                    <button className='burnOutIssueBtn' onClick={handleIssueJob}>BurnOut Issue</button>
                 </div>
                 <div style={{ width: '19%', display: 'flex', flexDirection: 'column', marginLeft: '-40px', marginTop: '30px', alignItems: 'center' }}>
                     <p style={{ margin: '0px', fontSize: '20px', fontWeight: 500 }}>Flask Count</p>
                     <h1 className='burnCountFlask'>{enteredValues.length}</h1>
-                </div>
-                <div>
-                    <div style={{ display: 'flex', marginTop: '30px' ,alignItems: 'center' }}>
-                        <p className='investDestilInputTitle'>FLASH CODE:</p>
-                        <input type='text' className='burnoutInput' value={flashCode} />
-                    </div>
-                    <div className="investDestilInputDiv">
-                        <p className='investDestilInputTitle'>BATCH NO:</p>
-                        <input type='text' className='burnoutInput' value={enteredValues.length === 0 ? '' : enteredValues.length === 1 ? 'AB' : enteredValues.length === 2 ? 'BC' : 'CD'} />
-                    </div>
-                    <button className='burnOutIssueBtn' onClick={handleIssueJob}>BurnOut Issue</button>
                 </div>
                 <div className='investSideFixedImg'>
                     <img
