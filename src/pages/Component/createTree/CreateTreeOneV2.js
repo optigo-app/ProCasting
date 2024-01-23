@@ -263,22 +263,22 @@ export default function CreateTreeOneV2() {
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center' }}>
                         <img src={topLogo} style={{ width: '75px',}} />
-                        <p style={{ fontSize: '25px', opacity: '0.6', margin: '0px 10px', fontWeight: 700,color:'#000435' }}>ProCasting</p>
+                        <p style={{ fontSize: '25px', opacity: '0.6', margin: '0px 10px', fontWeight: 700,color:'#000435' }} onClick={()=>navigation('/')} >ProCasting</p>
                         {/* <p className='infoTextInputONe'>E0025(BOB THOMAS)</p> */}
                     </div>
                 </div>
                 <div style={{ display: 'flex', marginTop: '0px', flexWrap: 'wrap' }} className='body_container'>
                     <div className='scaneUploadMain'>
                         <div className='createORMain' >
-                            <div onClick={toggleImageVisibility} style={{ width: 'fit-content', marginLeft: '30px', position: 'relative' }}>
+                            <div onClick={toggleImageVisibility} style={{ width: 'fit-content', marginLeft:isImageVisible?'30px':'2px', position: 'relative' }}>
                                 {!isImageVisible ? <div>
                                     <img src={scaneCodeImage} className='createImageQrCode' />
                                 </div> :
-                                    <div>
+                                    <div style={{marginLeft:'12px'}}>
                                         <img src={idle} />
                                     </div>}
                                 <div>
-                                    {isImageVisible && <p style={{ fontWeight: 'bold', marginLeft: '-30px' }}> <span style={{ color: 'red' }}>Click</span> On The Image For Scan<span style={{ color: 'red' }}>*</span></p>}
+                                    {isImageVisible && <p style={{ fontWeight: 'bold', marginLeft: '-30px',marginTop:'-12px' }}> <span style={{ color: 'red' }}>Click</span> On The Image For Scan<span style={{ color: 'red' }}>*</span></p>}
                                     <input type='text' id="hiddeninp" ref={ScanRef} onBlur={() => { setIsImageVisible(true) }} onFocus={() => setIsImageVisible(false)} value={inputValueHidden} onChange={handleInputChangeHidden} style={{ width: '20px', position: 'absolute', top: '80px', left: '50px', zIndex: -1 }} />
                                     <button style={{
                                         position: "absolute",
