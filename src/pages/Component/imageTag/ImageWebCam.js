@@ -105,11 +105,16 @@ const ImageWebCam = () => {
       }
       {
         cameraError &&
-        <div >
-          <div style={{ textAlign: 'end', marginRight: '12px', marginTop: '7px' }}>
-            <HighlightOffIcon style={{ fontSize: '35px' }} onClick={() => setImageflag(false)} />
-          </div>
-          <p style={{ fontSize: '18px', marginLeft: '12px', color: 'red' }}>
+        <div sx={{width:'auto'}}> 
+          {/* <div style={{ textAlign: 'end', marginRight: '12px', marginTop: '7px' }}>
+            <HighlightOffIcon style={{ fontSize: '35px' }} 
+            onClick={() => {
+              setCameraError(false)
+              setImageflag(true)
+              }} 
+              />
+          </div> */}
+          <p style={{ fontSize: '18px', marginLeft: '12px', color: 'red',fontWeight:'bold',textAlign:'center'}}>
             camera device is not accessible or connected!!!
           </p>
         </div>
