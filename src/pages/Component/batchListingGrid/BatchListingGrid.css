@@ -22,7 +22,7 @@
 
 .grid_head{
     display:flex;
-    gap:12px;
+    /* gap:12px; */
 }
 
 .DataGridTable{
@@ -64,13 +64,13 @@
     } 
 
     .menu{
-        display: block;
+        display: flex;
     }
 
     .menu_responsive{
         display:flex;
         gap:5px;
-        flex-direction:row-reverse;
+        flex-direction:row;
     }
 
     .grid_head_container{

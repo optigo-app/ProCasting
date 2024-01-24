@@ -5,6 +5,7 @@ import scaneCodeImage from "../../assets/scanBarcode.gif";
 import idle from "../../assets/idle.gif";
 import { useNavigate } from "react-router-dom";
 import topLogo from '../../assets/oraillogo.png'
+import { Button, Typography } from "@mui/material";
 
 
 export default function AddFlask() {
@@ -87,12 +88,22 @@ export default function AddFlask() {
     <div>
       <BarcodeScanner onScan={handleScan} onError={handleError} />
       <div className="TopBtnDivMainOneV2">
-        <p className="headerV2Title">
-          PROCASTING-TREE BIND WITH FLASK
-        </p>
-        <div style={{ display: 'flex', alignItems: 'center' }} onClick={() => naviagtion('/')}>
-          <img src={topLogo} style={{ width: '75px' }} />
-          <p style={{ fontSize: '25px', opacity: '0.6', margin: '0px 10px', fontWeight: 500 }}><span style={{ color: '#00FFFF', opacity: '1' }}>Pro</span>Casting</p>
+        <p className="headerV2Title">PROCASTING-TREE BIND WITH FLASK</p>
+        <div
+          style={{ display: "flex", alignItems: "center" }}
+          onClick={() => naviagtion("/")}
+        >
+          <img src={topLogo} style={{ width: "75px" }} />
+          <p
+            style={{
+              fontSize: "25px",
+              opacity: "0.6",
+              margin: "0px 10px",
+              fontWeight: 500,
+            }}
+          >
+            <span style={{ color: "#00FFFF", opacity: "1" }}>Pro</span>Casting
+          </p>
         </div>
       </div>
       {/* <p className="mainTitle">PROCASTING-TREE BIND WITH FLASK</p> */}
@@ -102,7 +113,7 @@ export default function AddFlask() {
             onClick={toggleImageVisibility}
             style={{
               width: "fit-content",
-              marginLeft: "30px",
+              marginLeft: !isImageVisible ? "30px" : "3px",
               position: "relative",
             }}
           >
@@ -149,11 +160,28 @@ export default function AddFlask() {
               autoFocus
             />
           </div>
-          <div style={{ display: 'flex', marginTop: '10px' }}>
-            <input type='text' value={inputValue} style={{ border: inputError && '1px solid red' }} className='enterBrachItemBox' onChange={handleInputChange} onKeyDown={handleKeyDown} />
-            <button className='createGoBtn' onClick={handleGoButtonClick} >
-              Go
-            </button>
+          <div style={{ display: "flex", marginTop: "10px" }}>
+            <input
+              type="text"
+              value={inputValue}
+              style={{ border: inputError && "1px solid red" }}
+              className="enterBrachItemBox"
+              onChange={handleInputChange}
+              onKeyDown={handleKeyDown}
+            />
+            <Button
+              className="createGoBtn"
+              style={{
+                color: "white",
+                backgroundColor: "black",
+                borderRadius: "0px",
+              }}
+              onClick={handleGoButtonClick}
+            >
+              <Typography sx={{ fontWeight: "bold", fontSize: "16px" }}>
+                GO
+              </Typography>
+            </Button>
           </div>
           {inputErrorMax && (
             <h3 style={{ color: "red", margin: "0px" }}>First save data..</h3>

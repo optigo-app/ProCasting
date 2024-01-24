@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import './BurnOut.css'
-import { Dialog, DialogTitle, Drawer } from '@mui/material';
+import { Dialog, DialogTitle, Drawer, Typography } from '@mui/material';
 import greenImges from '../../assets/green.png'
 import blueImges from '../../assets/blue.png'
 import orangeImges from '../../assets/orange.png'
@@ -196,7 +196,7 @@ export default function BurnOut() {
                                 style={{ width: "fit-content", position: "relative" }}
                             >
                                 {isImageVisible ? (
-                                    <div>
+                                    <div style={{ marginRight:'60px'}}>
                                         <img src={scaneCodeImage} className="createImageQrCode" />
                                     </div>
                                 ) : (
@@ -247,9 +247,9 @@ export default function BurnOut() {
                             </div>
                             <div style={{ display: 'flex', marginTop: '10px' }}>
                                 <input type='text' value={inputValue} style={{ border: inputError && '1px solid red' }} className='enterBrachItemBox' onChange={handleInputChange} onKeyDown={handleKeyDown} />
-                                <button className='createGoBtn' onClick={handleGoButtonClick} >
-                                    Go
-                                </button>
+                                <Button className='createGoBtn' style={{color:'white',backgroundColor:'black',borderRadius:'0px'}} onClick={handleGoButtonClick} >
+                                    <Typography sx={{fontWeight:'bold',fontSize:'16px'}}>GO</Typography>
+                                </Button>
                             </div>
                             <button
                                 style={{

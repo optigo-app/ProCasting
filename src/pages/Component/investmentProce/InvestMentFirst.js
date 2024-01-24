@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef, useCallback, useMemo } from "react";
 import "./InvestMentFirst.css";
-import { Button, Dialog, DialogTitle, Drawer } from "@mui/material";
+import { Button, Dialog, DialogTitle, Drawer, Typography } from "@mui/material";
 import greenImges from "../../assets/green.png";
 import blueImges from "../../assets/blue.png";
 import orangeImges from "../../assets/orange.png";
@@ -534,7 +534,7 @@ export default function InvestMentFirst() {
                   onClick={toggleImageVisibility}
                   style={{
                     width: "fit-content",
-                    marginLeft: !isImageVisible && "45px",
+                    marginLeft: !isImageVisible ? "30px" : "2px",
                     position: "relative",
                   }}
                 >
@@ -593,9 +593,9 @@ export default function InvestMentFirst() {
                 </div>
                 <div style={{ display: 'flex', marginTop: '10px' }}>
                   <input type='text' value={inputValue} style={{ border: inputError && '1px solid red' }} className='enterBrachItemBox' onChange={handleInputChange} onKeyDown={handleKeyDown} />
-                  <button className='createGoBtn' onClick={handleGoButtonClick} >
-                    Go
-                  </button>
+                  <Button className='createGoBtn' style={{color:'white',backgroundColor:'black',borderRadius:'0px'}} onClick={handleGoButtonClick} >
+                        <Typography sx={{fontWeight:'bold',fontSize:'16px'}}>GO</Typography>
+                  </Button>
                 </div>
                 <button
                   style={{

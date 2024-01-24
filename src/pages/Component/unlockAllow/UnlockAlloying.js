@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import "./UnlockAlloying.css";
-import { Dialog, DialogContentText, DialogTitle, Drawer } from "@mui/material";
+import { Dialog, DialogContentText, DialogTitle, Drawer, Typography } from "@mui/material";
 import Button from "@mui/material/Button";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
@@ -378,7 +378,7 @@ export default function UnlockAlloying() {
         <div className="UnlockTopBox1">
           <div
             onClick={toggleImageVisibility}
-            style={{ width: "fit-content", position: "relative", marginLeft: !isImageVisible && "46px" }}
+            style={{ width: "fit-content", position: "relative", marginLeft: !isImageVisible ? "46px" : "-60px" }}
           >
             {isImageVisible ? (
               <div>
@@ -423,9 +423,9 @@ export default function UnlockAlloying() {
           </div>
           <div style={{ display: 'flex', marginTop: '10px' }}>
             <input type='text' value={inputValue} style={{ border: inputError && '1px solid red' }} className='enterBrachItemBox' onChange={handleInputChange} onKeyDown={handleKeyDown} />
-            <button className='createGoBtn' onClick={handleGoButtonClick} >
-              Go
-            </button>
+            <Button className='createGoBtn' style={{color:'white',backgroundColor:'black',borderRadius:'0px'}} onClick={handleGoButtonClick} >
+            <Typography sx={{fontWeight:'bold',fontSize:'16px'}}>GO</Typography>
+            </Button>
           </div>
         </div>
 
