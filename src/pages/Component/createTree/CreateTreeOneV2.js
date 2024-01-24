@@ -206,7 +206,7 @@ export default function CreateTreeOneV2() {
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleClose}>ADD</Button>
+                    <Button onClick={handleClose} style={{backgroundColor : 'black' ,color: 'white'}}>ADD</Button>
                 </DialogActions>
             </Dialog>
 
@@ -238,7 +238,7 @@ export default function CreateTreeOneV2() {
 
 
                         <p className='headerV2Title' >CREATE NEW BATCH</p>
-                        
+
                         <Menu
                             id="basic-menu"
                             anchorEl={anchorEl}
@@ -248,10 +248,10 @@ export default function CreateTreeOneV2() {
                                 'aria-labelledby': 'basic-button',
                             }}
                         >
-                            <div style={{  }}>
+                            <div style={{}}>
                                 {/* <CgProfile style={{ height: '25px', width: '25px', marginLeft: '15px' }} /> */}
-                                <p style={{ margin: '0px 5px',color:'#b8b8b8' ,fontWeight: 500, margin: '7px', fontSize: '20px' }}>Bob Thomas</p>
-                                <p style={{ margin: '0px 5px',color:'#b8b8b8', fontWeight: 500, margin: '7px',textAlign:'center', fontSize:'20px' }}>E0025</p>
+                                <p style={{ margin: '0px 5px', color: '#b8b8b8', fontWeight: 500, margin: '7px', fontSize: '20px' }}>Bob Thomas</p>
+                                <p style={{ margin: '0px 5px', color: '#b8b8b8', fontWeight: 500, margin: '7px', textAlign: 'center', fontSize: '20px' }}>E0025</p>
                             </div>
                             {/* <MenuItem onClick={handleClose}>E0025</MenuItem> */}
                             {/* <MenuItem onClick={handleClose}>My account</MenuItem>
@@ -259,26 +259,37 @@ export default function CreateTreeOneV2() {
                         </Menu>
                     </div>
                     <div>
-                    {totalValues !== 0 && <p className='FixedGoldColorText'>GOLD 14K WHITE</p>}
+                        {totalValues !== 0 && <p className='FixedGoldColorText'>GOLD 14K WHITE</p>}
                     </div>
-                    <div style={{ display: 'flex', alignItems: 'center' }}>
-                        <img src={topLogo} style={{ width: '75px',}} />
-                        <p style={{ fontSize: '25px', opacity: '0.6', margin: '0px 10px', fontWeight: 700,color:'#000435' }} onClick={()=>navigation('/')} >ProCasting</p>
-                        {/* <p className='infoTextInputONe'>E0025(BOB THOMAS)</p> */}
+                    <div
+                        style={{ display: "flex", alignItems: "center", cursor: 'pointer' }}
+                        onClick={() => navigation("/")}
+                    >
+                        <img src={topLogo} style={{ width: "75px" }} />
+                        <p
+                            style={{
+                                fontSize: "25px",
+                                opacity: "0.6",
+                                margin: "0px 10px",
+                                fontWeight: 500,
+                            }}
+                        >
+                            <span style={{ color: "#00FFFF", opacity: "1" }}>Pro</span>Casting
+                        </p>
                     </div>
                 </div>
                 <div style={{ display: 'flex', marginTop: '0px', flexWrap: 'wrap' }} className='body_container'>
                     <div className='scaneUploadMain'>
                         <div className='createORMain' >
-                            <div onClick={toggleImageVisibility} style={{ width: 'fit-content', marginLeft:isImageVisible?'30px':'2px', position: 'relative' }}>
+                            <div onClick={toggleImageVisibility} style={{ width: 'fit-content', marginLeft: isImageVisible ? '30px' : '2px', position: 'relative' }}>
                                 {!isImageVisible ? <div>
                                     <img src={scaneCodeImage} className='createImageQrCode' />
                                 </div> :
-                                    <div style={{marginLeft:'12px'}}>
+                                    <div style={{ marginLeft: '12px' }}>
                                         <img src={idle} />
                                     </div>}
                                 <div>
-                                    {isImageVisible && <p style={{ fontWeight: 'bold', marginLeft: '-30px',marginTop:'-12px' }}> <span style={{ color: 'red' }}>Click</span> On The Image For Scan<span style={{ color: 'red' }}>*</span></p>}
+                                    {isImageVisible && <p style={{ fontWeight: 'bold', marginLeft: '-30px', marginTop: '-12px' }}> <span style={{ color: 'red' }}>Click</span> On The Image For Scan<span style={{ color: 'red' }}>*</span></p>}
                                     <input type='text' id="hiddeninp" ref={ScanRef} onBlur={() => { setIsImageVisible(true) }} onFocus={() => setIsImageVisible(false)} value={inputValueHidden} onChange={handleInputChangeHidden} style={{ width: '20px', position: 'absolute', top: '80px', left: '50px', zIndex: -1 }} />
                                     <button style={{
                                         position: "absolute",
@@ -290,8 +301,8 @@ export default function CreateTreeOneV2() {
                             </div>
                             <div style={{ display: 'flex', marginTop: '10px' }}>
                                 <input type='text' value={inputValue} style={{ border: inputError && '1px solid red' }} className='enterBrachItemBox' onChange={handleInputChange} onKeyDown={handleKeyDown} />
-                                <Button variant='contained' className='createGoBtn' style={{color:'white',backgroundColor:'black',borderRadius:'0px'}} onClick={handleGoButtonClick} >
-                                    <Typography sx={{fontWeight:'bold',fontSize:'16px'}}>GO</Typography>
+                                <Button variant='contained' className='createGoBtn' style={{ color: 'white', backgroundColor: 'black', borderRadius: '0px' }} onClick={handleGoButtonClick} >
+                                    <Typography sx={{ fontWeight: 'bold', fontSize: '16px' }}>GO</Typography>
                                 </Button>
                             </div>
                             <input

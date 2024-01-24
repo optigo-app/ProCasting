@@ -90,7 +90,7 @@ export default function AddFlask() {
       <div className="TopBtnDivMainOneV2">
         <p className="headerV2Title">PROCASTING-TREE BIND WITH FLASK</p>
         <div
-          style={{ display: "flex", alignItems: "center" }}
+          style={{ display: "flex", alignItems: "center" ,cursor: 'pointer' }}
           onClick={() => naviagtion("/")}
         >
           <img src={topLogo} style={{ width: "75px" }} />

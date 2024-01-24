@@ -245,32 +245,32 @@ const BatchListingGrid = () => {
   const GridHeadSelect = useCallback(() => (
     <>
       <div>
-          <label>Metal Type</label>
-          </div>
+        <label>Metal Type</label>
+      </div>
 
-          <div style={{marginLeft:'12px'}}>
-          <select style={{width:'150px',padding:'4px',backgroundColor:'#f0f0f0',border:'1px solid #b8b8b8',borderRadius:'6px'}}>
-            <option style={{}}>All Type</option>
-            <option style={{}}>Gold 14K WHITE</option>
-            <option style={{}}>Gold 14K YELLOW</option>
-            <option style={{}}>Gold 18K WHITE</option>
-            <option style={{}}>Gold 18K YELLOW</option>
-          </select>
-          </div>
+      <div style={{ marginLeft: '12px' }}>
+        <select style={{ width: '150px', padding: '4px', backgroundColor: '#f0f0f0', border: '1px solid #b8b8b8', borderRadius: '6px' }}>
+          <option style={{}}>All Type</option>
+          <option style={{}}>Gold 14K WHITE</option>
+          <option style={{}}>Gold 14K YELLOW</option>
+          <option style={{}}>Gold 18K WHITE</option>
+          <option style={{}}>Gold 18K YELLOW</option>
+        </select>
+      </div>
 
-          <div style={{marginLeft:'12px'}}>
-          <label>Status</label>
-          </div>
+      <div style={{ marginLeft: '12px' }}>
+        <label>Status</label>
+      </div>
 
-          <div style={{marginLeft:'12px'}}>
-          <select style={{width:'150px',padding:'4px',backgroundColor:'#f0f0f0',border:'1px solid #b8b8b8',borderRadius:'6px'}}>
-            <option style={{}}>All Type</option>
-            <option style={{}}>Investment Process</option>
-            <option style={{}}>Burnout Process</option>
-            <option style={{}}>Alloying</option>
-            <option style={{}}>casting Completed</option>
-          </select>
-          </div>
+      <div style={{ marginLeft: '12px' }}>
+        <select style={{ width: '150px', padding: '4px', backgroundColor: '#f0f0f0', border: '1px solid #b8b8b8', borderRadius: '6px' }}>
+          <option style={{}}>All Type</option>
+          <option style={{}}>Investment Process</option>
+          <option style={{}}>Burnout Process</option>
+          <option style={{}}>Alloying</option>
+          <option style={{}}>casting Completed</option>
+        </select>
+      </div>
     </>
   ), []);
 
@@ -278,9 +278,9 @@ const BatchListingGrid = () => {
     <>
       <div className="grid_head_container">
         <div className="grid_head menu" >
-          <MenuRoundedIcon onClick={() => setMenuFlag(true)} sx={{fontSize:'30px'}} />
+          <MenuRoundedIcon onClick={() => setMenuFlag(true)} sx={{ fontSize: '30px' }} />
           <div style={{ display: 'flex', alignItems: 'center' }}>
-                    <p className='headerV2Title' >BATCH LIST</p>
+            <p className='headerV2Title' >BATCH LIST</p>
           </div>
 
           {/* <div style={{display : 'flex' ,alignItems: 'stretch'}}>
@@ -297,48 +297,60 @@ const BatchListingGrid = () => {
             </button>
             <button className="grid-btn" onClick={() => navigation('/burnOut')}>BURNOUT</button>
           </div> */}
-          
 
-          <div style={{display:'flex',alignItems:'center',gap:'10px'}}>
-          <div className="grid_head date">{GridHeadDate()}</div>
 
-          <div className="grid_head_search">
-            <div
-              style={{
-                backgroundColor: "#f9f9f9",
-                border: "1px solid #e2e2e2",
-                borderRadius: "24px",
-                display: "flex",
-                // boxShadow: '2px 4px 3px #dbdbdb',
-              }}
-              className="grid_search"
-            >
-              <div style={{ marginTop: "4px", marginLeft: "8px" }}>
-                <SearchIcon />
-              </div>
-              <input
-                type="text"
-                placeholder="Search..."
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <div className="grid_head date">{GridHeadDate()}</div>
+
+            <div className="grid_head_search">
+              <div
                 style={{
                   backgroundColor: "#f9f9f9",
-                  outline: "none",
-                  border: "none",
-                  height: "27px",
-                  width: "280px",
+                  border: "1px solid #e2e2e2",
                   borderRadius: "24px",
-                  paddingInlineStart: "12px",
+                  display: "flex",
+                  // boxShadow: '2px 4px 3px #dbdbdb',
                 }}
-              />
-            </div>
-          </div>
-
-          <div className="grid_head select_metaltype">{GridHeadSelect()}</div>
-          </div>
-
-          <div style={{ display: 'flex', alignItems: 'center' ,cursor: 'pointer' }} onClick={() => navigation('/')}>
-                    <img src={topLogo} style={{ width: '75px', }} />
-                    <p style={{ fontSize: '25px', opacity: '0.6', margin: '0px 10px', fontWeight: 700, color: '#000435' }}>ProCasting</p>
+                className="grid_search"
+              >
+                <div style={{ marginTop: "4px", marginLeft: "8px" }}>
+                  <SearchIcon />
                 </div>
+                <input
+                  type="text"
+                  placeholder="Search..."
+                  style={{
+                    backgroundColor: "#f9f9f9",
+                    outline: "none",
+                    border: "none",
+                    height: "27px",
+                    width: "280px",
+                    borderRadius: "24px",
+                    paddingInlineStart: "12px",
+                  }}
+                />
+              </div>
+            </div>
+
+            <div className="grid_head select_metaltype">{GridHeadSelect()}</div>
+          </div>
+
+          <div
+            style={{ display: "flex", alignItems: "center", cursor: 'pointer' }}
+            onClick={() => navigation("/")}
+          >
+            <img src={topLogo} style={{ width: "75px" }} />
+            <p
+              style={{
+                fontSize: "25px",
+                opacity: "0.6",
+                margin: "0px 10px",
+                fontWeight: 500,
+              }}
+            >
+              <span style={{ color: "#00FFFF", opacity: "1" }}>Pro</span>Casting
+            </p>
+          </div>
         </div>
       </div>
 
@@ -349,7 +361,7 @@ const BatchListingGrid = () => {
           alignItems: "center",
         }}
       >
-        <div style={{ width: "100%"}} className="DataGridTable">
+        <div style={{ width: "100%" }} className="DataGridTable">
           <DataGrid
             rows={rows}
             columns={columns.map((column) => ({
@@ -359,20 +371,20 @@ const BatchListingGrid = () => {
             pageSize={5}
             rowsPerPageOptions={[5, 10, 20]}
             checkboxSelection={false}
-            
+
           />
         </div>
       </div>
       <Drawer anchor="left" open={menuFlag} onClose={() => setMenuFlag(false)}>
-        <div style={{paddingLeft:'30px'}}>
+        <div style={{ paddingLeft: '30px' }}>
           <h1>
             Filter
           </h1>
         </div>
-        <Divider/>
-        <div style={{padding:'30px',display:'flex',flexDirection:'column',gap:'20px'}}>
-          <div style={{display:'flex',gap:'12px'}}>{GridHeadDate()}</div>
-          <div style={{display:'flex',gap:'12px',flexDirection:'column'}}>{GridHeadSelect()}</div>
+        <Divider />
+        <div style={{ padding: '30px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          <div style={{ display: 'flex', gap: '12px' }}>{GridHeadDate()}</div>
+          <div style={{ display: 'flex', gap: '12px', flexDirection: 'column' }}>{GridHeadSelect()}</div>
         </div>
       </Drawer>
     </>
