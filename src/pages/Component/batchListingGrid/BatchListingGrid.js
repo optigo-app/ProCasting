@@ -248,7 +248,7 @@ const BatchListingGrid = () => {
           <label>Metal Type</label>
           </div>
 
-          <div>
+          <div style={{marginLeft:'12px'}}>
           <select style={{width:'150px',padding:'4px',backgroundColor:'#f0f0f0',border:'1px solid #b8b8b8',borderRadius:'6px'}}>
             <option style={{}}>All Type</option>
             <option style={{}}>Gold 14K WHITE</option>
@@ -258,11 +258,11 @@ const BatchListingGrid = () => {
           </select>
           </div>
 
-          <div>
+          <div style={{marginLeft:'12px'}}>
           <label>Status</label>
           </div>
 
-          <div>
+          <div style={{marginLeft:'12px'}}>
           <select style={{width:'150px',padding:'4px',backgroundColor:'#f0f0f0',border:'1px solid #b8b8b8',borderRadius:'6px'}}>
             <option style={{}}>All Type</option>
             <option style={{}}>Investment Process</option>
@@ -279,6 +279,9 @@ const BatchListingGrid = () => {
       <div className="grid_head_container">
         <div className="grid_head menu" >
           <MenuRoundedIcon onClick={() => setMenuFlag(true)} sx={{fontSize:'30px'}} />
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <p className='headerV2Title' >BATCH LIST</p>
+          </div>
 
           {/* <div style={{display : 'flex' ,alignItems: 'stretch'}}>
             <p style={{margin : '0px 5px',cursor:'pointer', fontSize: '14px',textDecoration: 'underline', color: 'blue'}} onClick={() => navigation('/investmentFirst')}>INVESTMENT PROCESS</p>
@@ -294,11 +297,9 @@ const BatchListingGrid = () => {
             </button>
             <button className="grid-btn" onClick={() => navigation('/burnOut')}>BURNOUT</button>
           </div> */}
-          <div style={{ display: 'flex', alignItems: 'center' }}>
-                    <p className='headerV2Title' >BATCH LIST</p>
-          </div>
+          
 
-          <div style={{display:'flex'}}>
+          <div style={{display:'flex',alignItems:'center',gap:'10px'}}>
           <div className="grid_head date">{GridHeadDate()}</div>
 
           <div className="grid_head_search">

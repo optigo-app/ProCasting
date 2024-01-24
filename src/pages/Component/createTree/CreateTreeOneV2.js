@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import './CreateTree.css'
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Dialog, Menu, MenuItem, TextField } from '@mui/material';
+import { Dialog, Menu, MenuItem, TextField, Typography } from '@mui/material';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { CurrentCamFlag, CurrentImageState } from '../../recoil/Recoil';
 import ImageWebCam from '../imageTag/ImageWebCam';
@@ -290,9 +290,9 @@ export default function CreateTreeOneV2() {
                             </div>
                             <div style={{ display: 'flex', marginTop: '10px' }}>
                                 <input type='text' value={inputValue} style={{ border: inputError && '1px solid red' }} className='enterBrachItemBox' onChange={handleInputChange} onKeyDown={handleKeyDown} />
-                                <button className='createGoBtn' onClick={handleGoButtonClick} >
-                                    Go
-                                </button>
+                                <Button variant='contained' className='createGoBtn' style={{color:'white',backgroundColor:'black',borderRadius:'0px'}} onClick={handleGoButtonClick} >
+                                    <Typography sx={{fontWeight:'bold',fontSize:'16px'}}>GO</Typography>
+                                </Button>
                             </div>
                             <input
                                 value={todayDate}
