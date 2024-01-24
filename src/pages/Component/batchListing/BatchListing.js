@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 
 
 export default function BatchListing() {
-    
+
     const navigation = useNavigate();
 
     useEffect(() => {
@@ -22,10 +22,21 @@ export default function BatchListing() {
                 <div style={{ display: 'flex', alignItems: 'center' }}>
                     <p className='headerV2Title' >PROCASTING-DASHBOARD</p>
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center' ,cursor: 'pointer' }} onClick={() => navigation('/')}>
-                    <img src={topLogo} style={{ width: '75px', }} />
-                    <p style={{ fontSize: '25px', opacity: '0.6', margin: '0px 10px', fontWeight: 700, color: '#000435' }}>ProCasting</p>
-                    {/* <p className='infoTextInputONe'>E0025(BOB THOMAS)</p> */}
+                <div
+                    style={{ display: "flex", alignItems: "center", cursor: 'pointer' }}
+                    onClick={() => navigation("/")}
+                >
+                    <img src={topLogo} style={{ width: "75px" }} />
+                    <p
+                        style={{
+                            fontSize: "25px",
+                            opacity: "0.6",
+                            margin: "0px 10px",
+                            fontWeight: 500,
+                        }}
+                    >
+                        <span style={{ color: "#00FFFF", opacity: "1" }}>Pro</span>Casting
+                    </p>
                 </div>
             </div>
 

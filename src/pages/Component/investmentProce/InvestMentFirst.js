@@ -500,11 +500,22 @@ export default function InvestMentFirst() {
           <div style={{ display: 'flex', alignItems: 'center' }}>
             <p className='headerV2Title' > INVESTMENT PROCESS</p>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center' }} onClick={() => naviagtion('/')}>
-            <img src={topLogo} style={{ width: '75px', }} />
-            <p style={{ fontSize: '25px', opacity: '0.6', margin: '0px 10px', fontWeight: 700, color: '#000435' }}>ProCasting</p>
-            {/* <p className='infoTextInputONe'>E0025(BOB THOMAS)</p> */}
-          </div>
+          <div
+          style={{ display: "flex", alignItems: "center" ,cursor: 'pointer' }}
+          onClick={() => naviagtion("/")}
+        >
+          <img src={topLogo} style={{ width: "75px" }} />
+          <p
+            style={{
+              fontSize: "25px",
+              opacity: "0.6",
+              margin: "0px 10px",
+              fontWeight: 500,
+            }}
+          >
+            <span style={{ color: "#00FFFF", opacity: "1" }}>Pro</span>Casting
+          </p>
+        </div>
         </div>
         <div
           style={{

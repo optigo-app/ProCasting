@@ -181,10 +181,21 @@ export default function BurnOut() {
                 <div style={{ display: 'flex', alignItems: 'center' }}>
                     <p className='headerV2Title' >BURNOUT PROCESS</p>
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center' }} onClick={() => navigation('/')}>
-                    <img src={topLogo} style={{ width: '75px', }} />
-                    <p style={{ fontSize: '25px', opacity: '0.6', margin: '0px 10px', fontWeight: 700, color: '#000435' }}>ProCasting</p>
-                    {/* <p className='infoTextInputONe'>E0025(BOB THOMAS)</p> */}
+                <div
+                    style={{ display: "flex", alignItems: "center", cursor: 'pointer' }}
+                    onClick={() => navigation("/")}
+                >
+                    <img src={topLogo} style={{ width: "75px" }} />
+                    <p
+                        style={{
+                            fontSize: "25px",
+                            opacity: "0.6",
+                            margin: "0px 10px",
+                            fontWeight: 500,
+                        }}
+                    >
+                        <span style={{ color: "#00FFFF", opacity: "1" }}>Pro</span>Casting
+                    </p>
                 </div>
             </div>
             <div className='burn_main_container' style={{ display: 'flex' }}>
@@ -196,7 +207,7 @@ export default function BurnOut() {
                                 style={{ width: "fit-content", position: "relative" }}
                             >
                                 {isImageVisible ? (
-                                    <div style={{ marginRight:'60px'}}>
+                                    <div style={{ marginRight: '60px' }}>
                                         <img src={scaneCodeImage} className="createImageQrCode" />
                                     </div>
                                 ) : (
@@ -247,8 +258,8 @@ export default function BurnOut() {
                             </div>
                             <div style={{ display: 'flex', marginTop: '10px' }}>
                                 <input type='text' value={inputValue} style={{ border: inputError && '1px solid red' }} className='enterBrachItemBox' onChange={handleInputChange} onKeyDown={handleKeyDown} />
-                                <Button className='createGoBtn' style={{color:'white',backgroundColor:'black',borderRadius:'0px'}} onClick={handleGoButtonClick} >
-                                    <Typography sx={{fontWeight:'bold',fontSize:'16px'}}>GO</Typography>
+                                <Button className='createGoBtn' style={{ color: 'white', backgroundColor: 'black', borderRadius: '0px' }} onClick={handleGoButtonClick} >
+                                    <Typography sx={{ fontWeight: 'bold', fontSize: '16px' }}>GO</Typography>
                                 </Button>
                             </div>
                             <button
