@@ -40,6 +40,8 @@ export default function UnlockAlloying() {
   const naviagtion = useNavigate();
   const scanRef = useRef(null);
 
+  const [scanInp, setScanInp] = useState('');
+
 
   useEffect(() => {
     if (scanRef.current) {
@@ -48,19 +50,24 @@ export default function UnlockAlloying() {
   }, []);
 
   useEffect(() => {
-    setTimeout(() => {
-      if (inputValueHidden.length) {
-        setEnteredValues([...enteredValues, inputValueHidden]);
-      }
-    }, 500);
-  }, [inputValueHidden]);
+    if (scanInp?.length) {
+        setTimeout(() => {
+            // if (!openYourBagDrawer && isImageVisible) {
+            if (isImageVisible) {
+                setEnteredValues([...enteredValues, scanInp]);
 
-
-  setTimeout(() => {
-    if (inputValueHidden.length) {
-      setInputValueHidden("");
+                setFlashCode(scanInp)
+            }
+        }, 500)
     }
-  }, 510);
+}, [scanInp])
+
+setTimeout(() => {
+    if (scanInp?.length > 0) {
+        setScanInp('')
+    }
+}, 510);
+
 
   useEffect(() => {
     // console.log('inout', inputValueHiddenPopup);
@@ -70,6 +77,7 @@ export default function UnlockAlloying() {
       }
     }, 500);
   }, [inputValueHiddenPopup]);
+
 
 
   setTimeout(() => {
@@ -179,12 +187,12 @@ export default function UnlockAlloying() {
   const handleInputChange = (event) => {
     setInputValue(event.target.value);
     setFlashCode(event.target.value);
+
   };
 
-  const handleInputChangeHidden = (event) => {
-    setInputValueHidden(event.target.value);
-    setFlashCode(event.target.value);
-  };
+  const handelScanInp = (target) => {
+    setScanInp(target)
+}
 
   const handleInputChangeHiddenPopup = (event) => {
     setInputValueHiddenPopup(event.target.value);
@@ -398,8 +406,8 @@ export default function UnlockAlloying() {
             )}
             <input
               type="text"
-              value={inputValueHiddenPopup}
-              onChange={handleInputChangeHidden}
+              value={scanInp}
+              onChange={(e) => handelScanInp(e.target.value)}
               style={{
                 width: "20px",
                 position: "absolute",
@@ -423,8 +431,8 @@ export default function UnlockAlloying() {
           </div>
           <div style={{ display: 'flex', marginTop: '10px' }}>
             <input type='text' value={inputValue} style={{ border: inputError && '1px solid red' }} className='enterBrachItemBox' onChange={handleInputChange} onKeyDown={handleKeyDown} />
-            <Button className='createGoBtn' style={{color:'white',backgroundColor:'black',borderRadius:'0px'}} onClick={handleGoButtonClick} >
-            <Typography sx={{fontWeight:'bold',fontSize:'16px'}}>GO</Typography>
+            <Button className='createGoBtn' style={{ color: 'white', backgroundColor: 'black', borderRadius: '0px' }} onClick={handleGoButtonClick} >
+              <Typography sx={{ fontWeight: 'bold', fontSize: '16px' }}>GO</Typography>
             </Button>
           </div>
         </div>
@@ -436,7 +444,7 @@ export default function UnlockAlloying() {
               type="text"
               className="unlovcDestilInput"
               value={flashCode}
-              onChange={(e) => setFlashCode(e.target.value)}
+            // onChange={(e) => setFlashCode(e.target.value)}
             />
           </div>
           <div className="investDestilInputDiv">
