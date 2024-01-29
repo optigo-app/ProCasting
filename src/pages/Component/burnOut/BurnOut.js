@@ -140,13 +140,15 @@ export default function BurnOut() {
         if (enteredValues.length === 0) {
             alert('Enetr job first')
         } else {
+            // window.location.reload();
+            // setTimeout(()=>{
+            // },500)
             notify();
             setFlashCode('');
             setEnteredValues([]);
             setGreeImg(false);
             setBlueImg(false);
             setOrangImg(false);
-            // window.location.reload();
             // setOpen(true);
         }
     }
@@ -373,18 +375,23 @@ export default function BurnOut() {
                     </div>
                 </div>
                 <div className="investSideFixedImg" >
-                    <img
+                   {(greenImg || blueImg || orangeImg)
+                    &&
+                   <img
                         src={
                             (greenImg && greenImges) ||
                             (blueImg && blueImges) ||
-                            (orangeImg && orangeImges)
+                            (orangeImg && orangeImges)|| undefined
                         }
+                        alt={''}
                         //   style={{paddingRight:'10px'}}
                         className="DrawerImg"
-                    />
+                        style={{display:''}}
+                    />}
                 </div>
             </div>
-            <p
+
+            <div
                 style={{
                     bottom: "10px",
                     textAlign: "center",
@@ -392,12 +399,13 @@ export default function BurnOut() {
                     color: "#a396c8",
                     fontSize: "18px",
                     fontWeight: 500,
+
                 }}
             >
                 {
                     "furnace Program number > #D (Diamond)  |   #W (WAX) |   #R1 Resin1    |    #R2 Resin2"
                 }
-            </p>
+            </div>
         </div>
     );
 }

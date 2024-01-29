@@ -159,6 +159,7 @@ export default function AddFlask() {
               onChange={(e) => handelScanInp(e.target.value)}
               autoFocus
             />
+            <button style={{background:'transparent',border:'none',outline:'none'}}></button>
           </div>
           <div style={{ display: "flex", marginTop: "10px" }}>
             <input

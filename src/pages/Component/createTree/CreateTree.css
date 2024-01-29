@@ -414,11 +414,12 @@ input[type='date']::-webkit-calender-picker-indicatore {
 }
 
 .homeRemarkDesc {
-    background-color: #dbdbdb;
-    /* color: white; */
+    background-color: #f1f1f1;
+    color: #498181;
     margin: 0px;
     padding: 0px 10px;
-
+    display: flex;
+    align-items: center;
 }
 
 .addReamrkTextBox {
