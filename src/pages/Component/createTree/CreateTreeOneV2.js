@@ -371,7 +371,7 @@ export default function CreateTreeOneV2() {
                     <IoPrint style={{ color: 'white', height: '25px', width: '25px', marginLeft: '-7px' }} />
                 </button>
                 <div className='createFooterMain'>
-                    {showEnteredValue && <p className='homeRemarkDesc'><b>Remark : </b>{remark}</p>}
+                    {showEnteredValue && <p className='homeRemarkDesc' style={{height:'37px'}}><Typography sx={{fontSize:'20px'}}>Remarks:</Typography>&nbsp;<Typography sx={{fontWeight:'600',fontSize:'20px'}}> {remark}</Typography></p>}
                     <div>
                         <p className="homeNoteDesc">
                             Note*:

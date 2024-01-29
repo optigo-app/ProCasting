@@ -185,6 +185,7 @@ setTimeout(() => {
   };
 
   const handleInputChange = (event) => {
+    
     setInputValue(event.target.value);
     setFlashCode(event.target.value);
 
@@ -364,9 +365,9 @@ setTimeout(() => {
           </div>
         </DialogTitle>
         <div style={{ display: "flex", justifyContent: "center" }}>
-          <button onClick={handleAddData} style={{ margin: "-20px 0px 20px" }}>
+          <Button variant="contained"  onClick={handleAddData} style={{ margin: "-20px 0px 20px",backgroundColor:'black',color:'white'}}>
             ADD TO TABLE
-          </button>
+          </Button>
         </div>
       </Dialog>
       <div className="TopBtnDivMainOneV2">
@@ -483,13 +484,14 @@ setTimeout(() => {
         </div>
       </div>
       <div>
-        {shotTableBtn && <button onClick={() => {
+        {shotTableBtn && <Button  onClick={() => {
           setShowTable(true)
           setShowTableBtn(false)
         }}
-          style={{ marginInline: '18%', height: '45px', marginTop: '-50px', width: '200px', }}>
-          MOVE TO TABLE
-        </button>}
+          style={{ marginInline: '2%', marginTop: '10px', width: '200px',backgroundColor:'black',color:'white'}}>
+
+          <Typography sx={{textTransform:'capitalize',fontWeight:'600',fontFamily:'sans-serif',letterSpacing:0.5,backgroundColor:'black',color:'white'}}>Move To Table</Typography>
+        </Button>}
         {showTable &&
           <div style={{ display: 'flex', justifyContent: 'center', marginTop: '10px' }}>
 
