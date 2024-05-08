@@ -42,8 +42,10 @@ export default function CreateTreeOneV2() {
     const [remark, setReamrk] = useState(undefined);
     const [showEnteredValue, setShowEnteredValue] = useState(false);
     const [selectedIndex, setSelectedIndex] = useState(null);
-
+    const [saveOpen,setSaveOpen]=useState(false)
+    const [saveWtOpen,setSaveWtOpen]=useState(false);
     const [anchorEl, setAnchorEl] = useState(null);
+    const [ShowBtnFlag,setShowBtnFlag]= useState(false);
     const openProMenu = Boolean(anchorEl);
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
@@ -164,16 +166,17 @@ export default function CreateTreeOneV2() {
         setInputWeightValue(newValue);
     };
 
-    useEffect(() => {
-        if (!inputWightValue) {
-            setTreeFlag(true)
-        } else {
-            setTreeFlag(false)
-        }
-    }, [inputWightValue])
+    // useEffect(() => {
+    //     if (!inputWightValue) {
+    //         setTreeFlag(true)
+    //     } else {
+    //         setTreeFlag(false)
+    //     }
+    // }, [inputWightValue])
 
     const handleSaveNew = () => {
-        window.location.reload();
+        setSaveOpen(true)
+        // window.location.reload();
     }
 
     const toggleImageVisibility = () => {
@@ -191,6 +194,38 @@ export default function CreateTreeOneV2() {
 
     return (
         <>
+        <Dialog
+            open={saveOpen}
+            onClose={()=>setSaveOpen(false)}
+            maxWidth
+        >
+            <DialogTitle sx={{textAlign:'center'}}>
+                Are you want to Save ?
+            </DialogTitle>
+            <DialogActions>
+                <Button  style={{backgroundColor : 'black' ,color: 'white',textTransform:'capitalize'}} onClick={()=>window.location.reload()}>save</Button>
+                <Button  style={{backgroundColor : 'black' ,color: 'white',textTransform:'capitalize'}} onClick={()=>setSaveOpen(false)}>close</Button>
+            </DialogActions>
+        </Dialog>
+        <Dialog
+            open={saveWtOpen}
+            onClose={()=>setSaveWtOpen(false)}
+            maxWidth
+        >
+            <DialogTitle sx={{textAlign:'center'}}>
+                Enter Tree Weight
+            </DialogTitle>
+            <DialogActions sx={{display:'flex',justifyContent:'center',alignItems:'center',flexDirection:'row'}}>
+                <input type='number' value={inputWightValue}  onChange={handleInputWeightChange} placeholder='TreeWeight' className='infoTextInputWight' />
+                <Button  
+                    style={{backgroundColor : 'black' ,color: 'white',textTransform:'capitalize'}} 
+                    onClick={()=>{
+                        setSaveWtOpen(false)
+                        setShowBtnFlag(true)
+                    }
+                    }>Save</Button>
+            </DialogActions>
+        </Dialog>
             <Dialog
                 open={open}
                 onClose={handleClose}
@@ -202,7 +237,7 @@ export default function CreateTreeOneV2() {
                 </DialogTitle>
                 <DialogContent>
                     <DialogContentText id="alert-dialog-description">
-                        <textarea type='text' onChange={handleChange} placeholder='Enter Remark' className='addReamrkTextBox' />
+                        <textarea type='text' autoFocus onChange={handleChange} placeholder='Enter Remark' className='addReamrkTextBox' />
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
@@ -321,10 +356,13 @@ export default function CreateTreeOneV2() {
                                     marginTop: '15px'
                                 }}
                             />
-                            <input type='text' placeholder='Batch' value={'AB'} style={{ marginTop: '15px' }} className='infoTextInputBatch' />
-                            <span style={{ display: 'flex', flexDirection: 'column' }}>
-                                <input type='number' value={inputWightValue} style={{ marginTop: '15px', border: treeFlag && '1px solid red' }} onChange={handleInputWeightChange} placeholder='Tree Weight' className='infoTextInputWight' />
-                                {treeFlag && <small style={{ color: 'red', marginLeft: '6px' }}>enter tree weight*</small>}
+                            <input type='text' placeholder='Batch' disabled value={'AB'} style={{ marginTop: '15px',textAlign:'center'}} className='infoTextInputBatch' />
+                            {ShowBtnFlag && inputWightValue && <>
+                                <span style={{ display: 'flex', flexDirection: 'column' }}>
+                                {/* <input type='number' value={inputWightValue} style={{ marginTop: '15px', border: treeFlag && '1px solid red' }} onChange={handleInputWeightChange} placeholder='Tree Weight' className='infoTextInputWight' /> */}
+                                <input type='text' disabled value={inputWightValue} style={{ marginTop: '15px',border:'none',textAlign:'center'}} onChange={handleInputWeightChange} className='infoTextInputWight' />
+                                {/* {treeFlag && <small style={{ color: 'red', marginLeft: '6px' }}>enter tree weight*</small>} */}
+                               
                             </span>
                             <button
                                 className="saveEndNewBtn"
@@ -332,8 +370,10 @@ export default function CreateTreeOneV2() {
                             >
                                 Save & New
                             </button>
+                            </>}
+                            
                         </div>
-                        <div className='allScaneDataMain'>
+                        <div className='allScaneDataMain' style={{position:'relative'}}>
                             <div style={{ display: 'flex' }}>
                                 <p className='totalItemText'>{totalValues}</p>
                                 <p className='totalItemTextTrue'>{totalValues}</p>
@@ -348,6 +388,10 @@ export default function CreateTreeOneV2() {
                                         <RemoveCircleRoundedIcon style={{ color: '#FF0000', cursor: 'pointer', fontSize: '30px' }} onClick={() => handleRemoveItem(index)} />
                                     </div>
                                 ))}
+                            </div>
+
+                            <div style={{display: enteredValues.length ? 'block':'none',position:'absolute',bottom:'-40px'}}>
+                                <button className="saveEndNewBtn" style={{width:'180px',marginTop:'5px'}} onClick={()=>setSaveWtOpen(true)}>Save & Add Weight</button>
                             </div>
                         </div>
                     </div>

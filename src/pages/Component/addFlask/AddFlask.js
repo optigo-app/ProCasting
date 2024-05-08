@@ -235,7 +235,7 @@ export default function AddFlask() {
                 style={{ marginLeft: "20px" }}
               />
               {enteredValues[1]?.length && (
-                <small className="div-small-text">diam.</small>
+                <small className="div-small-text">count</small>
               )}
             </div>
           </div>
@@ -254,11 +254,11 @@ export default function AddFlask() {
               <input
                 type="text"
                 className="addflaskInput"
-                value={enteredValues[1]?.length ? "100 g" : ""}
+                value={enteredValues[1]?.length ? "100g" : ""}
                 style={{ marginLeft: "20px" }}
               />
               {enteredValues[1]?.length && (
-                <small className="div-small-text">cap.</small>
+                <small className="div-small-text">est.wt</small>
               )}
             </div>
           </div>

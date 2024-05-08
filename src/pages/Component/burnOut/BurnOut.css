@@ -58,3 +58,8 @@
     align-items: left;
     width: 130px;
 }
+
+.burnOutIssueBtn:hover{
+    background-color: #a9a9a9;
+    
+}
