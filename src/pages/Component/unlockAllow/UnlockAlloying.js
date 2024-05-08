@@ -12,6 +12,9 @@ import Countdown from "react-countdown";
 import { toast } from "react-toastify";
 import topLogo from '../../assets/oraillogo.png'
 import { useNavigate } from "react-router-dom";
+import notiSound from "../../sound/Timeout.mpeg";
+import Sound from "react-sound";
+
 
 
 export default function UnlockAlloying() {
@@ -39,8 +42,12 @@ export default function UnlockAlloying() {
   const [fourthTableData, setFourthTableData] = useState([]);
   const naviagtion = useNavigate();
   const scanRef = useRef(null);
+  const [playStatus, setPlayStatus] = useState(Sound.status.STOPPED);
+  const [timerCompleted,setTimerCompleted] = useState(false);
 
   const [scanInp, setScanInp] = useState('');
+
+  console.log("timerCompleted",timerCompleted);
 
 
   useEffect(() => {
@@ -55,7 +62,6 @@ export default function UnlockAlloying() {
             // if (!openYourBagDrawer && isImageVisible) {
             if (isImageVisible) {
                 setEnteredValues([...enteredValues, scanInp]);
-
                 setFlashCode(scanInp)
             }
         }, 500)
@@ -139,6 +145,7 @@ setTimeout(() => {
 
   const handleAddData = () => {
     if (openPoupuNumber === 1) {
+      let CompeletedFlag;
       let timer = <span style={{ fontSize: '25px', color: 'red' }}><Countdown date={Date.now() + 30000} renderer={renderer} /></span>
       setFirstTableData((prev) => [
         ...prev,
@@ -238,14 +245,33 @@ setTimeout(() => {
       return <Completionist />;
     } else {
       return (
-        <span style={{ textAlign: 'center' }}>
+        <span style={{ textAlign: 'center' ,display:'flex',flexDirection:'row',justifyContent:'center',alignItems:'center',gap:'8px'}}>
           <span style={{ fontWeight: 'bold' }}>{seconds}</span>
+          <span style={{fontSize:'16px'}}>Remaining</span>
         </span>
       );
     }
   };
 
-  let TimeNotify = () => toast.error(`Time is Over!!!!`, { theme: "colored" });
+  
+  const [toastShown, setToastShown] = useState(false);
+  const playAudio = () => {
+    setPlayStatus(Sound.status.PLAYING);
+  
+    setTimeout(() => {
+      setPlayStatus(Sound.status.STOPPED);
+    }, 30000); 
+  };
+  
+  let TimeNotify = useCallback(() => {
+    if (!toastShown) {
+      toast.error("Time is Over!!!!", { theme: "colored" });
+      setToastShown(true);
+    }
+    playAudio();
+  }, [toastShown]);
+
+  // let TimeNotify = () => toast.error(`Time is Over!!!!`, { theme: "colored" });
 
   const Completionist = useCallback(() => {
 
@@ -275,6 +301,12 @@ setTimeout(() => {
       <BarcodeScanner
         onScan={handleScan}
         onError={handleError}
+      />
+ <Sound
+        url={notiSound}
+        playStatus={playStatus}
+        onFinishedPlaying={() => setPlayStatus(Sound.status.STOPPED)}
+        volume={100}
       />
 
       <Dialog
@@ -498,33 +530,39 @@ setTimeout(() => {
             {firtstTableData?.length === 0 ? <div className='tableDataMain' onClick={() => handleOpenPopup(1)}>
               <div style={{ display: 'flex', justifyContent: 'space-around', borderBottom: firtstTableData?.length && '1px solid #e1e1e1', paddingBottom: firtstTableData?.length && '5px' }}>
                 <p className="unlockTableTitle">TABLE 1</p>
-                {firtstTableData?.length !== 0 &&
+                {firtstTableData?.length !== 0 && timerCompleted &&
                   <div style={{ display: 'flex', alignItems: 'center' }}>
                     {/* <p className="unlockTableTitleNum" >{time}</p> */}
                     <p className="unlockTableTitleText">Minutes Remaining</p>
                   </div>
                 }
               </div>
-              <p className="UnlockformDataTable">
+                <p className="UnlockformDataTable">
                 {firtstTableData?.length !== 0 && firtstTableData.join(', ')}
               </p>
             </div>
               :
               <div style={{ display: 'flex', flexDirection: 'column' }}>
                 {firtstTableData.map((data, index) =>
+                  {
+                    console.log("data",data)
+                    return (
                   <div className='tableDataMain' onClick={() => handleOpenPopup(1)}>
                     <div style={{ display: 'flex', justifyContent: 'space-around' }}>
                       <p className="unlockTableTitle">TABLE 1</p>
-                      <div style={{ display: 'flex', alignItems: 'center', flexDirection: 'column', justifyContent: 'center', marginTop: '12px' }}>
+                      
+                     <div style={{ display: 'flex', alignItems: 'center', flexDirection: 'column', justifyContent: 'center', marginTop: '5px' }}>
                         {data?.timer}
-
-                        <p className="unlockTableTitleText">Minutes Remaining</p>
+                        {/* {!timerCompleted &&<p className="unlockTableTitleText">Minutes Remaining</p>} */}
                       </div>
                     </div>
-                    <p className="UnlockformDataTable">
+                    <hr style={{color:'gray'}}/>
+                    <p className="UnlockformDataTable" style={{display:'flex',justifyContent:'center',alignItems:'center',marginTop:'-5px'}}>
                       {firtstTableData?.length !== 0 && data.flaskID?.join(', ')}
                     </p>
-                  </div>)}
+                  </div>
+                  )}
+                  )}
               </div>
             }
 
@@ -533,8 +571,8 @@ setTimeout(() => {
                 <p className="unlockTableTitle">TABLE 2</p>
                 {secondTableData?.length !== 0 &&
                   <div style={{ display: 'flex', alignItems: 'center' }}>
-                    <p className="unlockTableTitleNum" >10</p>
-                    <p className="unlockTableTitleText">Minutes Remaining</p>
+                    {/* <p className="unlockTableTitleNum" >10</p> */}
+                    {timerCompleted && <p className="unlockTableTitleText">Minutes Remaining</p>}
                   </div>
                 }
               </div>
@@ -548,13 +586,14 @@ setTimeout(() => {
                   <div className='tableDataMain' onClick={() => handleOpenPopup(2)}>
                     <div style={{ display: 'flex', justifyContent: 'space-around' }}>
                       <p className="unlockTableTitle">TABLE 2</p>
-                      <div style={{ display: 'flex', alignItems: 'center', flexDirection: 'column', justifyContent: 'center', marginTop: '12px' }}>
+                      <div  style={{ display: 'flex', alignItems: 'center', flexDirection: 'column', justifyContent: 'center', marginTop: '5px' }}>
                         {data?.timer}
 
-                        <p className="unlockTableTitleText">Minutes Remaining</p>
+                        {/* {timerCompleted && <p className="unlockTableTitleText">Minutes Remaining</p>} */}
                       </div>
                     </div>
-                    <p className="UnlockformDataTable">
+                    <hr style={{color:'gray'}}/>
+                    <p className="UnlockformDataTable" style={{display:'flex',justifyContent:'center',alignItems:'center',marginTop:'-5px'}}>
                       {secondTableData?.length !== 0 && data.flaskID?.join(', ')}
                     </p>
                   </div>)}
@@ -581,13 +620,14 @@ setTimeout(() => {
                   <div className='tableDataMain' onClick={() => handleOpenPopup(3)}>
                     <div style={{ display: 'flex', justifyContent: 'space-around' }}>
                       <p className="unlockTableTitle">TABLE 3</p>
-                      <div style={{ display: 'flex', alignItems: 'center', flexDirection: 'column', justifyContent: 'center', marginTop: '12px' }}>
+                      <div  style={{ display: 'flex', alignItems: 'center', flexDirection: 'column', justifyContent: 'center', marginTop: '5px' }}>
                         {data?.timer}
 
-                        <p className="unlockTableTitleText">Minutes Remaining</p>
+                        {/* <p className="unlockTableTitleText">Minutes Remaining</p> */}
                       </div>
                     </div>
-                    <p className="UnlockformDataTable">
+                    <hr style={{color:'gray'}}/>
+                    <p className="UnlockformDataTable" style={{display:'flex',justifyContent:'center',alignItems:'center',marginTop:'-5px'}}>
                       {thirdTableData?.length !== 0 && data.flaskID?.join(', ')}
                     </p>
                   </div>)}
@@ -615,13 +655,14 @@ setTimeout(() => {
                   <div className='tableDataMain' onClick={() => handleOpenPopup(4)}>
                     <div style={{ display: 'flex', justifyContent: 'space-around' }}>
                       <p className="unlockTableTitle">TABLE 4</p>
-                      <div style={{ display: 'flex', alignItems: 'center', flexDirection: 'column', justifyContent: 'center', marginTop: '12px' }}>
+                      <div  style={{ display: 'flex', alignItems: 'center', flexDirection: 'column', justifyContent: 'center', marginTop: '5px' }}>
                         {data?.timer}
 
-                        <p className="unlockTableTitleText">Minutes Remaining</p>
+                        {/* <p className="unlockTableTitleText">Minutes Remaining</p> */}
                       </div>
                     </div>
-                    <p className="UnlockformDataTable">
+                    <hr style={{color:'gray'}}/>
+                    <p className="UnlockformDataTable" style={{display:'flex',justifyContent:'center',alignItems:'center',marginTop:'-5px'}}>
                       {fourthTableData?.length !== 0 && data.flaskID?.join(', ')}
                     </p>
                   </div>)}

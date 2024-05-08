@@ -117,7 +117,7 @@
     font-size: 20px;
     margin: 0px;
     display: flex;
-    width: 100px;
+    width: 150px;
 }
 .investDestilInput1{
 
@@ -202,12 +202,12 @@
 }
 
 .invest_upload_btn{
-    height: 27px;
-    width: 100px;
+    height: 37px;
+    width: 130px;
     border:none;
     outline:none;
     background-color: black;
-    font-size: 12px;
+    font-size: 16px;
     color:white;
     font-weight: 600;
     border-radius: 20px;

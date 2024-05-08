@@ -2,7 +2,8 @@ import React, { useEffect, useRef, useState } from 'react'
 import './BurnOut.css'
 import { Dialog, DialogTitle, Drawer, Typography } from '@mui/material';
 import greenImges from '../../assets/green.png'
-import blueImges from '../../assets/blue.png'
+import blueImges from '../../assets/1_MODIFIED.png'
+// import blueImges from '../../assets/1.png'
 import orangeImges from '../../assets/orange.png'
 import { IoMdClose } from "react-icons/io";
 import Button from '@mui/material/Button';
@@ -31,6 +32,7 @@ export default function BurnOut() {
     const [scanInp, setScanInp] = useState('');
     const invProRef = useRef(null)
     const navigation = useNavigate();
+    const [machineVal,setMachineVal]=useState('');
 
     useEffect(() => {
         if (enteredValues[0] === 'F1') {
@@ -154,6 +156,8 @@ export default function BurnOut() {
     }
 
     return (
+        <>
+        
         <div>
             <BarcodeScanner
                 onScan={handleScan}
@@ -181,7 +185,7 @@ export default function BurnOut() {
             </Dialog>
             <div className="TopBtnDivMainOneV2">
                 <div style={{ display: 'flex', alignItems: 'center' }}>
-                    <p className='headerV2Title' >BURNOUT PROCESS</p>
+                    <p className='headerV2Title' style={{textTransform:'capitalize'}} >BURNOUT PROCESS - {machineVal}</p>
                 </div>
                 <div
                     style={{ display: "flex", alignItems: "center", cursor: 'pointer' }}
@@ -200,6 +204,34 @@ export default function BurnOut() {
                     </p>
                 </div>
             </div>
+            {
+                !machineVal.length ?
+
+                 <div style={{display:'flex',justifyContent:'center',alignItems:'center',height:'100%',width:'100%'}}>
+                 <div style={{display:'flex',gap:'20px'}}>
+                     <button 
+                        className="burnOutIssueBtn" 
+                        onClick={()=>{
+                            setMachineVal('MACHINE 1')
+                            localStorage.setItem("machineVal",JSON.stringify('MACHINE 1'))
+                        }
+                        }
+                        >Machine 1</button>
+                     <button 
+                        className="burnOutIssueBtn" 
+                        onClick={()=>{
+                            setMachineVal('MACHINE 2')
+                            localStorage.setItem("machineVal",JSON.stringify('MACHINE 2'))
+                        }
+                        }
+                        >Machine 2</button>
+                     
+                 </div>
+                 </div>
+
+                 :
+
+                 <>
             <div className='burn_main_container' style={{ display: 'flex' }}>
                 <div className="left_container" style={{ width: '75%' }}>
                     <div style={{ display: "flex", marginTop: "-10px", justifyContent: 'space-evenly' }}>
@@ -406,6 +438,11 @@ export default function BurnOut() {
                     "furnace Program number > #D (Diamond)  |   #W (WAX) |   #R1 Resin1    |    #R2 Resin2"
                 }
             </div>
+            </>
+            }
+            
         </div>
+        
+        </>
     );
 }

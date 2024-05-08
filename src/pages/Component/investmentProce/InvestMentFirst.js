@@ -1,8 +1,16 @@
-import React, { useEffect, useState, useRef, useCallback, useMemo } from "react";
+import React, {
+  useEffect,
+  useState,
+  useRef,
+  useCallback,
+  useMemo,
+} from "react";
 import "./InvestMentFirst.css";
 import { Button, Dialog, DialogTitle, Drawer, Typography } from "@mui/material";
 import greenImges from "../../assets/green.png";
-import blueImges from "../../assets/blue.png";
+// import blueImges from "../../assets/blue.png";
+// import blueImges from "../../assets/1.png";
+import blueImges from "../../assets/1_MODIFIED.png";
 import orangeImges from "../../assets/orange.png";
 import { IoMdClose } from "react-icons/io";
 import Countdown from "react-countdown";
@@ -12,15 +20,16 @@ import idle from "../../assets/idle.gif";
 import RemoveCircleRoundedIcon from "@mui/icons-material/RemoveCircleRounded";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import uploadcloud from '../../assets/uploadCloud.png'
+import uploadcloud from "../../assets/uploadCloud.png";
 import { useRecoilValue } from "recoil";
 import { CurrentImageState } from "../../recoil/Recoil";
 import ImageWebCam from "../imageTag/ImageWebCam";
-import topLogo from '../../assets/oraillogo.png'
+import topLogo from "../../assets/oraillogo.png";
 import { useNavigate } from "react-router-dom";
+import notiSound from "../../sound/Timeout.mpeg";
+import Sound from "react-sound";
 
 export default function InvestMentFirst() {
-
   const [inputValue, setInputValue] = useState("");
   const [enteredValues, setEnteredValues] = useState([]);
   const [open, setOpen] = useState(false);
@@ -43,29 +52,45 @@ export default function InvestMentFirst() {
   const [eviIndex, setEviIndex] = useState([]);
   const [weightInp, setWeightInp] = useState("");
   const [saveData, setSaveData] = useState(false);
-  const [goBtnFlag, setGoBtnFlag] = useState(false)
+  const [goBtnFlag, setGoBtnFlag] = useState(false);
   const [openDelete, setOpenDelete] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(null);
-  const [isImgUpload, setIsImgUpload] = useState(false)
-  const [isImgShow, setIsImgShow] = useState(false)
-  const [fileBase64, setFileBase64] = useState('')
+  const [isImgUpload, setIsImgUpload] = useState(false);
+  const [isImgShow, setIsImgShow] = useState(false);
+  const [fileBase64, setFileBase64] = useState("");
+  const [waterWeight, setWaterWeight] = useState("");
+  const [waterTemp, setWaterTemp] = useState("");
+  const [glossFlag, setGlossFlag] = useState(false);
+  const [investTime, setInvestTime] = useState();
+  const [fetchFlag, setFetchFlag] = useState(false);
 
-  const invProRef = useRef(null)
+  const invProRef = useRef(null);
   const fileInputRef = useRef(null);
   const naviagtion = useNavigate();
 
-  console.log("enteredValues", enteredValues)
-  console.log("enteredValueseviIndex", eviIndex)
+  const [playStatus, setPlayStatus] = useState(Sound.status.STOPPED);
+
+  // useEffect(()=>{
+  //   if(fetchFlag === true){
+  //     let data = JSON.parse(localStorage.getItem("InvestTimer"))
+  //     setInvestTime(data);
+  //   }
+  //   },[fetchFlag])
+
+  // console.log("enteredValueseviIndex", eviIndex)
 
   useEffect(() => {
     if (greenImg) {
       setWeightInp("3000");
+      setWaterWeight("2100");
     }
     if (blueImg) {
       setWeightInp("3000");
+      setWaterWeight("2100");
     }
     if (orangeImg) {
       setWeightInp("3000");
+      setWaterWeight("2100");
     }
   }, [greenImg, blueImg, orangeImg, weight, defaultImg]);
 
@@ -75,7 +100,7 @@ export default function InvestMentFirst() {
       setBlueImg(false);
       setOrangImg(false);
     }
-  }, [enteredValues])
+  }, [enteredValues]);
 
   useEffect(() => {
     if (enteredValues[0]?.label === "F1") {
@@ -121,7 +146,7 @@ export default function InvestMentFirst() {
     enteredValues.length > 0 && setWeightInp("2000");
   }, []);
 
-  const handleScan = (data) => { };
+  const handleScan = (data) => {};
 
   const handleError = (error) => {
     console.error("Error while scanning:", error);
@@ -181,41 +206,58 @@ export default function InvestMentFirst() {
   const saveDataHandle = () => {
     if (TDS === undefined || TDS === "") {
       alert("Enetr TDS");
-
     } else if (phValue === undefined || phValue === "") {
       alert("Enetr phValue");
-      return
+      return;
     } else {
       setSaveData(true);
       notify();
-      const updateData = enteredValues?.map((ev, i) => {
-        if (!ev["ImgBtn"]) {
-          ev["ImgBtn"] = (
-            <button
-              onClick={() => {
-                setIsImgUpload(true)
-                setEviIndex(i)
-              }}
-              className="invest_upload_btn"
-            >
-              Upload Image
-            </button>
-          );
-        }
-        return ev;
-      });
-      setEnteredValues(updateData);
-      setShowTimmerBtn(true)
-      setTDS("");
-      setPhValue("");
+      // const updateData = enteredValues?.map((ev, i) => {
+      //   if (!ev["ImgBtn"]) {
+      //     ev["ImgBtn"] = (
+      //       <button
+      //         onClick={() => {
+      //           setIsImgUpload(true)
+      //           setEviIndex(i)
+      //         }}
+      //         className="invest_upload_btn"
+      //       >
+      //         Upload Image
+      //       </button>
+      //     );
+      //   }
+      //   return ev;
+      // });
+
+     // setEnteredValues(updateData);
+      setShowTimmerBtn(true);
     }
   };
 
-  let TimeNotify = () => toast.error(`Time is Over!!!!`, { theme: "colored" });
+  const [toastShown, setToastShown] = useState(false);
 
-  const Completionist = useCallback(() => {
+  const playAudio = () => {
+    setPlayStatus(Sound.status.PLAYING);
+  
+    setTimeout(() => {
+      setPlayStatus(Sound.status.STOPPED);
+    }, 30000); 
+  };
+  
+  let TimeNotify = useCallback(() => {
+    if (!toastShown) {
+      toast.error("Time is Over!!!!", { theme: "colored" });
+      setToastShown(true);
+    }
+    playAudio();
+  }, [toastShown]);
+  
 
-    TimeNotify();
+  function Completionist(completed) {
+    console.log("investTime", investTime);
+    console.log("completedXCV", completed?.completed);
+
+    // setGlossFlag(true)
 
     const d = new Date();
 
@@ -232,23 +274,51 @@ export default function InvestMentFirst() {
         ? `0${d.getSeconds()}`
         : d.getSeconds();
 
-    return <div style={{ textTransform: 'uppercase' }}> Gloss of completion time : <span style={{ fontWeight: 'bold' }}>{hour}:{min}:{sec}</span></div>;
+    if (completed?.completed === true) {
+      TimeNotify();
+      // setFetchFlag(true);
+      // setGlossFlag(true);
+      localStorage.setItem(
+        "InvestTimer",
+        JSON.stringify(`${hour}:${min}:${sec}`)
+      );
+    }
 
-  }, []);
+    // invTimer='ASDAD';
 
-  const renderer = useCallback(({ minutes, seconds, completed }) => {
-    if (completed && showTimmer) {
-      return <Completionist />;
+    return (
+      <div style={{ textTransform: "uppercase" }}>
+        {" "}
+        Gloss of completion time :
+        {investTime ? (
+          <span style={{ fontWeight: "bold" }}>{investTime}</span>
+        ) : (
+          <span style={{ fontWeight: "bold" }}>
+            {hour}:{min}:{sec}
+          </span>
+        )}
+      </div>
+    );
+  }
+
+  const renderer = ({ minutes, seconds, completed }) => {
+    console.log("completedrender", completed);
+    // if(completed){
+    // }
+    if (completed || glossFlag) {
+      // setFetchFlag(true);
+      return <Completionist completed={completed} />;
     } else {
       return (
-        <span style={{ textAlign: 'center' }}>
-          GLOSS OFF TIMER : <span style={{ fontWeight: 'bold' }}>{minutes}:{seconds}</span>
+        <span style={{ textAlign: "center" }}>
+          Filling + Pouring Timer :{" "}
+          <span style={{ fontWeight: "bold" }}>
+            {minutes}:{seconds}
+          </span>
         </span>
       );
     }
-  }, [showTimmer]);
-
-
+  };
 
   const handleStartTime = () => {
     setShowTimmer(true);
@@ -269,11 +339,13 @@ export default function InvestMentFirst() {
   };
 
   const handelScanInp = (target) => {
-    setScanInp(target)
-  }
+    setScanInp(target);
+  };
 
   const handleConfirmation = () => {
-    setEnteredValues(enteredValues.filter((_, index) => index !== selectedIndex));
+    setEnteredValues(
+      enteredValues.filter((_, index) => index !== selectedIndex)
+    );
     setOpenDelete(false);
     if (enteredValues.length === 1) {
       window.location.reload();
@@ -289,7 +361,7 @@ export default function InvestMentFirst() {
   };
 
   // const handleFileUpload = (event) => {
-  //   const file = event.target.files[0]; 
+  //   const file = event.target.files[0];
 
   //   if (file) {
   //     const reader = new FileReader();
@@ -318,18 +390,33 @@ export default function InvestMentFirst() {
     if (CurrentImageValue.length > 0) {
       const updatedData = enteredValues.map((d, index) => {
         if (eviIndex === index) {
-          d.ImgUrl = CurrentImageValue
+          d.ImgUrl = CurrentImageValue;
         }
         return d;
       });
       setEnteredValues(updatedData);
 
-      setIsImgUpload(false)
+      setIsImgUpload(false);
     }
-  }, [CurrentImageValue])
+  }, [CurrentImageValue]);
+
+  const handelUploadImg = () => {
+    // setFetchFlag(true)
+    let data = JSON.parse(localStorage.getItem("InvestTimer"));
+    setInvestTime(data);
+    setIsImgUpload(true);
+    setGlossFlag(true);
+  };
 
   return (
     <div>
+      <Sound
+        url={notiSound}
+        playStatus={playStatus}
+        onFinishedPlaying={() => setPlayStatus(Sound.status.STOPPED)}
+        volume={100}
+      />
+
       <BarcodeScanner
         onScan={handleScan}
         onError={handleError}
@@ -497,31 +584,33 @@ export default function InvestMentFirst() {
 
       <div>
         <div className="TopBtnDivMainOneV2">
-          <div style={{ display: 'flex', alignItems: 'center' }}>
-            <p className='headerV2Title' > INVESTMENT PROCESS</p>
+          <div style={{ display: "flex", alignItems: "center" }}>
+            <p className="headerV2Title"> INVESTMENT PROCESS</p>
           </div>
           <div
-          style={{ display: "flex", alignItems: "center" ,cursor: 'pointer' }}
-          onClick={() => naviagtion("/")}
-        >
-          <img src={topLogo} style={{ width: "75px" }} />
-          <p
-            style={{
-              fontSize: "25px",
-              opacity: "0.6",
-              margin: "0px 10px",
-              fontWeight: 500,
-            }}
+            style={{ display: "flex", alignItems: "center", cursor: "pointer" }}
+            onClick={() => naviagtion("/")}
           >
-            <span style={{ color: "#00FFFF", opacity: "1" }}>Pro</span>Casting
-          </p>
-        </div>
+            <img src={topLogo} style={{ width: "75px" }} />
+            <p
+              style={{
+                fontSize: "25px",
+                opacity: "0.6",
+                margin: "0px 10px",
+                fontWeight: 500,
+              }}
+            >
+              <span style={{ color: "#00FFFF", opacity: "1" }}>Pro</span>Casting
+            </p>
+          </div>
         </div>
         <div
           style={{
             display: "flex",
             marginTop: "0px",
             justifyContent: "space-around",
+            // border:'1px solid red',
+            position: "relative",
           }}
         >
           <div
@@ -538,6 +627,7 @@ export default function InvestMentFirst() {
                 // width: "80%",
                 gap: "80px",
                 // justifyContent: "space-around",
+                position: "relative",
               }}
             >
               <div className="investTopBox1">
@@ -551,10 +641,7 @@ export default function InvestMentFirst() {
                 >
                   {isImageVisible ? (
                     <div>
-                      <img
-                        src={scaneCodeImage}
-                        className="createImageQrCode"
-                      />
+                      <img src={scaneCodeImage} className="createImageQrCode" />
                     </div>
                   ) : (
                     <div>
@@ -602,10 +689,27 @@ export default function InvestMentFirst() {
                     c
                   </button>
                 </div>
-                <div style={{ display: 'flex', marginTop: '10px' }}>
-                  <input type='text' value={inputValue} style={{ border: inputError && '1px solid red' }} className='enterBrachItemBox' onChange={handleInputChange} onKeyDown={handleKeyDown} />
-                  <Button className='createGoBtn' style={{color:'white',backgroundColor:'black',borderRadius:'0px'}} onClick={handleGoButtonClick} >
-                        <Typography sx={{fontWeight:'bold',fontSize:'16px'}}>GO</Typography>
+                <div style={{ display: "flex", marginTop: "10px" }}>
+                  <input
+                    type="text"
+                    value={inputValue}
+                    style={{ border: inputError && "1px solid red" }}
+                    className="enterBrachItemBox"
+                    onChange={handleInputChange}
+                    onKeyDown={handleKeyDown}
+                  />
+                  <Button
+                    className="createGoBtn"
+                    style={{
+                      color: "white",
+                      backgroundColor: "black",
+                      borderRadius: "0px",
+                    }}
+                    onClick={handleGoButtonClick}
+                  >
+                    <Typography sx={{ fontWeight: "bold", fontSize: "16px" }}>
+                      GO
+                    </Typography>
                   </Button>
                 </div>
                 <button
@@ -662,7 +766,7 @@ export default function InvestMentFirst() {
                     justifyContent: "center",
                   }}
                 >
-                  <p className="investDestilInputTitleNew">Weight:</p>
+                  <p className="investDestilInputTitleNew">Powder Weight:</p>
                   <input
                     type="number"
                     // value={
@@ -674,6 +778,52 @@ export default function InvestMentFirst() {
                     // }
                     value={weightInp}
                     onChange={(e) => setWeightInp(e.target.value)}
+                    className="investDestilInput1"
+                  />
+                </div>
+                <div
+                  style={{
+                    display: "flex",
+                    marginTop: "15px",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <p className="investDestilInputTitleNew">Water Weight:</p>
+                  <input
+                    type="number"
+                    // value={
+                    //   (greenImg && "3000") ||
+                    //   (blueImg && "3000") ||
+                    //   (orangeImg && "3000") ||
+                    //   (weight && "") ||
+                    //   (defaultImg && "")
+                    // }
+                    value={waterWeight}
+                    onChange={(e) => setWaterWeight(e.target.value)}
+                    className="investDestilInput1"
+                  />
+                </div>
+                <div
+                  style={{
+                    display: "flex",
+                    marginTop: "15px",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <p className="investDestilInputTitleNew">Water Temp. :</p>
+                  <input
+                    type="number"
+                    // value={
+                    //   (greenImg && "3000") ||
+                    //   (blueImg && "3000") ||
+                    //   (orangeImg && "3000") ||
+                    //   (weight && "") ||
+                    //   (defaultImg && "")
+                    // }
+                    value={waterTemp}
+                    onChange={(e) => setWaterTemp(e.target.value)}
                     className="investDestilInput1"
                   />
                 </div>
@@ -721,7 +871,6 @@ export default function InvestMentFirst() {
                     // className="investAddGlassBtn"
                     onClick={saveDataHandle}
                     className="homeNoteTitleV2"
-
                   >
                     Save
                   </button>
@@ -736,105 +885,162 @@ export default function InvestMentFirst() {
                 flexDirection: "column",
               }}
             >
-              {showTimmerBtn && <div className="invest_btn_div">
-                <div
-                  style={{
-                    color: "#800000",
-                    fontSize: "24px",
-                    backgroundColor: "#efefef",
-                    width: "100%",
-                    padding: "6px",
-                  }}
-                >
-                  {!showTimmer ? (
-                    <div style={{ display: 'flex', alignItems: 'center', height: '30px' }}>
-
-                      <p>Process Compeleted Start Gloss Of Time :</p>
-                      &nbsp;
-                      <button
-                        className="invest_btn"
-                        onClick={() => handleStartTime()}
-                      >
-                        Start Time
-                      </button>
-                    </div>
-                  ) : (
-                    <Countdown date={Date.now() + 30000} renderer={renderer} />
-                  )}
-                </div>
-              </div>}
-
-              <div
-                style={{ display: "flex", marginTop: "5px", flexWrap: "wrap" }}
-              >
-                {enteredValues?.map((value, index) => (
-                  <table
-                    key={index}
+              {showTimmerBtn && (
+                <div className="invest_btn_div">
+                  <div
                     style={{
-                      backgroundColor:
-                        (greenImg && "#b1d8b7") ||
-                        (blueImg && "#a396c8") ||
-                        (orangeImg && "orange") ||
-                        (defaultImg && "#add8e6"),
-                      margin: "5px",
+                      color: "#800000",
+                      fontSize: "24px",
+                      backgroundColor: "#efefef",
+                      width: "100%",
+                      padding: "6px",
+                      display: "flex",
+                      justifyContent: "space-between",
                     }}
                   >
-                    <tr>
-                      <th className="not">{value?.label}</th>
-                    </tr>
-                    <tr>
-                      <th className="investTableRow">
-                        Batch No:{index === 0 && "AB"}
-                        {index === 1 && "BC"}
-                        {index === 2 && "CD"}{" "}
-                      </th>
-                    </tr>
-                    <tr>
-                      <th className="investTableRow">78 Jobs </th>
-                    </tr>
-                    <tr>
-                      <th className="investTableRow">150 Grams </th>
-                    </tr>
-                    <tr>
-                      <th
-                        className={`investTableRow ${!showTimmerBtn && "sett"}`}
+                    {!showTimmer ? (
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          height: "30px",
+                        }}
                       >
-                        {(greenImg && "Wax Setting") ||
-                          (blueImg && "Regular") ||
-                          (orangeImg && "RPT")}
-                      </th>
-                    </tr>
+                        <p>Process Compeleted Start Time :</p>
+                        &nbsp;
+                        <button
+                          className="invest_btn"
+                          onClick={() => handleStartTime()}
+                        >
+                          Start Time
+                        </button>
+                      </div>
+                    ) : (
+                      <Countdown
+                        date={Date.now() + 30000}
+                        renderer={renderer}
+                      />
+                    )}
+                    {!CurrentImageValue.length ? (
+                      <div>
+                        Gloss Off Time :{" "}
+                        <span style={{ fontWeight: "bold" }}>4 Hours</span>
+                      </div>
+                    ) : (
+                      ""
+                    )}
+                  </div>
+                  {/* <div>
+                  hello
+                </div> */}
+                </div>
+              )}
 
-                    {!value?.ImgUrl && (
+              {!showTimmer && (
+                <div
+                  style={{
+                    display: "flex",
+                    marginTop: "5px",
+                    flexWrap: "wrap",
+                  }}
+                >
+                  {enteredValues?.map((value, index) => (
+                    <table
+                      key={index}
+                      style={{
+                        backgroundColor:
+                          (greenImg && "#b1d8b7") ||
+                          (blueImg && "#a396c8") ||
+                          (orangeImg && "orange") ||
+                          (defaultImg && "#add8e6"),
+                        margin: "5px",
+                      }}
+                    >
+                      <tr>
+                        <th className="not">{value?.label}</th>
+                      </tr>
+                      <tr>
+                        <th className="investTableRow">
+                          Batch No:{index === 0 && "AB"}
+                          {index === 1 && "BC"}
+                          {index === 2 && "CD"}{" "}
+                        </th>
+                      </tr>
+                      <tr>
+                        <th className="investTableRow">78 Jobs </th>
+                      </tr>
+                      <tr>
+                        <th className="investTableRow">150 Grams </th>
+                      </tr>
+                      <tr>
+                        <th
+                          className={`investTableRow ${
+                            !showTimmerBtn && "sett"
+                          }`}
+                        >
+                          {(greenImg && "Wax Setting") ||
+                            (blueImg && "Regular") ||
+                            (orangeImg && "RPT")}
+                        </th>
+                      </tr>
+
+                      {/* {!value?.ImgUrl && (
                       // {!CurrentImageValue && (
                       // {!CurrentImageValue && (
                       <tr>
                         <th className="btncom">{value?.ImgBtn}</th>
                       </tr>
-                    )}
-                    {value?.ImgUrl && (
-                      <tr>
-                        <th className="btncom">
-                          <button
-                            onClick={() => {
-                              setIsImgShow(true);
-                              setEviIndex(index);
-                              setFileBase64(value?.ImgUrl);
-                            }}
-                            className="invest_upload_btn"
-                          >
-                            Show Image
-                          </button>
-                        </th>
-                      </tr>
-                    )}
+                    )} */}
+                      {value?.ImgUrl && (
+                        <tr>
+                          <th className="btncom">
+                            <button
+                              onClick={() => {
+                                setIsImgShow(true);
+                                setEviIndex(index);
+                                setFileBase64(value?.ImgUrl);
+                              }}
+                              className="invest_upload_btn"
+                            >
+                              Show Image
+                            </button>
+                          </th>
+                        </tr>
+                      )}
 
-                    {/* <tr>
+                      {/* <tr>
                     <th style={{ color: "red" }}>{value?.timer}</th>
                   </tr> */}
-                  </table>
-                ))}
-              </div>
+                    </table>
+                  ))}
+                </div>
+              )}
+
+              {showTimmer && (
+                <div style={{ display: "flex", marginTop: "50px" }}>
+                  {CurrentImageValue.length ? (
+                    <button
+                      onClick={() => {
+                        setIsImgShow(true);
+                        // setEviIndex(index);
+                        setFileBase64(CurrentImageValue);
+                      }}
+                      className="invest_upload_btn"
+                    >
+                      Show Image
+                    </button>
+                  ) : (
+                    <button
+                      onClick={handelUploadImg}
+                      className="invest_upload_btn"
+                    >
+                      Upload Image
+                    </button>
+                  )}
+                </div>
+              )}
+
+              {/* <div>hello</div> */}
             </div>
           </div>
 
