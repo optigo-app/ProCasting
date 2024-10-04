@@ -46,6 +46,7 @@ const ImageWebCam = () => {
           ref={camera}
           numberOfCamerasCallback={setNumberOfCameras}
           aspectRatio={4 / 3}
+          // facingMode="environment"
           videoSourceDeviceId={devices[2]?.deviceId}
           errorMessages={
             {

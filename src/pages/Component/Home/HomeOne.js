@@ -22,6 +22,10 @@ import slider3 from '../../assets/slider/investment.png'
 import slider1 from '../../assets/slider/tree.png'
 import { Carousel } from 'react-responsive-carousel'
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
+import { CommonAPI } from '../../../Utils/CommonApi'
+import { toast } from 'react-toastify'
+import { useSetRecoilState } from 'recoil'
+import { CurrentImageState } from '../../recoil/Recoil'
 
 const fullScreenStyle = {
     // minHeight: '100vh',
@@ -33,21 +37,33 @@ const fullScreenStyle = {
     // background: ' linear-gradient(90deg, #b08efe 0%, #a79afe 9%, #a5bffd 100%)',
 };
 
+
 export default function HomeOne() {
 
+    const [initMfg,setInitMfg] = useState();
+    const [empInfo,setEmpInfo] = useState();
+
     const [open, setOpen] = useState(false);
+    const [open1, setOpen1] = useState(false);
     const [openTree, setOpenTree] = useState(false);
     const [scannedValue, setScannedValue] = useState();
+    const [scannedValue1, setScannedValue1] = useState();
     const [scannedValueError, setScannedValueError] = useState(false);
+    const [scannedValueError1, setScannedValueError1] = useState(false);
     const [editLocalVal, setEditLocalVal] = useState(false)
     const scanRef = useRef(null);
     const navigation = useNavigate();
+    const setInvestImage=useSetRecoilState(CurrentImageState)
 
     useEffect(() => {
         if (scanRef.current) {
             scanRef.current.focus()
         }
     }, [])
+
+    useEffect(()=>{
+        setInvestImage('')
+    },[])
 
     // useEffect(() => {
     //     document.body.style.backgroundColor = 'lightblue';
@@ -68,7 +84,7 @@ export default function HomeOne() {
 
     const handleClickOpen = () => {
         setEditLocalVal(false)
-        setOpen(true);
+        setOpen1(true);
         localStorage.setItem('EditTreePage', false)
 
 
@@ -83,16 +99,81 @@ export default function HomeOne() {
         setScannedValue('');
         setScannedValueError(false);
     };
-    const handleCloseContiue = () => {
-        if (scannedValue === undefined || scannedValue === '') {
-            setScannedValueError(true)
+
+    const ValidBatch = async() =>{
+        let deviceT = JSON.parse(localStorage.getItem("initmfg"))?.deviceToken
+        let empData = JSON.parse(localStorage.getItem("getemp"))
+
+        let bodyparam = {CastBatchNo:scannedValue1,deviceToken:deviceT}
+
+        let ecodedbodyparam = btoa(JSON.stringify(bodyparam))
+
+        let body = {
+            "con":`{\"id\":\"\",\"mode\":\"VALDTREEBATCH\",\"appuserid\":\"${empData?.empuserid}\"}`,
+            "p":`${ecodedbodyparam}`,  
+            "f":"formname (album)"
+        }
+
+        await CommonAPI(body).then((res)=>{
+            if(res?.Data?.rd[0]?.stat===1){
+                navigation('/createTreeOneV2',{state:{mode:false,CastBatch:scannedValue1?.toUpperCase()}})
+            }else{
+                toast.error(res?.Data?.rd[0]?.stat_msg)
+            }
+        })
+
+
+    };
+
+    const handleCloseContiue1 = (e) => {
+        if(e.key === 'Enter'){
+            if (scannedValue1 === undefined || scannedValue1 === '') {
+                setScannedValueError1(true)
+            } else {
+                setScannedValueError1(false)
+                // setScannedValue('AB')
+                ValidBatch()
+                // navigation('/createTreeOneV2',{state:{mode:false,CastBatch:scannedValue1?.toUpperCase()}})
+                // navigation(editTree === false ? '/createTreeOne' : '/createTreeOne', { state: { editTree: editTree ? 'true' : 'false' } })
+            }
+        }
+    }
+    const handleCloseContiue11 = () => {
+        if (scannedValue1 === undefined || scannedValue1 === '') {
+            setScannedValueError1(true)
         } else {
-            setScannedValueError(false)
-            setScannedValue('AB')
-            navigation('/createTreeOneV2')
+            setScannedValueError1(false)
+            // setScannedValue('AB')
+            ValidBatch()
+            // navigation('/createTreeOneV2',{state:{mode:false,CastBatch:scannedValue1?.toUpperCase()}})
             // navigation(editTree === false ? '/createTreeOne' : '/createTreeOne', { state: { editTree: editTree ? 'true' : 'false' } })
         }
     }
+    const handleCloseContiueedit = (e) => {
+        if(e.key === 'Enter'){
+            if (scannedValue === undefined || scannedValue === '') {
+                setScannedValueError(true)
+            } else {
+                setScannedValueError(false)
+                // setScannedValue('AB')
+                navigation('/createTreeOneV2',{state:{mode:true,CastBatch:scannedValue?.toUpperCase()}})
+                // navigation(editTree === false ? '/createTreeOne' : '/createTreeOne', { state: { editTree: editTree ? 'true' : 'false' } })
+            }
+        }
+    }
+    const handleCloseContiueedit1 = (e) => {
+            if (scannedValue === undefined || scannedValue === '') {
+                setScannedValueError(true)
+            } else {
+                setScannedValueError(false)
+                // setScannedValue('AB')
+                navigation('/createTreeOneV2',{state:{mode:true,CastBatch:scannedValue?.toUpperCase()}})
+                // navigation(editTree === false ? '/createTreeOne' : '/createTreeOne', { state: { editTree: editTree ? 'true' : 'false' } })
+            }
+        
+    }
+    
+   
 
     const printQR = (url) => {
         window.open(url)
@@ -104,12 +185,126 @@ export default function HomeOne() {
     const handleCloseTree = () => {
         setOpenTree(false);
     };
+
+    // console.log("navigator",navigator)
+
+    useEffect(()=>{
+
+        const GET_EMP_PROCASTINGSTAUS = async(mode) =>{
+
+            let deviceT = JSON.parse(localStorage.getItem("initmfg"))?.deviceToken
+
+            let bodyparam = {"deviceToken":`${deviceT}`}
+    
+            let ecodedbodyparam = btoa(JSON.stringify(bodyparam))
+    
+            let body = {
+                "con":`{\"id\":\"\",\"mode\":\"${mode}\",\"appuserid\":\"\"}`,
+                "p":`${ecodedbodyparam}`,  
+                "f":"formname (album)"
+            }
+
+            await CommonAPI(body).then((res)=>{
+                if(res){
+                    if(mode === "GETEMP"){
+                        localStorage.setItem("getemp",JSON.stringify(res?.Data?.rd[0]))
+                        setEmpInfo(res?.Data?.rd[0])
+                    }
+                    if(mode === "GETPROCASTINGSTAUS"){
+                        localStorage.setItem("getprocastingstatus",JSON.stringify(res?.Data?.rd))
+                    }
+                    // if(mode === "TREELIST"){
+                    //     localStorage.setItem("treelist",JSON.stringify(res?.Data?.rd))
+                    // }
+                }
+            }).catch((err)=>console.log("GET_EMP_PROCASTINGSTAUS_CASTJOBLIST",err))
+
+        }
+
+        GET_EMP_PROCASTINGSTAUS("GETEMP")
+        GET_EMP_PROCASTINGSTAUS("GETPROCASTINGSTAUS")
+
+        // const INITMFGAPI = async() => {
+        //     let bodyparam = {
+        //         "deviceID": "DeviceID_SMIT1",
+        //         "deviceName":`${navigator?.userAgentData?.platform ?? ""}`,
+        //         "brand": `${navigator?.userAgentData?.brands[1]?.brand ?? ""}`,
+        //         "model": "mymodel",
+        //         "manufacturer": "mymanufacturer",
+        //         "appver": `${navigator?.userAgentData?.brands[1]?.version ?? ""}`,
+        //         "appvercode": `${navigator?.userAgentData?.brands[1]?.version ?? ""}`,
+        //         "device_type": `${navigator?.userAgentData?.platform ?? ""}`,
+        //         "onesignal_uid": "abc123_onesignal_uid"
+        //     }
+    
+        //     let ecodedbodyparam = btoa(JSON.stringify(bodyparam))
+            
+        //     let body = {
+        //         "con":"{\"id\":\"\",\"mode\":\"INITMFG\",\"appuserid\":\"\"}",
+        //         "p":`${ecodedbodyparam}`,  
+        //         "f":"formname (album)"
+        //     }
+
+        //     await CommonAPI(body).then((res)=>{
+        //         if(res?.Message == "Success"){
+
+        //             localStorage.setItem("initmfg",JSON.stringify(res?.Data?.rd[0]))
+
+        //             setInitMfg(res?.Data?.rd[0])
+
+        //             GET_EMP_PROCASTINGSTAUS(res,"GETEMP")
+        //             GET_EMP_PROCASTINGSTAUS(res,"GETPROCASTINGSTAUS")
+        //             alert(res?.Data?.rd[0])
+        //             toast.success(res?.Data?.rd[0])
+        //             // GET_EMP_PROCASTINGSTAUS(res,"TREELIST")
+        //         }else{
+        //             toast.error(res?.Message)
+        //             // setTimeout(()=>{
+        //             //     navigation("/")
+        //             // },1000)
+        //         }
+        //     }).catch((err)=>console.log("err",err))
+        // }
+
+        // INITMFGAPI();
+    },[])
+
+
     return (
         <div>
             <BarcodeScanner
                 onScan={handleScan}
                 onError={handleError}
             />
+            <Dialog
+                open={open1}
+                onClose={()=>setOpen1(false)}
+                aria-labelledby="alert-dialog-title"
+                aria-describedby="alert-dialog-description"
+                className='scanTreeDilogMain'
+
+            >
+                <p style={{ display: 'flex', fontWeight: 500, fontSize: '35px', margin: '20px 20px 0px 20px', justifyContent: 'space-between' }}>
+                    {"Add Tree"}
+                    {/* {editLocalVal === false && <button onClick={() => printQR('/printQr')}>PRINT QR</button>} */}
+                </p>
+                <p style={{ marginInline: '20px', width: '400px', fontSize: '18px', color: 'black', marginTop: '0px', marginBottom: '0px' }}>Enter this tree then get the value it's set the auto then click the continue button end create tree</p>
+                <div className='homePopupMainBox1'>
+                    {/* <DialogContentText id="alert-dialog-description" style={{ paddingTop: '30px' }}>
+                        <img src={scaneCodeImage} className='createImageQrCode' />
+                        <input type='text' autoFocus value={scannedValue} ref={scanRef} onChange={(text) => setScannedValue(text.target.value)} onKeyDown={handleCloseContiue1} style={{ width: '2px', position: 'absolute', zIndex: '-1' }} />
+                    </DialogContentText> */}
+                    <div>
+                        <input type='text'  value={scannedValue1} autoFocus onChange={(e) => setScannedValue1(e.target.value)} onKeyDown={handleCloseContiue1} className='scaneTreeInputBox1' />
+                        {scannedValueError1 && <p style={{ color: 'red', fontSize: '18px', margin: '5px' }}>FIRST SCAN TREE</p>}
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'center'}}>
+                        <button onClick={handleCloseContiue11}  className='homePopupContineBtn'>CONTINUE</button>
+                    </div>
+                </div>
+
+            </Dialog>
+
             <Dialog
                 open={open}
                 onClose={handleClose}
@@ -126,14 +321,14 @@ export default function HomeOne() {
                 <div className='homePopupMainBox'>
                     <DialogContentText id="alert-dialog-description" style={{ paddingTop: '30px' }}>
                         <img src={scaneCodeImage} className='createImageQrCode' />
-                        <input type='text' autoFocus value={scannedValue} ref={scanRef} onChange={(text) => setScannedValue(text.target.value)} style={{ width: '2px', position: 'absolute', zIndex: '-1' }} />
+                        <input type='text' autoFocus value={scannedValue} ref={scanRef} onChange={(text) => setScannedValue(text.target.value)} onKeyDown={handleCloseContiueedit} style={{ width: '2px', position: 'absolute', zIndex: '-1' }} />
                     </DialogContentText>
                     <div>
                         <input type='text' disabled value={scannedValue} onChange={(text) => setScannedValue(text)} className='scaneTreeInputBox' />
                         {scannedValueError && <p style={{ color: 'red', fontSize: '18px', margin: '5px' }}>FIRST SCAN TREE</p>}
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'center', marginTop: '50px', marginBottom: '25px' }}>
-                        <button onClick={handleCloseContiue} className='homePopupContineBtn'>CONTINUE</button>
+                        <button onClick={handleCloseContiueedit1}  className='homePopupContineBtn'>CONTINUE</button>
                     </div>
                 </div>
 
@@ -150,10 +345,10 @@ export default function HomeOne() {
                         {"SELECT TREE"}
                     </DialogTitle>
                     <DialogContent style={{ display: 'flex' }}>
-                        <div className='NoteMain'>
+                        {/* <div className='NoteMain'>
                             <img src={Note} className='Noteimg' onClick={() => printQR('/printQr')} />
                             <p className='NoteImgTitle'>NEW TREE</p>
-                        </div>
+                        </div> */}
                         <div className='NoteMain'>
                             <img src={Note} className='Noteimg' onClick={handleClickOpen} />
                             <p className='NoteImgTitle'>ADD TREE</p>

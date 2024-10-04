@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import "./BatchListingGrid.css";
 import { DataGrid } from "@mui/x-data-grid";
 import SearchIcon from '@mui/icons-material/Search';
@@ -6,39 +6,164 @@ import MenuRoundedIcon from '@mui/icons-material/MenuRounded';
 import { Divider, Drawer } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import topLogo from '../../assets/oraillogo.png'
+import { CommonAPI } from "../../../Utils/CommonApi";
+import { toast } from "react-toastify";
 
 const BatchListingGrid = () => {
 
   const [menuFlag, setMenuFlag] = useState(false)
+  const [batchList,setBatchList] = useState([]);
+  const [batchFilterList,setBatchFilterList] =  useState([]);
+  const [startDate,setStartDate] = useState();
+  const [endDate,setEndDate] = useState();
+
   const navigation = useNavigate();
 
+
+  useEffect(()=>{
+    console.log("date",startDate,endDate)
+
+    let filterDate
+
+    if(endDate && !startDate){
+      toast.error("First Choose the Starting Date !!")
+      setEndDate(undefined);
+      return;
+    }
+
+
+    if(startDate){
+      filterDate = batchList?.filter((ele)=>{
+        const itemDate = ele.CastingIssDate.split('T')[0];
+        return itemDate == startDate 
+      })
+      setBatchFilterList(filterDate)
+    }
+
+    if(startDate && endDate){
+      filterDate = batchList?.filter((ele)=>{
+      const itemDate = ele.CastingIssDate.split('T')[0];
+      return itemDate >= startDate && itemDate <= endDate;
+    })
+    setBatchFilterList(filterDate)
+    }
+
+    if(!startDate && !endDate){
+      setBatchFilterList([]);
+    }
+
+    
+    // filterDate = batchList?.filter((ele)=>{
+    //   const itemDate = ele.CastingIssDate.split('T')[0];
+    //   return itemDate >= startDate && itemDate <= endDate;
+    // })
+
+
+  },[startDate,endDate])
+
+  const replaceEmptyStrings = obj => {
+    for (let key in obj) {
+        if (obj[key] === "") {
+            obj[key] = "-";
+        }
+    }
+};
+
+  const GETTREELIST = async() => {
+
+    let deviceT = JSON.parse(localStorage.getItem("initmfg"))?.deviceToken
+
+    let bodyparam = {"deviceToken":`${deviceT}`}
+
+    let ecodedbodyparam = btoa(JSON.stringify(bodyparam))
+
+    let body = {
+        "con":`{\"id\":\"\",\"mode\":\"TREELIST\",\"appuserid\":\"\"}`,
+        "p":`${ecodedbodyparam}`,  
+        "f":"formname (album)"
+    }
+
+    await CommonAPI(body).then((res)=>{
+        if(res){
+          let ListData = res?.Data?.rd
+
+          ListData?.forEach((ele,i) => {
+            ele.id = i+1;
+            ele.CastingIssDate = ele.CastingIssDate.split('T')[0];
+            replaceEmptyStrings(ele); 
+          });
+
+          console.log("res",ListData) 
+          setBatchList(ListData)
+        }
+    }).catch((err)=>{
+      console.log("GETTREELIST ERROR",err)
+      toast.error("something went wrong please try again !!")
+    })
+  }
+
+
+  useEffect(()=>{
+    GETTREELIST();
+  },[])
+
+  const handleSearch = (e) =>{
+    const query = e.target.value.toLowerCase();
+
+    const results = batchList.filter(item => {
+      return Object.values(item).some(value => 
+        value.toString().toLowerCase().includes(query)
+      );
+    });
+
+    console.log("result",results);
+
+    setBatchFilterList(results)  
+  }
+
+
+
+
   const columns = [
-    { field: "sr", headerName: "Sr#", width: 100 },
-    { field: "date", headerName: "Date", width: 130 },
-    { field: "batch", headerName: "Batch#", width: 130 },
+    { field: "id", headerName: "Sr#", width: 80 },
+    { field: "CastingIssDate", headerName: "Date", width: 130 },
+    { field: "Batch#", headerName: "Batch#", width: 130 },
     {
-      field: "employee",
+      field: "Barcode",
       headerName: "Employee",
       width: 130,
     },
-    { field: "treewt", headerName: "Tree Wt", width: 130 },
+    { field: "TreeWt", headerName: "Tree Wt", width: 100 },
     {
-      field: "departmentbatchno",
+      field: "Investment",
       headerName: "Department batch no#",
-      width: 150,
+      width: 170,
     },
-    { field: "metaltype", headerName: "Metal Type", width: 130 },
-    { field: "metalcolor", headerName: "Metal Color", width: 130 },
+    { field: "MetalType", headerName: "Metal Type", width: 130 },
+    { field: "MetalColor", headerName: "Metal Color", width: 130 },
     { field: "serialjobs", headerName: "serial Jobs", width: 150 },
     { field: "status", headerName: "Status", width: 150 },
-    { field: "issue", headerName: "Issue", width: 130 },
-    { field: "return", headerName: "Return", width: 130 },
-    { field: "powderweight", headerName: "Powder Weight", width: 120 },
-    { field: "metalwt", headerName: "Metal Wt(pure)", width: 130 },
+    { field: "Issuewt", headerName: "Issue", width: 100 },
+    { field: "Returnwt", headerName: "Return", width: 100 },
+    { field: "requirepowder", headerName: "Powder Weight", width: 120 },
+    { field: "metalwtpure", headerName: "Metal Wt(pure)", width: 130 },
     { field: "alloywt", headerName: "Alloy Wt(pure)", width: 130 },
-    { field: "flask", headerName: "Flask", width: 100 },
-    { field: "labelprint", headerName: "Label Print", width: 100 },
-    { field: "view", headerName: "View", width: 100 },
+    { field: "flaskbarcode", headerName: "Flask", width: 100 },
+    { field: "LabelPrint", headerName: "Label Print", width: 100 },
+    { field: "Image",
+     headerName: "View", 
+     width: 100,
+     renderCell: (params) => {
+      const {value} = params;
+      const isBase64 = value && value.startsWith('data:image');
+      return isBase64 ? (
+        <img src={value} alt="Image" style={{ width: '100%', height: 'auto' }} />
+      ) : (
+        "-"
+      );
+
+     }
+    },
   ];
 
   const rows = [
@@ -225,10 +350,12 @@ const BatchListingGrid = () => {
             height: "30px",
             borderRadius: "8px",
           }}
+          value={startDate}
+          onChange={(e)=>setStartDate(e.target.value)}
         />
       </div>
       <div>
-        <label>To: &nbsp;</label>
+        <label>&nbsp;&nbsp;To: &nbsp;</label>
         <input
           type="date"
           style={{
@@ -238,6 +365,8 @@ const BatchListingGrid = () => {
             height: "30px",
             borderRadius: "8px",
           }}
+          value={endDate}
+          onChange={(e)=>setEndDate(e.target.value)}
         />
       </div>
     </>
@@ -328,6 +457,7 @@ const BatchListingGrid = () => {
                     borderRadius: "24px",
                     paddingInlineStart: "12px",
                   }}
+                  onChange={(e)=>handleSearch(e)}
                 />
               </div>
             </div>
@@ -337,7 +467,7 @@ const BatchListingGrid = () => {
 
           <div
             style={{ display: "flex", alignItems: "center", cursor: 'pointer' }}
-            onClick={() => navigation("/")}
+            onClick={() => navigation("/homeone")}
           >
             <img src={topLogo} style={{ width: "75px" }} />
             <p
@@ -363,7 +493,7 @@ const BatchListingGrid = () => {
       >
         <div style={{ width: "100%" }} className="DataGridTable">
           <DataGrid
-            rows={rows}
+            rows={batchFilterList?.length == 0  ? batchList : batchFilterList}
             columns={columns.map((column) => ({
               ...column,
               headerClassName: "customHeaderCell", // Apply custom CSS class to header cells

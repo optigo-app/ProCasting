@@ -14,14 +14,17 @@ import CreateTreeOne from './pages/Component/createTree/CreateTreeOne';
 import { ToastContainer } from 'react-toastify';
 import HomeOne from './pages/Component/Home/HomeOne';
 import CreateTreeOneV2 from './pages/Component/createTree/CreateTreeOneV2';
+import Activate from './pages/Component/Activate/Activate';
 
 function App() {
+
   return (
     <>
     <ToastContainer />
+    {/* <BrowserRouter basename='/procasting'> */}
     <BrowserRouter>
       <Routes>
-        <Route path='/' element={<HomeOne />} />
+        <Route path='/homeone' element={<HomeOne />} />
         <Route path='/createTreeOne' element={<CreateTreeOne />} />
         <Route path='/createTreeOneV2' element={<CreateTreeOneV2 />} />
         <Route path='/addFlask' element={<AddFlask />} />
@@ -32,6 +35,7 @@ function App() {
         <Route path='/batchListingGrid' element={<BatchListingGrid />} />
         <Route path='/imagewebcam' element={<ImageWebCam />} />
         <Route path='/printQr' element={<PrintQr />} />
+        <Route path='/' element={<Activate />} />
       </Routes>
     </BrowserRouter>
     </>

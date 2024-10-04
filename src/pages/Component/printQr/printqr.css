@@ -1,0 +1,43 @@
+.printqr_main_container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    width: 100%;
+    gap: 12px;
+    height: 300px;
+}
+
+.printqr_tbody{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.printqr_qrcode{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+@media print {
+/* 
+    .body * {
+        visibility: hidden!important;
+    }
+
+    .printqr_main_container{
+        visibility: visible!important;
+    }
+
+    .printqr_main_container{
+        position: absolute!important;
+        left: 0!important;
+        top: 0!important;
+    } */
+
+    .no-print {
+      display: none !important;
+    }
+  }

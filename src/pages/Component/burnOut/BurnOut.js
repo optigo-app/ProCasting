@@ -14,7 +14,8 @@ import topLogo from '../../assets/oraillogo.png'
 
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { CommonAPI } from '../../../Utils/CommonApi';
 
 
 export default function BurnOut() {
@@ -33,6 +34,203 @@ export default function BurnOut() {
     const invProRef = useRef(null)
     const navigation = useNavigate();
     const [machineVal,setMachineVal]=useState('');
+    const [TreeFlaskBindList,setTreeFlaskBindList] = useState();
+    const [castingStatus,setCastingStatus] = useState(null)
+    const [furnaceId,setFurnaceId] = useState()
+    const [burnoutId,setBurnoutId] = useState()
+    const [FlaskImg,setFlaskImg]=useState('')
+
+    console.log("FlaskImg",FlaskImg?.length);
+
+    // cosnt 
+    let location = useLocation()
+
+    useEffect(()=>{
+        let fId = Math.floor(1000 + Math.random() * 9000)
+        let bId = Math.floor(1000 + Math.random() * 900)
+        setFurnaceId(fId)
+        setBurnoutId(bId)
+    },[location?.key])
+   
+
+    const BurnOutFlaskBind = async() =>{
+
+        let empData = JSON.parse(localStorage.getItem("getemp"))
+        let deviceT = JSON.parse(localStorage.getItem("initmfg"))?.deviceToken 
+
+        let bodyparam = {
+            "flaskids": enteredValues?.map((ele)=>ele?.flaskid)?.join(),
+            "burnoutid": burnoutId,
+            "furnaceid": furnaceId,
+            "empid": `${empData?.empid}`,
+            "empuserid":`${empData?.empuserid}`,
+            "empcode": `${empData?.empcode}`,
+            "deviceToken": `${deviceT}`,
+            "onesignal_uid": "abc123_onesignal_uid"
+        }
+
+        let ecodedbodyparam = btoa(JSON.stringify(bodyparam))
+
+        let body = {
+            "con":`{\"id\":\"\",\"mode\":\"BURNOUTFLASKBIND\",\"appuserid\":\"${empData?.empuserid}\"}`,
+            "p":`${ecodedbodyparam}`,  
+            "f":"formname (BURNOUTFLASKBIND)"
+        }
+
+        await CommonAPI(body).then((res)=>
+            {
+                console.log("BURNOUTFLASKBIND",res)
+                if(res){
+                    toast.success("Saved Successfully!!")
+                }else{
+                    toast.error("something went wrong!!")
+                }
+            }).catch((err)=>console.log("err",err))
+    }
+
+    const ValidFlaskForBurnOut = async(flaskid) =>{
+
+        let empData = JSON.parse(localStorage.getItem("getemp"))
+        let deviceT = JSON.parse(localStorage.getItem("initmfg"))?.deviceToken 
+      
+        let bodyparam = {
+          flaskids: `${flaskid}`,
+          empid: `${empData?.empid}`,
+          empuserid:`${empData?.empuserid}`,
+          empcode: `${empData?.empcode}`,
+          deviceToken: `${deviceT}`
+        }  
+      
+        let ecodedbodyparam = btoa(JSON.stringify(bodyparam))
+      
+        let body ={
+            "con":`{\"id\":\"\",\"mode\":\"VALDNFLASKFORBURNOUT\",\"appuserid\":\"${empData?.empuserid}\"}`,
+            "p":`${ecodedbodyparam}`,  
+            "f":"formname (VALDNFLASKFORBURNOUT)"
+        }
+
+        let finalVal;
+      
+        await CommonAPI(body).then((res)=>{
+            if(res){
+            console.log("VALDNFLASKFORBURNOUT",res)
+            finalVal = res?.Data?.rd[0]
+          }
+        }).catch((err)=>console.log("err",err))
+
+        return finalVal
+      
+    }
+
+    const DeleteFlaskFromBurnout = async() =>{
+
+        let empData = JSON.parse(localStorage.getItem("getemp"))
+        let deviceT = JSON.parse(localStorage.getItem("initmfg"))?.deviceToken 
+
+        let bodyparam = {
+            burnoutid: "2",
+            flaskid: "1",
+            empid: `${empData?.empid}`,
+            empuserid:`${empData?.empuserid}`,
+            empcode: `${empData?.empcode}`,
+            deviceToken: `${deviceT}`
+        }
+
+        let ecodedbodyparam = btoa(JSON.stringify(bodyparam))
+
+        let body ={
+            "con":`{\"id\":\"\",\"mode\":\"DELFLASKFROMBURNOUT\",\"appuserid\":\"${empData?.empuserid}\"}`,
+            "p":`${ecodedbodyparam}`,  
+            "f":"formname (DELFLASKFROMBURNOUT)"
+        }
+
+        await CommonAPI(body).then((res)=>console.log("DELFLASKFROMBURNOUT",res)).catch((err)=>console.log("err",err))
+    }
+
+    const getTreeFalskBindList = async() =>{
+
+        let empData = JSON.parse(localStorage.getItem("getemp"))
+        let deviceT = JSON.parse(localStorage.getItem("initmfg"))?.deviceToken 
+      
+        let bodyparam = {
+          "deviceToken": `${deviceT}`
+        }
+      
+        let ecodedbodyparam = btoa(JSON.stringify(bodyparam))
+      
+        let body = {
+          "con":`{\"id\":\"\",\"mode\":\"GETTREEFLASKBINDLIST\",\"appuserid\":\"${empData?.empuserid}\"}`,
+          "p":`${ecodedbodyparam}`,  
+          "f":"formname (album)"
+        }
+      
+        await CommonAPI(body).then((res)=>{
+          if(res?.Data.rd?.length){
+            setTreeFlaskBindList(res?.Data.rd)
+          }
+        }).catch((err)=>{
+            console.log("err",err) 
+        })
+      
+       }
+
+       useEffect(()=>{
+        getTreeFalskBindList();
+       },[])
+
+       const GetTreeDataApi = async(castUniqueno) =>{
+
+        // let getDataOfSavedTree =  JSON.parse(localStorage.getItem("SavedTree"))
+        // let castuniqueno = getDataOfSavedTree[getDataOfSavedTree?.length -1]
+    
+        let empData = JSON.parse(localStorage.getItem("getemp"))
+        let deviceT = JSON.parse(localStorage.getItem("initmfg"))?.deviceToken 
+        let treeUniqueno = JSON.parse(localStorage.getItem("SavedTree")) 
+    
+        
+    
+        let bodyparam = {
+         "castuniqueno": `${castUniqueno}`,
+         "empid": `${empData?.empid}`,
+         "empuserid":`${empData?.empuserid}`,
+         "empcode": `${empData?.empcode}`,
+         "deviceToken": `${deviceT}`
+       }
+    
+       let ecodedbodyparam = btoa(JSON.stringify(bodyparam))
+    
+       let body = {
+         "con":`{\"id\":\"\",\"mode\":\"GETTREEQR\",\"appuserid\":\"${empData?.empuserid}\"}`,
+         "p":`${ecodedbodyparam}`,  
+         "f":"formname (album)"
+       }   
+    
+       let treeVal;
+    
+       if(castUniqueno){
+        await CommonAPI(body).then((res)=>{
+          if(res?.Data.rd[0].stat == 1){
+             //  setQrData(res?.Data.rd[0])
+             console.log(res?.Data.rd[0])
+    
+             if(castingStatus === null){
+              setCastingStatus(res?.Data.rd[0]?.procastingstatus)
+            }
+    
+             treeVal = res?.Data.rd[0]
+            //  setTreeVal(res?.Data.rd[0])
+    
+          }
+              console.log("resTreeQr",res);
+        }).catch((err)=>{
+             console.log("err",err) 
+        })
+       }else{
+          toast.error("CastUniqueNo. not Available!!")
+       }
+    
+       return treeVal;
+     }
 
     useEffect(() => {
         if (enteredValues[0] === 'F1') {
@@ -69,24 +267,63 @@ export default function BurnOut() {
         }
     }, [enteredValues])
 
-    useEffect(() => {
-        if (scanInp?.length) {
-            setTimeout(() => {
-                // if (!openYourBagDrawer && isImageVisible) {
-                if (isImageVisible) {
-                    setEnteredValues([...enteredValues, scanInp]);
+    // useEffect(() => {
+    //     // setTimeout(() => {
+    //         // if (!openYourBagDrawer && isImageVisible) {
+    //             // if (isImageVisible) {
+    //                 //     setEnteredValues([...enteredValues, scanInp]);
+                    
+    //                 //     setFlashCode(scanInp)
+    //                 // }
+                    
+    //                 const scanData = async() =>{
+    //                 if (scanInp?.length) {
+    //                 let flasklist = JSON.parse(sessionStorage.getItem("flasklist"))
 
-                    setFlashCode(scanInp)
-                }
-            }, 500)
-        }
-    }, [scanInp])
+    //                 let FinalFlaskList = flasklist?.filter((ele)=> scanInp == ele?.flaskbarcode)
+        
+    //                 let investmentVal;
+    //                 console.log("scandata",FinalFlaskList);
 
-    setTimeout(() => {
-        if (scanInp?.length > 0) {
-            setScanInp('')
-        }
-    }, 510);
+                    
+    //                 if(FinalFlaskList?.length > 0){
+    //                     let bindTreeFlask = TreeFlaskBindList?.filter((ele)=>ele?.flaskid == FinalFlaskList[0]?.flaskid)
+
+    //                     if(bindTreeFlask?.length > 0){
+        
+    //                         if(FlaskImg?.length == 0){
+    //                             let resData = await ValidFlaskForBurnOut(FinalFlaskList[0]?.flaskid)
+    //                             let initmfg = JSON.parse(localStorage.getItem("initmfg"))
+    //                             let ImgPath = `${initmfg?.UploadLogicalPath}${initmfg?.ukey}/procasting/${resData?.flaskimage}`
+    //                             // console.log("ImgPath",ImgPath);
+    //                             setFlaskImg(ImgPath)
+    //                           }
+        
+    //                         let TreeData = await GetTreeDataApi(bindTreeFlask[0]?.castuniqueno)
+    //                         console.log("TreeData",castingStatus)
+                            
+    //                         await ValidFlaskForBurnOut(FinalFlaskList[0]?.flaskid)
+    //                         investmentVal = {...TreeData,...FinalFlaskList[0],investmentid:bindTreeFlask[0]?.investmentid}
+    //                         setFlashCode(scanInp)
+    //                         setEnteredValues([...enteredValues, investmentVal]);
+    //                     }else{
+    //                         toast.error('Flask Invalid!!')
+    //                     }
+    //                 }
+                 
+    //             }
+
+    //            // }, 500)
+    //     }
+
+    //     scanData();
+    // }, [scanInp])
+
+    // setTimeout(() => {
+    //     if (scanInp?.length > 0) {
+    //         setScanInp('')
+    //     }
+    // }, 510);
 
     const handleScan = (data) => {
         setEnteredValues([...enteredValues, data]);
@@ -113,18 +350,102 @@ export default function BurnOut() {
 
     const handleInputChange = (event) => {
         setInputValue(event.target.value);
-        setFlashCode(event.target.value);
     };
 
-    const handleGoButtonClick = () => {
+    const handleGoButtonClick = async() => {
         if (inputValue === '' || inputValue === undefined) {
             setInputError(true)
         } else {
             setInputError(false)
-            setEnteredValues([...enteredValues, inputValue]);
-            setInputValue('');
+            let flasklist = JSON.parse(sessionStorage.getItem("flasklist"))
+
+            let FinalFlaskList = flasklist?.find((ele)=> inputValue == ele?.flaskbarcode)
+
+            let investmentVal;
+            
+            if(Object.keys(FinalFlaskList)?.length > 0){
+                let bindTreeFlask = TreeFlaskBindList?.filter((ele)=>ele?.flaskid == FinalFlaskList?.flaskid)
+                if(bindTreeFlask?.length > 0){
+
+                    if(FlaskImg?.length == 0){
+                        let resData = await ValidFlaskForBurnOut(FinalFlaskList?.flaskid)
+                        let initmfg = JSON.parse(localStorage.getItem("initmfg"))
+                        let ImgPath = `${initmfg?.UploadLogicalPath}${initmfg?.ukey}/procasting/${resData?.flaskimage}`
+                        // console.log("ImgPath",ImgPath);
+                        setFlaskImg(ImgPath)
+                      }
+                      setFlashCode(inputValue);
+
+                    let TreeData = await GetTreeDataApi(bindTreeFlask[0]?.castuniqueno)
+                    console.log("TreeData",castingStatus)
+                    
+                    await ValidFlaskForBurnOut(FinalFlaskList?.flaskid)
+                    investmentVal = {...TreeData,...FinalFlaskList,investmentid:bindTreeFlask[0]?.investmentid}
+                    setEnteredValues([...enteredValues, investmentVal]);
+                }else{
+                    toast.error('Flask Invalid!!')
+                }
+            
+            // if(castingStatus == TreeData?.procastingstatus){
+            // }else{
+            // toast.error("Invalid casting Type !!")
+            // }
+
+            } else{
+            toast.error("not Valid Flask!!")
+            }
+                setInputValue('');
         }
     };
+
+    const handleGoButtonClickHidden = async() => {
+        if (scanInp === '' || scanInp === undefined) {
+            setInputError(true)
+        } else {
+            setInputError(false)
+            let flasklist = JSON.parse(sessionStorage.getItem("flasklist"))
+
+            let FinalFlaskList = flasklist?.find((ele)=> scanInp == ele?.flaskbarcode)
+
+            let investmentVal;
+            
+            if(Object.keys(FinalFlaskList)?.length > 0){
+                let bindTreeFlask = TreeFlaskBindList?.filter((ele)=>ele?.flaskid == FinalFlaskList?.flaskid)
+                if(bindTreeFlask?.length > 0){
+
+                    if(FlaskImg?.length == 0){
+                        let resData = await ValidFlaskForBurnOut(FinalFlaskList?.flaskid)
+                        let initmfg = JSON.parse(localStorage.getItem("initmfg"))
+                        let ImgPath = `${initmfg?.UploadLogicalPath}${initmfg?.ukey}/procasting/${resData?.flaskimage}`
+                        // console.log("ImgPath",ImgPath);
+                        setFlaskImg(ImgPath)
+                      }
+                      setFlashCode(scanInp)
+
+                    let TreeData = await GetTreeDataApi(bindTreeFlask[0]?.castuniqueno)
+                    console.log("TreeData",castingStatus)
+                    
+                    await ValidFlaskForBurnOut(FinalFlaskList?.flaskid)
+                    investmentVal = {...TreeData,...FinalFlaskList,investmentid:bindTreeFlask[0]?.investmentid}
+                    setEnteredValues([...enteredValues, investmentVal]);
+                }else{
+                    toast.error('Flask Invalid!!')
+                }
+            
+            // if(castingStatus == TreeData?.procastingstatus){
+            // }else{
+            // toast.error("Invalid casting Type !!")
+            // }
+
+            } else{
+            toast.error("not Valid Flask!!")
+            }
+                setScanInp('');
+        }
+    };
+
+    console.log("enteredValues",enteredValues);
+
 
     const handleRefresh = () => {
         window.location.reload();
@@ -136,6 +457,14 @@ export default function BurnOut() {
             handleGoButtonClick();
         }
     };
+
+    const handleKeyDownHidden = (event) => {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            handleGoButtonClickHidden();
+        }
+    };
+
     const notify = () => toast.success("SAVED SUCCESSFULLY");
 
     const handleIssueJob = () => {
@@ -145,7 +474,9 @@ export default function BurnOut() {
             // window.location.reload();
             // setTimeout(()=>{
             // },500)
-            notify();
+            BurnOutFlaskBind()
+            // notify();
+            setFlaskImg('')
             setFlashCode('');
             setEnteredValues([]);
             setGreeImg(false);
@@ -185,11 +516,12 @@ export default function BurnOut() {
             </Dialog>
             <div className="TopBtnDivMainOneV2">
                 <div style={{ display: 'flex', alignItems: 'center' }}>
-                    <p className='headerV2Title' style={{textTransform:'capitalize'}} >BURNOUT PROCESS - {machineVal}</p>
+                    {/* <p className='headerV2Title' style={{textTransform:'capitalize'}} >BURNOUT PROCESS - {machineVal}</p> */}
+                    <p className='headerV2Title' style={{textTransform:'capitalize'}} >BURNOUT PROCESS</p>
                 </div>
                 <div
                     style={{ display: "flex", alignItems: "center", cursor: 'pointer' }}
-                    onClick={() => navigation("/")}
+                    onClick={() => navigation("/homeone")}
                 >
                     <img src={topLogo} style={{ width: "75px" }} />
                     <p
@@ -204,7 +536,7 @@ export default function BurnOut() {
                     </p>
                 </div>
             </div>
-            {
+            {/* {
                 !machineVal.length ?
 
                  <div style={{display:'flex',justifyContent:'center',alignItems:'center',height:'100%',width:'100%'}}>
@@ -231,7 +563,7 @@ export default function BurnOut() {
 
                  :
 
-                 <>
+                 <> */}
             <div className='burn_main_container' style={{ display: 'flex' }}>
                 <div className="left_container" style={{ width: '75%' }}>
                     <div style={{ display: "flex", marginTop: "-10px", justifyContent: 'space-evenly' }}>
@@ -277,6 +609,7 @@ export default function BurnOut() {
                                     onFocus={() => setIsImageVisible(true)}
                                     value={scanInp}
                                     onChange={(e) => handelScanInp(e.target.value)}
+                                    onKeyDown={handleKeyDownHidden}
                                     autoFocus
                                 />
                                 <button
@@ -322,6 +655,7 @@ export default function BurnOut() {
                                     type="text"
                                     className="burnoutInput"
                                     value={flashCode}
+                                    // onChange={(e)=>console.log(e.target.value)}
                                 />
                             </div>
                             <div className="investDestilInputDiv">
@@ -330,13 +664,7 @@ export default function BurnOut() {
                                     type="text"
                                     className="burnoutInput"
                                     value={
-                                        enteredValues.length === 0
-                                            ? ""
-                                            : enteredValues.length === 1
-                                                ? "AB"
-                                                : enteredValues.length === 2
-                                                    ? "BC"
-                                                    : "CD"
+                                       enteredValues[enteredValues?.length -1]?.CastBatchNo ?? ""
                                     }
                                 />
                             </div>
@@ -362,7 +690,7 @@ export default function BurnOut() {
                     </div>
 
                     <div style={{ display: "flex", justifyContent: "center" }}>
-                        <h2 className="brunFurnaceId">furnace ID : F123</h2>
+                        <h2 className="brunFurnaceId">furnace ID : {furnaceId}</h2>
                     </div>
 
                     <div style={{ display: "flex", flexWrap: "wrap" }}>
@@ -371,32 +699,28 @@ export default function BurnOut() {
                                 key={index}
                                 style={{
                                     backgroundColor:
-                                        (greenImg && "#b1d8b7") ||
-                                        (blueImg && "#a396c8") ||
-                                        (orangeImg && "orange") ||
-                                        (defaultImg && "#add8e6"),
+                                    (value?.procastingstatus=="Wax Setting" && "#b1d8b7") ||
+                                    (value?.procastingstatus=="Regular" && "#a396c8") ||
+                                    (value?.procastingstatus=="Plastic" && "orange") ||
+                                    (value?.procastingstatus=="" && "#add8e6"),
                                     margin: "20px",
                                 }}
                             >
                                 <tr>
                                     <th className="investTableRow">
-                                        Batch No:{index === 0 && "AB"}
-                                        {index === 1 && "BC"}
-                                        {index === 2 && "CD"}{" "}
+                                        Batch No:{value?.CastBatchNo}
                                     </th>
                                 </tr>
                                 <tr>
-                                    <th className="investTableRow">78 Jobs </th>
+                                    <th className="investTableRow">{value?.jobcount} jobs</th>
                                 </tr>
                                 <tr>
-                                    <th className="investTableRow">150 Grams </th>
+                                    <th className="investTableRow">{value?.TreeWeight}</th>
                                 </tr>
 
                                 <tr>
-                                    <th className="investTableRow">
-                                        {(greenImg && "Wax Setting") ||
-                                            (blueImg && "Regular") ||
-                                            (orangeImg && "RPT")}
+                                    <th className="investTableRow" style={{borderBottom:"none"}}>
+                                       {value?.procastingstatus == "" ? "NA" : value?.procastingstatus}
                                     </th>
                                 </tr>
                                 {/* <tr>
@@ -406,20 +730,22 @@ export default function BurnOut() {
                         ))}
                     </div>
                 </div>
-                <div className="investSideFixedImg" >
-                   {(greenImg || blueImg || orangeImg)
-                    &&
+                <div className="investSideFixedImg" style={{visibility:!FlaskImg && 'hidden'}} >
+                   {/* {(greenImg || blueImg || orangeImg)
+                    && */}
                    <img
                         src={
-                            (greenImg && greenImges) ||
-                            (blueImg && blueImges) ||
-                            (orangeImg && orangeImges)|| undefined
+                            // (greenImg && greenImges) ||
+                            // (blueImg && blueImges) ||
+                            // (orangeImg && orangeImges)|| undefined
+                            FlaskImg
                         }
                         alt={''}
                         //   style={{paddingRight:'10px'}}
                         className="DrawerImg"
-                        style={{display:''}}
-                    />}
+                        // style={{display:FlaskImg && 'none'}}
+                    />
+                    {/* } */}
                 </div>
             </div>
 
@@ -438,8 +764,8 @@ export default function BurnOut() {
                     "furnace Program number > #D (Diamond)  |   #W (WAX) |   #R1 Resin1    |    #R2 Resin2"
                 }
             </div>
-            </>
-            }
+            {/* </>
+            } */}
             
         </div>
         

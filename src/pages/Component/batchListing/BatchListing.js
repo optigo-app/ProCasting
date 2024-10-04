@@ -24,7 +24,7 @@ export default function BatchListing() {
                 </div>
                 <div
                     style={{ display: "flex", alignItems: "center", cursor: 'pointer' }}
-                    onClick={() => navigation("/")}
+                    onClick={() => navigation("/homeone")}
                 >
                     <img src={topLogo} style={{ width: "75px" }} />
                     <p
