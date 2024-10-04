@@ -14,6 +14,8 @@ import topLogo from '../../assets/oraillogo.png'
 import { useNavigate } from "react-router-dom";
 import notiSound from "../../sound/Timeout.mpeg";
 import Sound from "react-sound";
+import { CommonAPI } from "../../../Utils/CommonApi";
+import { convertToMilliseconds } from "../../../Utils/globalFunction";
 
 
 
@@ -30,6 +32,7 @@ export default function UnlockAlloying() {
   const [isImageVisiblePopup, setIsImageVisiblePopup] = useState(true);
   const [shotTableBtn, setShowTableBtn] = useState(false);
   const [showTable, setShowTable] = useState(false);
+  const [castingStatus,setCastingStatus] = useState(null)
 
   const [showTimmer, setShowTimmer] = useState(false);
 
@@ -44,11 +47,127 @@ export default function UnlockAlloying() {
   const scanRef = useRef(null);
   const [playStatus, setPlayStatus] = useState(Sound.status.STOPPED);
   const [timerCompleted,setTimerCompleted] = useState(false);
+  const [TreeFlaskBindList,setTreeFlaskBindList] = useState();
 
   const [scanInp, setScanInp] = useState('');
 
   console.log("timerCompleted",timerCompleted);
 
+  const getTreeFalskBindList = async() =>{
+
+    let empData = JSON.parse(localStorage.getItem("getemp"))
+    let deviceT = JSON.parse(localStorage.getItem("initmfg"))?.deviceToken 
+  
+    let bodyparam = {
+      "deviceToken": `${deviceT}`
+    }
+  
+    let ecodedbodyparam = btoa(JSON.stringify(bodyparam))
+  
+    let body = {
+      "con":`{\"id\":\"\",\"mode\":\"GETTREEFLASKBINDLIST\",\"appuserid\":\"${empData?.empuserid}\"}`,
+      "p":`${ecodedbodyparam}`,  
+      "f":"formname (album)"
+    }
+  
+    await CommonAPI(body).then((res)=>{
+      if(res?.Data.rd?.length){
+        setTreeFlaskBindList(res?.Data.rd)
+      }
+    }).catch((err)=>{
+        console.log("err",err) 
+    })
+  
+   }
+
+   console.log("enteredValues",enteredValues);
+
+   useEffect(()=>{
+    getTreeFalskBindList();
+   },[])
+
+   const GetTreeDataApi = async(castUniqueno) =>{
+
+    // let getDataOfSavedTree =  JSON.parse(localStorage.getItem("SavedTree"))
+    // let castuniqueno = getDataOfSavedTree[getDataOfSavedTree?.length -1]
+
+    let empData = JSON.parse(localStorage.getItem("getemp"))
+    let deviceT = JSON.parse(localStorage.getItem("initmfg"))?.deviceToken 
+    let treeUniqueno = JSON.parse(localStorage.getItem("SavedTree")) 
+
+    
+
+    let bodyparam = {
+     "castuniqueno": `${castUniqueno}`,
+     "empid": `${empData?.empid}`,
+     "empuserid":`${empData?.empuserid}`,
+     "empcode": `${empData?.empcode}`,
+     "deviceToken": `${deviceT}`
+   }
+
+   let ecodedbodyparam = btoa(JSON.stringify(bodyparam))
+
+   let body = {
+     "con":`{\"id\":\"\",\"mode\":\"GETTREEQR\",\"appuserid\":\"${empData?.empuserid}\"}`,
+     "p":`${ecodedbodyparam}`,  
+     "f":"formname (album)"
+   }   
+
+   let treeVal={};
+
+   if(castUniqueno){
+    await CommonAPI(body).then((res)=>{
+      if(res?.Data.rd[0].stat == 1){
+         //  setQrData(res?.Data.rd[0])
+         console.log(res?.Data.rd[0])
+
+         if(castingStatus === null){
+          setCastingStatus(res?.Data.rd[0]?.procastingstatus)
+        }
+
+         treeVal = res?.Data.rd[0]
+        //  setTreeVal(res?.Data.rd[0])
+
+      }
+          console.log("resTreeQr",res);
+    }).catch((err)=>{
+         console.log("err",err) 
+    })
+   }else{
+      toast.error("CastUniqueNo. not Available!!")
+   }
+
+   return treeVal;
+ }
+
+  const AlloyingUnlock = async() =>{
+
+    let empData = JSON.parse(localStorage.getItem("getemp"))
+    let deviceT = JSON.parse(localStorage.getItem("initmfg"))?.deviceToken
+
+    let bodyparam = {
+      "castuniqueno": enteredValues[0]?.CastUniqueno ?? "",
+      "flaskid": enteredValues[0]?.flaskid,
+      "empid": `${empData?.empid}`,
+      "empcode": `${empData?.empcode}`,
+      "deviceToken": `${deviceT}`,
+      "onesignal_uid": "abc123_onesignal_uid"
+  }
+
+    let ecodedbodyparam = btoa(JSON.stringify(bodyparam))
+
+    let body = {
+      "con":`{\"id\":\"\",\"mode\":\"ALLOYINGUNLOCK\",\"appuserid\":\"${empData?.empuserid}\"}`,
+      "p":`${ecodedbodyparam}`,  
+      "f":"formname (album)"
+  }
+
+    await CommonAPI(body).then((res)=>{
+      console.log("ALLOYINGUNLOCK",res)
+      setShowTableBtn(true)
+      toast.success("Successfully Unlocked  !!")
+    }).catch((err)=>console.log("err",err))
+}
 
   useEffect(() => {
     if (scanRef.current) {
@@ -56,23 +175,63 @@ export default function UnlockAlloying() {
     }
   }, []);
 
-  useEffect(() => {
-    if (scanInp?.length) {
-        setTimeout(() => {
-            // if (!openYourBagDrawer && isImageVisible) {
-            if (isImageVisible) {
-                setEnteredValues([...enteredValues, scanInp]);
-                setFlashCode(scanInp)
-            }
-        }, 500)
-    }
-}, [scanInp])
+//   useEffect(() => {
 
-setTimeout(() => {
-    if (scanInp?.length > 0) {
-        setScanInp('')
-    }
-}, 510);
+
+//     const scanData = async() => {
+//       if (scanInp?.length) {
+
+//           // setTimeout(() => {
+//               // if (!openYourBagDrawer && isImageVisible) {
+//               // if (isImageVisible) {
+//                   // setEnteredValues([...enteredValues, scanInp]);
+  
+//                   if(enteredValues?.length < 1){
+
+//                     // setInputError(false);
+//                     let flasklist = JSON.parse(sessionStorage.getItem("flasklist"))
+              
+//                     let FinalFlaskList = flasklist?.filter((ele)=> scanInp == ele?.flaskbarcode)
+              
+//                     let investmentVal;
+                    
+//                     if(FinalFlaskList?.length > 0){
+
+//                     let bindTreeFlask = TreeFlaskBindList?.filter((ele)=>ele?.flaskid == FinalFlaskList[0]?.flaskid)
+
+                    
+//                     let TreeData;
+                    
+//                     if(bindTreeFlask?.length > 0){
+//                       console.log("scanInp",bindTreeFlask)
+//                       TreeData = await GetTreeDataApi(bindTreeFlask[0]?.castuniqueno)
+//                       investmentVal = {...TreeData,...FinalFlaskList[0],investmentid:bindTreeFlask?.investmentid}
+//                       setEnteredValues([...enteredValues, investmentVal]);
+//                       setScanInp("");
+//                     }
+
+
+//                   }
+                  
+//                   if(enteredValues?.length === 1 ){
+//                     toast.error("First compelete the Unlock process of Flask!!!")
+//                   }
+//                   // setFlashCode(scanInp)
+//               // }
+//             }
+//           // }, 500)
+//       }
+//     } 
+
+//     scanData();
+
+// }, [scanInp])
+
+// setTimeout(() => {
+//     if (scanInp?.length > 0) {
+//         setScanInp('')
+//     }
+// }, 510);
 
 
   useEffect(() => {
@@ -113,11 +272,12 @@ setTimeout(() => {
 
   const handleClickOpen = () => {
 
-    if (flashCode === '' || flashCode === undefined) {
+    if (enteredValues?.length == 0) {
       alert('SCANE JOB FIRST')
     } else {
       // setOpen(true);
-      setShowTableBtn(true)
+      AlloyingUnlock();
+      
     }
 
   };
@@ -141,21 +301,26 @@ setTimeout(() => {
   //   setFirstTableData((prev)=>[...prev,updateTable])
   // },[])
 
+  
+
+  console.log("convertToMilliseconds",enteredValuesPopup?.length);
 
 
   const handleAddData = () => {
     if (openPoupuNumber === 1) {
       let CompeletedFlag;
-      let timer = <span style={{ fontSize: '25px', color: 'red' }}><Countdown date={Date.now() + 30000} renderer={renderer} /></span>
-      setFirstTableData((prev) => [
-        ...prev,
-        { flaskID: enteredValuesPopup, timer },
-      ]);
+      if(enteredValuesPopup ?.length > 0 ){
+        let timer = <span style={{ fontSize: '25px', color: 'red' }}><Countdown date={Date.now() + convertToMilliseconds("unlock")} renderer={renderer} /></span>
+        setFirstTableData((prev) => [
+          ...prev,
+          { flaskID: enteredValuesPopup, timer },
+        ]);
+      }
 
       // setShowTimmer(true);
     }
     else if (openPoupuNumber === 2) {
-      let timer = <span style={{ fontSize: '25px', color: 'red' }}><Countdown date={Date.now() + 30000} renderer={renderer} /></span>
+      let timer = <span style={{ fontSize: '25px', color: 'red' }}><Countdown date={Date.now() + convertToMilliseconds("unlock")} renderer={renderer} /></span>
       setSecondTableData((prev) => [
         ...prev,
         { flaskID: enteredValuesPopup, timer },
@@ -164,7 +329,7 @@ setTimeout(() => {
       // setShowTimmer(true);
     }
     else if (openPoupuNumber === 3) {
-      let timer = <span style={{ fontSize: '25px', color: 'red' }}><Countdown date={Date.now() + 30000} renderer={renderer} /></span>
+      let timer = <span style={{ fontSize: '25px', color: 'red' }}><Countdown date={Date.now() + convertToMilliseconds("unlock")} renderer={renderer} /></span>
       setThirdTableData((prev) => [
         ...prev,
         { flaskID: enteredValuesPopup, timer },
@@ -173,7 +338,7 @@ setTimeout(() => {
       // setShowTimmer(true);
     }
     else if (openPoupuNumber === 4) {
-      let timer = <span style={{ fontSize: '25px', color: 'red' }}><Countdown date={Date.now() + 30000} renderer={renderer} /></span>
+      let timer = <span style={{ fontSize: '25px', color: 'red' }}><Countdown date={Date.now() + convertToMilliseconds("unlock")} renderer={renderer} /></span>
       setFourthTableData((prev) => [
         ...prev,
         { flaskID: enteredValuesPopup, timer },
@@ -206,24 +371,84 @@ setTimeout(() => {
     setInputValueHiddenPopup(event.target.value);
   };
 
-  const handleGoButtonClick = () => {
+  const handleGoButtonClick = async() => {
     if (inputValue === "" || inputValue === undefined) {
       setInputError(true);
     } else {
-      setInputError(false);
-      setEnteredValues([...enteredValues, inputValue]);
-      setInputValue("");
+      if(enteredValues?.length < 1){
+        setInputError(false);
+        let flasklist = JSON.parse(sessionStorage.getItem("flasklist"))
+  
+        let FinalFlaskList = flasklist?.find((ele)=> inputValue == ele?.flaskbarcode)
+  
+        let investmentVal;
+        
+        if(Object.keys(FinalFlaskList)?.length > 0){
+            let bindTreeFlask = TreeFlaskBindList?.find((ele)=>ele?.flaskid == FinalFlaskList?.flaskid)
+  
+        let TreeData = await GetTreeDataApi(bindTreeFlask?.castuniqueno)
+  
+        investmentVal = {...TreeData,...FinalFlaskList,investmentid:bindTreeFlask?.investmentid}
+        setEnteredValues([...enteredValues, investmentVal]);
+        setInputValue("");
+      }
+      
+      if(enteredValues?.length === 1 ){
+        toast.error("First compelete the Unlock process of Flask!!!")
+      }
+     
     }
-  };
+   }
+  }
+  const handleGoButtonClickHidden = async() => {
+    if (scanInp === "" || scanInp === undefined) {
+      setInputError(true);
+    } else {
+      if(enteredValues?.length < 1){
+        setInputError(false);
+        let flasklist = JSON.parse(sessionStorage.getItem("flasklist"))
+  
+        let FinalFlaskList = flasklist?.find((ele)=> scanInp == ele?.flaskbarcode)
+  
+        let investmentVal;
+        
+        if(Object.keys(FinalFlaskList)?.length > 0){
+            let bindTreeFlask = TreeFlaskBindList?.find((ele)=>ele?.flaskid == FinalFlaskList?.flaskid)
+  
+        let TreeData = await GetTreeDataApi(bindTreeFlask?.castuniqueno)
+  
+        if(Object.keys(TreeData)?.length > 0){
+          investmentVal = {...TreeData,...FinalFlaskList,investmentid:bindTreeFlask?.investmentid}
+          setEnteredValues([...enteredValues, investmentVal]);
+        }
+        setScanInp("");
+      }
+      
+      if(enteredValues?.length === 1 ){
+        toast.error("First compelete the Unlock process of Flask!!!")
+      }
+     
+    }
+   }
+  }
+
   const handleKeyDown = (event) => {
     if (event.key === "Enter") {
       event.preventDefault();
       handleGoButtonClick();
     }
   };
+  const handleKeyDownHidden = (event) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      handleGoButtonClickHidden();
+    }
+  };
 
   const handleConfirmation = () => {
-    setFirstTableData(firtstTableData.filter((_, index) => index !== selectedIndex));
+    setEnteredValuesPopup(enteredValuesPopup.filter((_, index) => index !== selectedIndex));
+    console.log("indexToRemove",firtstTableData);
+
     setOpenDelete(false);
   };
 
@@ -246,7 +471,7 @@ setTimeout(() => {
     } else {
       return (
         <span style={{ textAlign: 'center' ,display:'flex',flexDirection:'row',justifyContent:'center',alignItems:'center',gap:'8px'}}>
-          <span style={{ fontWeight: 'bold' }}>{seconds}</span>
+          <span style={{ fontWeight: 'bold' }}>{`${seconds}s`}</span>
           <span style={{fontSize:'16px'}}>Remaining</span>
         </span>
       );
@@ -263,15 +488,15 @@ setTimeout(() => {
     }, 30000); 
   };
   
-  let TimeNotify = useCallback(() => {
-    if (!toastShown) {
-      toast.error("Time is Over!!!!", { theme: "colored" });
-      setToastShown(true);
-    }
-    playAudio();
-  }, [toastShown]);
+  // let TimeNotify = useCallback(() => {
+  //   if (!toastShown) {
+  //     toast.error("Time is Over!!!!", { theme: "colored" });
+  //     setToastShown(true);
+  //   }
+  //   playAudio();
+  // }, [toastShown]);
 
-  // let TimeNotify = () => toast.error(`Time is Over!!!!`, { theme: "colored" });
+  let TimeNotify = () => toast.error(`Time is Over!!!!`, { theme: "colored" });
 
   const Completionist = useCallback(() => {
 
@@ -406,7 +631,7 @@ setTimeout(() => {
         <p className="headerV2Title">
           ALLOYING UNLOCK PROCESS
         </p>
-        <div style={{ display: 'flex', alignItems: 'center' }} onClick={() => naviagtion('/')}>
+        <div style={{ display: 'flex', alignItems: 'center' }} onClick={() => naviagtion('/homeone')}>
           <img src={topLogo} style={{ width: '75px' }} />
           <p style={{ fontSize: '25px', opacity: '0.6', margin: '0px 10px', fontWeight: 500 }}><span style={{ color: '#00FFFF', opacity: '1' }}>Pro</span>Casting</p>
         </div>
@@ -453,6 +678,7 @@ setTimeout(() => {
                 setIsImageVisible(false);
               }}
               onFocus={() => setIsImageVisible(true)}
+              onKeyDown={handleKeyDownHidden}
               autoFocus
             />
             <button style={{
@@ -476,7 +702,7 @@ setTimeout(() => {
             <input
               type="text"
               className="unlovcDestilInput"
-              value={flashCode}
+              value={enteredValues[enteredValues?.length -1]?.flaskbarcode ?? ""}
             // onChange={(e) => setFlashCode(e.target.value)}
             />
           </div>
@@ -485,21 +711,13 @@ setTimeout(() => {
             <input
               type="text"
               className="unlovcDestilInput"
-              value={
-                enteredValues.length === 0
-                  ? ""
-                  : enteredValues.length === 1
-                    ? "AB"
-                    : enteredValues.length === 2
-                      ? "BC"
-                      : "CD"
-              }
+              value={enteredValues[enteredValues?.length -1]?.CastBatchNo ?? ""}
             />
           </div>
           <div className="investDestilInputDiv">
             <p className='investDestilInputTitle'>WEIGHT:</p>
             <input type='text' disabled className='unlovcDestilInput' style={{ outline: 'none', backgroundColor: '#eceded' }}
-              value={enteredValues.length === 0 ? "" : "100"}
+              value={enteredValues[enteredValues?.length -1]?.TreeWeight ?? ""}
             />
           </div>
           <div className="investDestilInputDiv">
@@ -566,12 +784,11 @@ setTimeout(() => {
               </div>
             }
 
-            {secondTableData?.length === 0 ? <div className='tableDataMain' onClick={() => handleOpenPopup(2)}>
+            {/* {secondTableData?.length === 0 ? <div className='tableDataMain' onClick={() => handleOpenPopup(2)}>
               <div style={{ display: 'flex', justifyContent: 'space-around' }}>
                 <p className="unlockTableTitle">TABLE 2</p>
                 {secondTableData?.length !== 0 &&
                   <div style={{ display: 'flex', alignItems: 'center' }}>
-                    {/* <p className="unlockTableTitleNum" >10</p> */}
                     {timerCompleted && <p className="unlockTableTitleText">Minutes Remaining</p>}
                   </div>
                 }
@@ -589,7 +806,6 @@ setTimeout(() => {
                       <div  style={{ display: 'flex', alignItems: 'center', flexDirection: 'column', justifyContent: 'center', marginTop: '5px' }}>
                         {data?.timer}
 
-                        {/* {timerCompleted && <p className="unlockTableTitleText">Minutes Remaining</p>} */}
                       </div>
                     </div>
                     <hr style={{color:'gray'}}/>
@@ -598,9 +814,9 @@ setTimeout(() => {
                     </p>
                   </div>)}
               </div>
-            }
+            } */}
 
-            {thirdTableData?.length === 0 ? <div className='tableDataMain' onClick={() => handleOpenPopup(3)}>
+            {/* {thirdTableData?.length === 0 ? <div className='tableDataMain' onClick={() => handleOpenPopup(3)}>
               <div style={{ display: 'flex', justifyContent: 'space-around' }}>
                 <p className="unlockTableTitle">TABLE 3</p>
                 {thirdTableData?.length !== 0 &&
@@ -623,7 +839,6 @@ setTimeout(() => {
                       <div  style={{ display: 'flex', alignItems: 'center', flexDirection: 'column', justifyContent: 'center', marginTop: '5px' }}>
                         {data?.timer}
 
-                        {/* <p className="unlockTableTitleText">Minutes Remaining</p> */}
                       </div>
                     </div>
                     <hr style={{color:'gray'}}/>
@@ -632,10 +847,11 @@ setTimeout(() => {
                     </p>
                   </div>)}
               </div>
-            }
+            } */}
+                        {/* <p className="unlockTableTitleText">Minutes Remaining</p> */}
 
 
-            {fourthTableData?.length === 0 ? <div className='tableDataMain' onClick={() => handleOpenPopup(4)}>
+            {/* {fourthTableData?.length === 0 ? <div className='tableDataMain' onClick={() => handleOpenPopup(4)}>
               <div style={{ display: 'flex', justifyContent: 'space-around' }}>
                 <p className="unlockTableTitle">TABLE 4</p>
                 {fourthTableData?.length !== 0 &&
@@ -658,7 +874,7 @@ setTimeout(() => {
                       <div  style={{ display: 'flex', alignItems: 'center', flexDirection: 'column', justifyContent: 'center', marginTop: '5px' }}>
                         {data?.timer}
 
-                        {/* <p className="unlockTableTitleText">Minutes Remaining</p> */}
+                       
                       </div>
                     </div>
                     <hr style={{color:'gray'}}/>
@@ -667,7 +883,7 @@ setTimeout(() => {
                     </p>
                   </div>)}
               </div>
-            }
+            } */}
           </div>
         }
       </div>

@@ -28,6 +28,8 @@ import topLogo from "../../assets/oraillogo.png";
 import { useNavigate } from "react-router-dom";
 import notiSound from "../../sound/Timeout.mpeg";
 import Sound from "react-sound";
+import { CommonAPI } from "../../../Utils/CommonApi";
+import { TotalTime, convertToMilliseconds } from "../../../Utils/globalFunction";
 
 export default function InvestMentFirst() {
   const [inputValue, setInputValue] = useState("");
@@ -62,7 +64,54 @@ export default function InvestMentFirst() {
   const [waterTemp, setWaterTemp] = useState("");
   const [glossFlag, setGlossFlag] = useState(false);
   const [investTime, setInvestTime] = useState();
-  const [fetchFlag, setFetchFlag] = useState(false);
+  const [TreeVal, setTreeVal] = useState();
+  const [TreeFlaskBindList,setTreeFlaskBindList] = useState();
+  const [InvestApiTime,setInvestApiTime] = useState({startTime:"",endTime:""})
+  const [castingStatus,setCastingStatus] = useState(null)
+  const [FlaskImg,setFlaskImg] = useState('');
+  const [FlaskinvestId,setFlaskInvestId] = useState();
+  // const [countDownTime,setCountDownTime] = useState()
+  const [isCompleted, setIsCompleted] = useState(false);
+
+  const staticMilliseconds = 3000; // Static value for 7 minutes (in milliseconds)
+  const [timeLeft, setTimeLeft] = useState(staticMilliseconds); // Set initial time
+  const [isActive, setIsActive] = useState(false); // Start or stop the timer
+
+  useEffect(() => {
+    let timerInterval = null;
+  
+    if (isActive && timeLeft > 0) {
+      timerInterval = setInterval(() => {
+        setTimeLeft((prevTime) => prevTime - 1000); // Decrease time by 1 second
+      }, 1000);
+    } else if (timeLeft === 0 && isActive) {
+      clearInterval(timerInterval);
+      // Check if the timer is still active and hasn't shown the toast before
+      if (isActive) {
+        toast.success("Your Time is over");
+        setIsActive(false); // Disable active state after toast runs
+      }
+    }
+  
+    return () => clearInterval(timerInterval); // Cleanup interval on component unmount
+  }, [isActive, timeLeft]);
+
+  const startTimer = () => {
+    setIsActive(true); // Activate the timer
+    setShowTimmer(true)
+  };
+
+  const onComplete = useCallback(() => {
+    setIsCompleted(true); // Update state to trigger re-render
+    console.log('Countdown completed!');
+    // Add any other logic you want to execute when the countdown finishes
+  },[])
+
+  console.log("FlaskImg",FlaskImg)
+
+  // useEffect(()=>{
+  //   setCountDownTime(Date.now() + convertToMilliseconds("invest"))
+  // },[])
 
   const invProRef = useRef(null);
   const fileInputRef = useRef(null);
@@ -79,20 +128,281 @@ export default function InvestMentFirst() {
 
   // console.log("enteredValueseviIndex", eviIndex)
 
+  const handleStartTimeDate = () => {
+    const currentStartTime = new Date().toLocaleTimeString();
+    setInvestApiTime((prevState) => ({
+      ...prevState,
+      startTime: currentStartTime
+    }));
+  };
+
+
+
+  const handleEndTimeDate = () => {
+    const currentEndTime = new Date().toLocaleTimeString();
+    setInvestApiTime((prevState) => ({
+      ...prevState,
+      endTime: currentEndTime
+    }));
+  };
+
+  const GetTreeDataApi = async(castUniqueno) =>{
+
+    // let getDataOfSavedTree =  JSON.parse(localStorage.getItem("SavedTree"))
+    // let castuniqueno = getDataOfSavedTree[getDataOfSavedTree?.length -1]
+
+    let empData = JSON.parse(localStorage.getItem("getemp"))
+    let deviceT = JSON.parse(localStorage.getItem("initmfg"))?.deviceToken 
+    let treeUniqueno = JSON.parse(localStorage.getItem("SavedTree")) 
+
+    let uniquenotree;
+
+    if(treeUniqueno){
+      uniquenotree = treeUniqueno[0]?.CastUniqueno
+    }
+
+    let bodyparam = {
+     "castuniqueno": `${castUniqueno}`,
+     "empid": `${empData?.empid}`,
+     "empuserid":`${empData?.empuserid}`,
+     "empcode": `${empData?.empcode}`,
+     "deviceToken": `${deviceT}`
+   }
+
+   let ecodedbodyparam = btoa(JSON.stringify(bodyparam))
+
+   let body = {
+     "con":`{\"id\":\"\",\"mode\":\"GETTREEQR\",\"appuserid\":\"${empData?.empuserid}\"}`,
+     "p":`${ecodedbodyparam}`,  
+     "f":"formname (album)"
+   }   
+
+   let treeVal;
+
+   if(castUniqueno){
+    await CommonAPI(body).then((res)=>{
+      if(res?.Data.rd[0].stat == 1){
+         //  setQrData(res?.Data.rd[0])
+         console.log(res?.Data.rd[0])
+
+         if(castingStatus === null){
+          setCastingStatus(res?.Data.rd[0]?.procastingstatus)
+        }
+
+         treeVal = res?.Data.rd[0]
+         setTreeVal(res?.Data.rd[0])
+
+      }
+          console.log("resTreeQr",res);
+    }).catch((err)=>{
+         console.log("err",err) 
+    })
+   }
+  else{
+      toast.error("CastUniqueNo. not Available!!")
+   }
+
+   return treeVal;
+ }
+
+
+ const getTreeFalskBindList = async() =>{
+
+  let empData = JSON.parse(localStorage.getItem("getemp"))
+  let deviceT = JSON.parse(localStorage.getItem("initmfg"))?.deviceToken 
+
+  let bodyparam = {
+    "deviceToken": `${deviceT}`
+  }
+
+  let ecodedbodyparam = btoa(JSON.stringify(bodyparam))
+
+  let body = {
+    "con":`{\"id\":\"\",\"mode\":\"GETTREEFLASKBINDLIST\",\"appuserid\":\"${empData?.empuserid}\"}`,
+    "p":`${ecodedbodyparam}`,  
+    "f":"formname (album)"
+  }
+
+  await CommonAPI(body).then((res)=>{
+    if(res?.Data.rd?.length){
+      setTreeFlaskBindList(res?.Data.rd)
+    }
+  }).catch((err)=>{
+      console.log("err",err) 
+  })
+
+ }
+
+ const InvestFlaskBind = async() =>{
+    let empData = JSON.parse(localStorage.getItem("getemp"))
+    let deviceT = JSON.parse(localStorage.getItem("initmfg"))?.deviceToken 
+
+    let bodyparam = {
+      flaskids:enteredValues.map(ele=>ele?.flaskid).join(),
+      investmentid: ([...new Set(enteredValues.map(ele=>ele?.investmentid))]).join(','),
+      powderwt:`${weightInp}`,
+      waterwt:`${waterWeight}`,
+      watertemp: `${waterTemp}`,
+      tds: `${TDS}`,
+      phvalue:`${phValue}`,
+      empid: `${empData?.empid}`,
+      empuserid:`${empData?.empuserid}`,
+      empcode: `${empData?.empcode}`,
+      deviceToken: `${deviceT}`
+   }
+
+   let ecodedbodyparam = btoa(JSON.stringify(bodyparam))
+
+   let body = {
+    "con":`{\"id\":\"\",\"mode\":\"INVESTFLASKBIND\",\"appuserid\":\"${empData?.empuserid}\"}`,
+    "p":`${ecodedbodyparam}`,  
+    "f":"formname (INVESTFLASKBIND)"
+   }
+
+   await CommonAPI(body).then((res)=>{
+    if(res){
+      let invevstid= res?.Data?.rd[0]?.investmentid
+      setFlaskInvestId(invevstid)
+      handleStartTimeDate()
+
+    }
+   }
+  ).catch((err)=>console.log("err",err))
+
+
+ } 
+
+ const ValidFlaskForInvest = async(flaskid) =>{
+  let empData = JSON.parse(localStorage.getItem("getemp"))
+  let deviceT = JSON.parse(localStorage.getItem("initmfg"))?.deviceToken 
+
+  let bodyparam = {
+    // flaskids:enteredValues.map(ele=>ele?.flaskid).join(),
+    flaskids:`${flaskid}`,
+    empid: `${empData?.empid}`,
+    empuserid:`${empData?.empuserid}`,
+    empcode: `${empData?.empcode}`,
+    deviceToken: `${deviceT}`
+ }
+
+ let ecodedbodyparam = btoa(JSON.stringify(bodyparam))
+
+  let body = {
+  "con":`{\"id\":\"\",\"mode\":\"VALDNFLASKFORINVEST\",\"appuserid\":\"${empData?.empuserid}\"}`,
+  "p":`${ecodedbodyparam}`,  
+  "f":"formname (VALDNFLASKFORINVEST)"
+  }
+
+  let finalVal;
+
+  await CommonAPI(body).then((res)=>{
+    if(res){
+      console.log("VALDNFLASKFORINVEST",res)
+      finalVal = res?.Data?.rd[0]
+    }
+  }).catch((err)=>console.log("err",err))
+
+  return finalVal
+ }
+
+
+ const InvestInfoSave = async() =>{
+  let empData = JSON.parse(localStorage.getItem("getemp"))
+  let deviceT = JSON.parse(localStorage.getItem("initmfg"))?.deviceToken 
+
+  let bodyparam = {
+    investmentid: FlaskinvestId ?? 0,
+    investmentstartdate: InvestApiTime?.startTime,
+    investmentenddate: InvestApiTime?.endTime,
+    investmentphoto: fileBase64,
+    empid: `${empData?.empid}`,
+    empuserid:`${empData?.empuserid}`,
+    empcode: `${empData?.empcode}`,
+    deviceToken: `${deviceT}`
+  }
+
+ let ecodedbodyparam = btoa(JSON.stringify(bodyparam))
+
+
+  let body ={
+    "con":`{\"id\":\"\",\"mode\":\"INVESTINFOSAVE\",\"appuserid\":\"${empData?.empuserid}\"}`,
+    "p":`${ecodedbodyparam}`,  
+    "f":"formname (album)"
+  }
+
+
+ await CommonAPI(body).then((res)=>{
+  if(res){
+    handleEndTimeDate()
+    toast.success("Invest Info Save!!")
+    naviagtion("/homeone")
+  }
+ }
+).catch((err)=>{
+  console.log("err",err)
+  toast.error("Error!!")
+})
+
+ }
+
+ useEffect(()=>{
+   if(CurrentImageValue){
+    InvestInfoSave()
+    toast.success("Photo upload!!")
+   }
+ },[CurrentImageValue])
+
+
+ const DeleteFlaskForInvest = async(flaskid) =>{
+
+  let empData = JSON.parse(localStorage.getItem("getemp"))
+  let deviceT = JSON.parse(localStorage.getItem("initmfg"))?.deviceToken 
+
+  let bodyparam = {
+    investmentid: ([...new Set(enteredValues.map(ele=>ele?.investmentid))]).join(','),
+    flaskids: `${flaskid}`,
+    empid: `${empData?.empid}`,
+    empuserid:`${empData?.empuserid}`,
+    empcode: `${empData?.empcode}`,
+    deviceToken: `${deviceT}`
+  }  
+
+  let ecodedbodyparam = btoa(JSON.stringify(bodyparam))
+
+  let body ={
+    "con":`{\"id\":\"\",\"mode\":\"DELFLASKFROMINVEST\",\"appuserid\":\"${empData?.empuserid}\"}`,
+    "p":`${ecodedbodyparam}`,  
+    "f":"formname (album)"
+  }
+
+  await CommonAPI(body).then((res)=>console.log("DELFLASKFROMINVEST",res)).catch((err)=>console.log("err",err))
+
+ }
+
+ useEffect(()=>{
+//   GetTreeDataApi()
+  getTreeFalskBindList()
+ },[])
+
   useEffect(() => {
-    if (greenImg) {
-      setWeightInp("3000");
-      setWaterWeight("2100");
+    // if (greenImg) {
+    //   setWeightInp("3000");
+    //   setWaterWeight("2100");
+    // }
+    // if (blueImg) {
+    //   setWeightInp("3000");
+    //   setWaterWeight("2100");
+    // }
+    // if (orangeImg) {
+    //   setWeightInp("3000");
+    //   setWaterWeight("2100");
+    // }
+
+    if(enteredValues){
+      setWeightInp(enteredValues[enteredValues?.length-1]?.requirepowder);
+      setWaterWeight(enteredValues[enteredValues?.length-1]?.requirewater);
     }
-    if (blueImg) {
-      setWeightInp("3000");
-      setWaterWeight("2100");
-    }
-    if (orangeImg) {
-      setWeightInp("3000");
-      setWaterWeight("2100");
-    }
-  }, [greenImg, blueImg, orangeImg, weight, defaultImg]);
+  }, [enteredValues]);
 
   useEffect(() => {
     if (!enteredValues[0]?.length) {
@@ -126,25 +436,71 @@ export default function InvestMentFirst() {
     }
   }, [enteredValues]);
 
-  useEffect(() => {
-    if (scanInp?.length) {
-      setTimeout(() => {
-        if (!openYourBagDrawer && isImageVisible) {
-          setEnteredValues([...enteredValues, { label: scanInp }]);
-        }
-      }, 500);
-    }
-  }, [scanInp]);
+  // useEffect(() => {
+    // if (scanInp?.length) {
+    //   setTimeout(() => {
+    //     if (!openYourBagDrawer && isImageVisible) {
+    //       setEnteredValues([...enteredValues, { label: scanInp }]);
+    //     }
+    //   }, 500);
+    // }
 
-  setTimeout(() => {
-    if (scanInp?.length > 0) {
-      setScanInp("");
-    }
-  }, 510);
+    // let scanData = async() =>{
+    //   if (scanInp?.length) {
+    //     // setTimeout(() => {
+    //       // if (!openYourBagDrawer && isImageVisible) {
+    //       setInputError(false);
+  
+    //       let flasklist = JSON.parse(sessionStorage.getItem("flasklist"))
+    
+    //       let FinalFlaskList = flasklist?.filter((ele)=> scanInp == ele?.flaskbarcode)
+    
+    //       let investmentVal;
+    
+    //       if(FinalFlaskList?.length > 0){
+    //         let bindTreeFlask = TreeFlaskBindList?.filter((ele)=>ele?.flaskid == FinalFlaskList[0]?.flaskid)
+    //         let TreeData ;
+  
+    //       if(bindTreeFlask?.length > 0){
+  
+    //         if(FlaskImg?.length == 0){
+    //           let resData = await ValidFlaskForInvest(FinalFlaskList[0]?.flaskid)
+    //           let initmfg = JSON.parse(localStorage.getItem("initmfg"))
+    //           let ImgPath = `${initmfg?.UploadLogicalPath}${initmfg?.ukey}/procasting/${resData?.flaskimage}`
+    //           console.log("ImgPath",ImgPath);
+    //           setFlaskImg(ImgPath)
+    //         }
+    //         TreeData =  await GetTreeDataApi(bindTreeFlask[0]?.castuniqueno)
 
-  useEffect(() => {
-    enteredValues.length > 0 && setWeightInp("2000");
-  }, []);
+    //         console.log("scanInp",bindTreeFlask[0]?.castuniqueno);
+
+  
+    //         investmentVal = {...TreeData,...FinalFlaskList[0],investmentid:bindTreeFlask[0]?.investmentid}
+    //         setEnteredValues([...enteredValues, investmentVal]);
+    //       }
+    //       else{
+    //         // toast.error("Flask Invalid!!")
+    //       }
+    //       // }else{
+    //         // toast.error("not Valid Flask!!")
+    //       // }
+    //       // setInputValue("");
+    //     }
+    //     // },500)
+    //   }
+    // }
+
+  //   scanData();
+   
+  // }, [scanInp]);
+
+  // setTimeout(() => {
+  //   if (scanInp?.length > 0) {
+  //     setScanInp("");
+  //   }
+  // }, 510);
+
+
 
   const handleScan = (data) => {};
 
@@ -166,15 +522,94 @@ export default function InvestMentFirst() {
     setInputValue(event.target.value);
   };
 
-  const handleGoButtonClick = () => {
+  const handleGoButtonClick = async() => {
     if (inputValue === "" || inputValue === undefined) {
       setInputError(true);
     } else {
       setInputError(false);
-      setEnteredValues([...enteredValues, { label: inputValue }]);
+      
+      let flaskids = JSON.parse(sessionStorage.getItem("bindedFlask"))
+      let flasklist = JSON.parse(sessionStorage.getItem("flasklist"))
+
+      let FinalFlaskList = flasklist?.filter((ele)=> inputValue == ele?.flaskbarcode)
+
+      let investmentVal;
+
+      if(FinalFlaskList?.length > 0){
+        let bindTreeFlask = TreeFlaskBindList?.filter((ele)=>ele?.flaskid == FinalFlaskList[0]?.flaskid)
+        let TreeData ;
+        if(bindTreeFlask?.length > 0){
+          if(FlaskImg?.length == 0){
+            let resData = await ValidFlaskForInvest(FinalFlaskList[0]?.flaskid)
+            if(resData){
+              let initmfg = JSON.parse(localStorage.getItem("initmfg"))
+              let ImgPath = `${initmfg?.UploadLogicalPath}${initmfg?.ukey}/procasting/${resData?.flaskimage}`
+              console.log("ImgPath",ImgPath);
+              setFlaskImg(ImgPath)
+            }
+          }
+          TreeData = await GetTreeDataApi(bindTreeFlask[0]?.castuniqueno)
+          investmentVal = {...TreeData,...FinalFlaskList[0],investmentid:bindTreeFlask[0]?.investmentid}
+          setEnteredValues([...enteredValues, investmentVal]);
+        }else{
+          toast.error("Flask Invalid!!")
+        }
+        console.log("TreeData",bindTreeFlask)
+       
+      }else{
+        toast.error("not Valid Flask!!")
+      }
+      
       setInputValue("");
     }
   };
+
+  const handleGoButtonClickHidden = async() => {
+    if (scanInp === "" || scanInp === undefined) {
+      setInputError(true);
+    } else {
+      setInputError(false);
+      
+      let flaskids = JSON.parse(sessionStorage.getItem("bindedFlask"))
+      let flasklist = JSON.parse(sessionStorage.getItem("flasklist"))
+
+      let FinalFlaskList = flasklist?.filter((ele)=> scanInp == ele?.flaskbarcode)
+
+      let investmentVal;
+
+      if(FinalFlaskList?.length > 0){
+        let bindTreeFlask = TreeFlaskBindList?.filter((ele)=>ele?.flaskid == FinalFlaskList[0]?.flaskid)
+        let TreeData ;
+        if(bindTreeFlask?.length > 0){
+          if(FlaskImg?.length == 0){
+            let resData = await ValidFlaskForInvest(FinalFlaskList[0]?.flaskid)
+            if(resData){
+              let initmfg = JSON.parse(localStorage.getItem("initmfg"))
+              let ImgPath = `${initmfg?.UploadLogicalPath}${initmfg?.ukey}/procasting/${resData?.flaskimage}`
+              console.log("ImgPath",ImgPath);
+              setFlaskImg(ImgPath)
+            }
+          }
+          TreeData = await GetTreeDataApi(bindTreeFlask[0]?.castuniqueno)
+          investmentVal = {...TreeData,...FinalFlaskList[0],investmentid:bindTreeFlask[0]?.investmentid}
+          setEnteredValues([...enteredValues, investmentVal]);
+        }else{
+          toast.error("Flask Invalid!!")
+        }
+        console.log("TreeData",bindTreeFlask)
+       
+      }else{
+        toast.error("not Valid Flask!!")
+      }
+      
+      setScanInp("");
+    }
+  };
+
+
+
+  console.log("enterdvalue",enteredValues);
+
 
   const handleInputChangen = (e) => {
     setEnteredTime(e.target.value);
@@ -201,17 +636,31 @@ export default function InvestMentFirst() {
     }
   };
 
+  const handleKeyDownHidden = (event) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      handleGoButtonClickHidden();
+    }
+  };
+
   const notify = () => toast.success("SAVED SUCCESSFULLY");
 
   const saveDataHandle = () => {
-    if (TDS === undefined || TDS === "") {
-      alert("Enetr TDS");
-    } else if (phValue === undefined || phValue === "") {
-      alert("Enetr phValue");
-      return;
-    } else {
+    if (weightInp === undefined || weightInp === "" ) {
+      toast.error("Enter powder weight")
+    } else if(waterWeight === undefined || waterWeight === "") {
+      toast.error("Enter water Weight")
+    } else if(waterTemp === undefined || waterTemp === ""){
+      toast.error("Enter Water Temperature")
+    } else if( TDS === undefined || TDS === ""){
+      toast.error("Enetr TDS");
+    } else if( phValue === undefined || phValue === ""){
+      toast.error("Enetr phValue");
+    } 
+    else {
       setSaveData(true);
       notify();
+      InvestFlaskBind()
       // const updateData = enteredValues?.map((ev, i) => {
       //   if (!ev["ImgBtn"]) {
       //     ev["ImgBtn"] = (
@@ -234,6 +683,34 @@ export default function InvestMentFirst() {
     }
   };
 
+  // useEffect(()=>{
+  //   if(glossFlag){
+  //     const d = new Date();
+
+  //     let hour =
+  //       d.getHours().toString().length === 1 ? `0${d.getHours()}` : d.getHours();
+  
+  //     let min =
+  //       d.getMinutes().toString().length === 1
+  //         ? `0${d.getMinutes()}`
+  //         : d.getMinutes();
+  
+  //     let sec =
+  //       d.getSeconds().toString().length === 1
+  //         ? `0${d.getSeconds()}`
+  //         : d.getSeconds();
+          
+  //     localStorage.setItem(
+  //       "InvestTimer",
+  //       JSON.stringify(`${hour}:${min}:${sec}`)
+  //     );
+  //   }
+  // },[glossFlag])
+
+  useEffect(()=>{
+    localStorage.removeItem("InvestTimer")
+  },[])
+
   const [toastShown, setToastShown] = useState(false);
 
   const playAudio = () => {
@@ -253,11 +730,12 @@ export default function InvestMentFirst() {
   }, [toastShown]);
   
 
-  function Completionist(completed) {
-    console.log("investTime", investTime);
-    console.log("completedXCV", completed?.completed);
+  const  Completionist= useCallback(() => {
+    // console.log("investTime", investTime);
+    // console.log("completedXCV", completed?.completed);
 
     // setGlossFlag(true)
+
 
     const d = new Date();
 
@@ -274,46 +752,46 @@ export default function InvestMentFirst() {
         ? `0${d.getSeconds()}`
         : d.getSeconds();
 
-    if (completed?.completed === true) {
-      TimeNotify();
+    // let timeFinish =false;
+
+    // if (isCompleted === true) {
+      // TimeNotify();
       // setFetchFlag(true);
       // setGlossFlag(true);
-      localStorage.setItem(
-        "InvestTimer",
-        JSON.stringify(`${hour}:${min}:${sec}`)
-      );
-    }
+      // localStorage.setItem(
+      //   "InvestTimer",
+      //   JSON.stringify(`${hour}:${min}:${sec}`)
+      // );
+    // }
+    // let finishTime = JSON.parse(localStorage.getItem("InvestTimer"));
 
     // invTimer='ASDAD';
 
     return (
       <div style={{ textTransform: "uppercase" }}>
-        {" "}
         Gloss of completion time :
-        {investTime ? (
-          <span style={{ fontWeight: "bold" }}>{investTime}</span>
-        ) : (
+        {/* {timeFinish ? (
+          <span style={{ fontWeight: "bold" }}>{finishTime}</span>
+        ) : ( */}
           <span style={{ fontWeight: "bold" }}>
             {hour}:{min}:{sec}
           </span>
-        )}
+        {/* )} */}
       </div>
-    );
-  }
+    )
+  },[])
+
+  // console.log("showTimmer",showTimmer);
 
   const renderer = ({ minutes, seconds, completed }) => {
-    console.log("completedrender", completed);
-    // if(completed){
-    // }
-    if (completed || glossFlag) {
-      // setFetchFlag(true);
-      return <Completionist completed={completed} />;
+    if (completed) {
+      return <Completionist />;
     } else {
       return (
         <span style={{ textAlign: "center" }}>
           Filling + Pouring Timer :{" "}
           <span style={{ fontWeight: "bold" }}>
-            {minutes}:{seconds}
+            {(minutes)}:{(seconds)}
           </span>
         </span>
       );
@@ -400,13 +878,19 @@ export default function InvestMentFirst() {
     }
   }, [CurrentImageValue]);
 
-  const handelUploadImg = () => {
+  const handelUploadImg = useCallback((event) => {
     // setFetchFlag(true)
-    let data = JSON.parse(localStorage.getItem("InvestTimer"));
-    setInvestTime(data);
+    // let data = JSON.parse(localStorage.getItem("InvestTimer"));
+    // setInvestTime(data);
+    event.stopPropagation(); 
+    // InvestInfoSave()
     setIsImgUpload(true);
     setGlossFlag(true);
-  };
+    // setCountDownTime(Date.now())
+
+  },[]);
+
+  console.log("icompleted",isCompleted);
 
   return (
     <div>
@@ -427,6 +911,7 @@ export default function InvestMentFirst() {
       <Dialog
         fullWidth
         open={isImgUpload}
+        disableEnforceFocus
         onClose={() => setIsImgUpload(false)}
       >
         <ImageWebCam />
@@ -589,7 +1074,7 @@ export default function InvestMentFirst() {
           </div>
           <div
             style={{ display: "flex", alignItems: "center", cursor: "pointer" }}
-            onClick={() => naviagtion("/")}
+            onClick={() => naviagtion("/homeone")}
           >
             <img src={topLogo} style={{ width: "75px" }} />
             <p
@@ -676,6 +1161,7 @@ export default function InvestMentFirst() {
                     onFocus={() => setIsImageVisible(true)}
                     value={scanInp}
                     onChange={(e) => handelScanInp(e.target.value)}
+                    onKeyDown={handleKeyDownHidden}
                     autoFocus
                   />
                   <button
@@ -741,7 +1227,7 @@ export default function InvestMentFirst() {
                   {enteredValues?.map((value, index) => (
                     <div className="allScanInvestdataMain">
                       <p className="allInvestScanData" key={index}>
-                        {value?.label}
+                        {value?.flaskbarcode}
                       </p>
                       {!saveData && (
                         <RemoveCircleRoundedIcon
@@ -906,25 +1392,43 @@ export default function InvestMentFirst() {
                           height: "30px",
                         }}
                       >
-                        <p>Process Compeleted Start Time :</p>
+                        <p>Process Compeleted Start Time: </p>
                         &nbsp;
                         <button
                           className="invest_btn"
-                          onClick={() => handleStartTime()}
+                          onClick={startTimer}
                         >
                           Start Time
                         </button>
                       </div>
                     ) : (
-                      <Countdown
-                        date={Date.now() + 30000}
-                        renderer={renderer}
-                      />
+                      // <Countdown
+                      //   // date={Date.now() + convertToMilliseconds("invest")}
+                      //   date={Date.now() + 3000}
+                      //   renderer={renderer}
+                      //   // onComplete={onComplete}
+                      // /> 
+                      <div>
+                        {isActive ? (
+                          <h3 style={{margin:'0px',padding:'0px',fontWeight:'500',fontSize:'22px'}}>
+                            Filling + Pouring Timer : {Math.floor(timeLeft / 60000)}m{" "}
+                            {Math.floor((timeLeft % 60000) / 1000)}s
+                          </h3>
+                        ) : (
+                          <h3 style={{margin:'0px',padding:'0px',fontWeight:'500',fontSize:'22px'}}>
+                             {`Gloss of completion time: ${new Date().toLocaleTimeString()}`}
+                          </h3>
+                        )}
+                      </div>
                     )}
+
+
+                      
                     {!CurrentImageValue.length ? (
                       <div>
                         Gloss Off Time :{" "}
-                        <span style={{ fontWeight: "bold" }}>4 Hours</span>
+                        {/* <span style={{ fontWeight: "bold" }}>{TotalTime("invest")}</span> */}
+                        <span style={{ fontWeight: "bold" }}>{"4:00:00"}</span>
                       </div>
                     ) : (
                       ""
@@ -949,28 +1453,26 @@ export default function InvestMentFirst() {
                       key={index}
                       style={{
                         backgroundColor:
-                          (greenImg && "#b1d8b7") ||
-                          (blueImg && "#a396c8") ||
-                          (orangeImg && "orange") ||
-                          (defaultImg && "#add8e6"),
+                          (value?.procastingstatus=="Wax Setting" && "#b1d8b7") ||
+                          (value?.procastingstatus=="Regular" && "#a396c8") ||
+                          (value?.procastingstatus=="Plastic" && "orange") ||
+                          (value?.procastingstatus=="" && "#add8e6"),
                         margin: "5px",
                       }}
                     >
                       <tr>
-                        <th className="not">{value?.label}</th>
+                        <th className="not">{value?.flaskbarcode}</th>
                       </tr>
                       <tr>
                         <th className="investTableRow">
-                          Batch No:{index === 0 && "AB"}
-                          {index === 1 && "BC"}
-                          {index === 2 && "CD"}{" "}
+                          Batch No: {value?.CastBatchNo}
                         </th>
                       </tr>
                       <tr>
-                        <th className="investTableRow">78 Jobs </th>
+                        <th className="investTableRow">{value?.jobcount} Jobs </th>
                       </tr>
                       <tr>
-                        <th className="investTableRow">150 Grams </th>
+                        <th className="investTableRow">{value?.TreeWeight} Grams </th>
                       </tr>
                       <tr>
                         <th
@@ -978,9 +1480,10 @@ export default function InvestMentFirst() {
                             !showTimmerBtn && "sett"
                           }`}
                         >
-                          {(greenImg && "Wax Setting") ||
+                          {/* {(greenImg && "Wax Setting") ||
                             (blueImg && "Regular") ||
-                            (orangeImg && "RPT")}
+                            (orangeImg && "RPT")} */}
+                            {value?.procastingstatus == "" ? "NA" : value?.procastingstatus}
                         </th>
                       </tr>
 
@@ -1016,7 +1519,7 @@ export default function InvestMentFirst() {
                 </div>
               )}
 
-              {showTimmer && (
+              {showTimmer  && (
                 <div style={{ display: "flex", marginTop: "50px" }}>
                   {CurrentImageValue.length ? (
                     <button
@@ -1044,16 +1547,18 @@ export default function InvestMentFirst() {
             </div>
           </div>
 
-          <div className="investSideFixedImg">
+          <div className="investSideFixedImg" style={{visibility:!FlaskImg && 'hidden'}}>
             <img
               src={
-                (greenImg && greenImges) ||
-                (blueImg && blueImges) ||
-                (orangeImg && orangeImges)
+                // (greenImg && greenImges) ||
+                // (blueImg && blueImges) ||
+                // (orangeImg && orangeImges)
+                FlaskImg
               }
+              alt="Img..."
               className="DrawerImg"
             />
-          </div>
+          </div> 
         </div>
       </div>
     </div>
