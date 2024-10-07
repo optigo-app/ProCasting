@@ -17,7 +17,7 @@ import CreateTreeOneV2 from './pages/Component/createTree/CreateTreeOneV2';
 import Activate from './pages/Component/Activate/Activate';
 
 function App() {
-
+console.log("this is app.js file")
   return (
     <>
     <ToastContainer />
