@@ -18,7 +18,7 @@ const Activate = () => {
   const qrBoxEl = useRef(null);
   const [qrOn, setQrOn] = useState(true);
   const [scannedResults, setScannedResults] = useState();
-  const [playStatus, setPlayStatus] = useState(Sound.status.STOPPED);
+  const [playStatus, setPlayStatus] = useState(Sound?.status?.STOPPED);
   const navigation = useNavigate();
 
   // const APIURL=`http://zen/api/store.aspx`;
@@ -51,7 +51,7 @@ const Activate = () => {
         Yearcode: "",
         Version: "V4",
         sp: "2",
-        'Content-Type': 'application/json' // Ensure correct content type if needed
+        'Content-Type': 'application/json'
       };
   
       try {
@@ -61,8 +61,7 @@ const Activate = () => {
           body: JSON.stringify(body)
         });
   
-        // Check if the response is okay (status in the range 200-299)
-        if (!response.ok) {
+          if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
   
@@ -152,7 +151,7 @@ const Activate = () => {
       <Sound
         url={notiSound}
         playStatus={playStatus}
-        onFinishedPlaying={() => setPlayStatus(Sound.status.STOPPED)}
+        onFinishedPlaying={() => setPlayStatus(Sound?.status?.STOPPED)}
         volume={100}
       />
       <div className="main_container">

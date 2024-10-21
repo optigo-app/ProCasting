@@ -149,7 +149,7 @@ export default function CreateTreeOne() {
         } else {
             setTreeFlag(false)
         }
-        const newValue = value.replace(/\D/g,'').slice(0, 5);
+        const newValue = value.replace(/\D/g, '').slice(0, 5);
         setInputWeightValue(newValue);
     };
 
@@ -205,10 +205,10 @@ export default function CreateTreeOne() {
                 aria-labelledby="alert-dialog-title"
                 aria-describedby="alert-dialog-description"
             >
-                <DialogTitle id="alert-dialog-title" style={{margin: '20px' , paddingInline: '100px'}}>
+                <DialogTitle id="alert-dialog-title" style={{ margin: '20px', paddingInline: '100px' }}>
                     {"ARE YOU SURE TO DELETE ?"}
                 </DialogTitle>
-                <DialogActions style={{display: 'flex' , justifyContent: 'center'}}>
+                <DialogActions style={{ display: 'flex', justifyContent: 'center' }}>
                     <Button onClick={handleConfirmation}>YES</Button>
                     <Button onClick={handleClickOpenDelete}>NO</Button>
                 </DialogActions>
@@ -284,7 +284,7 @@ export default function CreateTreeOne() {
                                 <p className='totalItemTextFail'>{'0'}</p>
 
                             </div>
-                        {totalValues !== 0 && <p className='FixedGoldColorText'>GOLD 14K WHITE</p>}
+                            {totalValues !== 0 && <p className='FixedGoldColorText'>GOLD 14K WHITE</p>}
 
                             <div className='CreateDataMain'>
                                 {enteredValues.map((value, index) => (

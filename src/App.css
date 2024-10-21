@@ -36,3 +36,37 @@
     transform: rotate(360deg);
   }
 }
+
+
+/* ::-webkit-scrollbar {
+  width: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background-color: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #888;
+  border-radius: 20px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #888;
+} */
+
+.Toastify__toast-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: center;
+  width: fit-content !important;
+}
+
+.Toastify__toast {
+  width: fit-content !important;
+  font-family: "Inter", sans-serif;
+}
+.Toastify__toast-body {
+  padding: 0px 6px;
+}

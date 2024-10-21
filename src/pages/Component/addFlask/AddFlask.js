@@ -6,8 +6,10 @@ import idle from "../../assets/idle.gif";
 import { useNavigate } from "react-router-dom";
 import topLogo from "../../assets/oraillogo.png";
 import { Button, Typography } from "@mui/material";
-import { CommonAPI } from "../../../Utils/CommonApi";
+import { CommonAPI } from '../../../Utils/API/CommonApi'
 import { toast } from "react-toastify";
+import { CgProfile } from "react-icons/cg";
+import ProfileMenu from "../../../Utils/ProfileMenu";
 
 export default function AddFlask() {
   const [inputValue, setInputValue] = useState("");
@@ -21,6 +23,19 @@ export default function AddFlask() {
   const [treeVal, setTreeVal] = useState();
   const invProRef = useRef(null);
   const naviagtion = useNavigate();
+  const [openMenu, setOpenMenu] = useState(false);
+  const [anchorEl, setAnchorEl] = useState(null);
+
+
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+    setOpenMenu(true);
+  };
+
+  const handleMenuClose = () => {
+    setOpenMenu(false);
+    setAnchorEl(null);
+  };
 
   const GetFlaskListApi = async () => {
     let deviceT = JSON.parse(localStorage.getItem("initmfg"))?.deviceToken;
@@ -49,9 +64,6 @@ export default function AddFlask() {
   };
 
   const GetTreeDataApi = async (uniqueNo) => {
-    // let getDataOfSavedTree =  JSON.parse(localStorage.getItem("SavedTree"))
-    // let castuniqueno = getDataOfSavedTree[getDataOfSavedTree?.length -1]
-
     if (!uniqueNo) {
       toast.error("cast unique no. is not Available!!");
     } else {
@@ -78,12 +90,10 @@ export default function AddFlask() {
         .then((res) => {
           if (res?.Data?.rd[0]?.stat == 1) {
             //  setQrData(res?.Data.rd[0])
-            console.log(res?.Data.rd[0]);
             setTreeVal(res?.Data.rd[0]);
-          }else{
-            toast.error("Something Went Wrong Please Try Again!!")
+          } else {
+            toast.error(res?.Data?.rd[0]?.stat_msg)
           }
-          console.log("resTreeQr", res);
         })
         .catch((err) => {
           console.log("err", err);
@@ -115,9 +125,6 @@ export default function AddFlask() {
     await CommonAPI(body).then((res) => {
       if (res) {
         let BindedFlask = JSON.parse(sessionStorage.getItem("bindedFlask"));
-
-        console.log("BindedFlask", BindedFlask);
-
         if (BindedFlask?.length) {
           sessionStorage.setItem(
             "bindedFlask",
@@ -130,9 +137,9 @@ export default function AddFlask() {
           );
         }
 
-        toast.success("Tree And Flask Bind SuccessFully!!");
+        toast.success("Tree And Flask Bind SuccessFully!");
       } else {
-        toast.error("something went wrong!! Try Again!!");
+        toast.error("something went wrong!! Try Again!");
       }
     });
   };
@@ -146,54 +153,7 @@ export default function AddFlask() {
     invProRef.current.focus();
   }, [invProRef]);
 
-  // useEffect(() => {
-  //   // setTimeout(() => {
-  //   //   if (scanInp.length) {
-  //   //     setEnteredValues([...enteredValues, scanInp]);
-  //   //   }
-  //   // }, 500);
-
-  //   if (flaskVal == undefined || treeVal == undefined) {
-
-  //     if (scanInp && scanInp?.length != 0) {
-  //       if (!flaskVal) {
-  //       console.log("scanInp FlaskList",FlaskList );
-  //       console.log("scanInp scanInp",scanInp );
-  //         let Flask = FlaskList?.filter((ele) => ele?.flaskbarcode == scanInp);
-
-  //         console.log("scanInp", Flask?.length);
-
-  //         // if (Flask?.length == 0) {
-  //         //   toast.error("Please Enter Valid FlaskID!!");
-  //         //   return;
-  //         // }
-
-  //         if (Flask?.length > 0) {
-  //           // setEnteredValues([...enteredValues, Flask])
-  //           console.log("Flask", Flask);
-  //           setFlaskVal(Flask[0]);
-  //           return;
-  //         }
-
-  //         setInputValue("");
-  //       } else {
-  //         GetTreeDataApi(scanInp);
-  //         setInputValue("");
-  //       }
-  //     }
-  //   } else {
-  //     setInputErrorMax(true);
-  //     setInputValue("");
-  //   }
-  // }, [scanInp]);
-
-  // setTimeout(() => {
-  //   if (scanInp?.length > 0) {
-  //     setScanInp("");
-  //   }
-  // }, 510);
-
-  const handleScan = (data) => {};
+  const handleScan = (data) => { };
 
   const handleError = (error) => {
     console.error("Error while scanning", error);
@@ -209,9 +169,7 @@ export default function AddFlask() {
     setInputValue(event.target.value);
   };
 
-  console.log("EnterdVal", enteredValues);
-
-  const handleGoButtonClick = async() => {
+  const handleGoButtonClick = async () => {
     if (flaskVal == undefined || treeVal == undefined) {
       if (inputValue === "" || inputValue === undefined) {
         setInputError(true);
@@ -223,7 +181,6 @@ export default function AddFlask() {
           );
           if (Flask?.length > 0) {
             // setEnteredValues([...enteredValues, Flask])
-            console.log("Flask", Flask);
             setFlaskVal(Flask[0]);
           } else {
             toast.error("Please Enter Valid FlaskID!!");
@@ -240,7 +197,7 @@ export default function AddFlask() {
     }
   };
 
-  const handleGoButtonClickHidden = async() => {
+  const handleGoButtonClickHidden = async () => {
     if (flaskVal == undefined || treeVal == undefined) {
       if (scanInp === "" || scanInp === undefined) {
         setInputError(true);
@@ -252,7 +209,6 @@ export default function AddFlask() {
           );
           if (Flask?.length > 0) {
             // setEnteredValues([...enteredValues, Flask])
-            console.log("Flask", Flask);
             setFlaskVal(Flask[0]);
           } else {
             toast.error("Please Enter Valid FlaskID!!");
@@ -297,13 +253,18 @@ export default function AddFlask() {
     setScanInp(target);
   };
 
-  console.log("treeVal", treeVal);
 
   return (
     <div>
       <BarcodeScanner onScan={handleScan} onError={handleError} />
       <div className="TopBtnDivMainOneV2">
-        <p className="headerV2Title">PROCASTING-TREE BIND WITH FLASK</p>
+        <div className="profileFIcon">
+          <CgProfile style={{ height: '30px', width: '30px', marginLeft: '15px' }} onClick={handleClick} />
+          <p className="headerV2Title">PROCASTING-TREE BIND WITH FLASK</p>
+          {openMenu &&
+            <ProfileMenu open={openMenu} anchorEl={anchorEl} handleClose={handleMenuClose} />
+          }
+        </div>
         <div
           style={{ display: "flex", alignItems: "center", cursor: "pointer" }}
           onClick={() => naviagtion("/homeone")}

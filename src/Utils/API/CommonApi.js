@@ -6,7 +6,6 @@ const APIURL=`https://api.optigoapps.com/test/store.aspx`;
 export const CommonAPI = async (body) => {
 
     let Token = JSON.parse(sessionStorage.getItem("token"))
-    // alert(Token)
     try{
         const header = {
             // Authorization: `Bearer 9065471700535651`,

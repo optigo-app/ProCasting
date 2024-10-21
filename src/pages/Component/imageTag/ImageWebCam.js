@@ -2,20 +2,19 @@ import React, { useEffect, useRef, useState } from "react";
 import { Camera } from "react-camera-pro";
 import { useSetRecoilState } from "recoil";
 import { CurrentCamFlag, CurrentImageState } from "../../recoil/Recoil";
-import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 import CameraIcon from '@mui/icons-material/Camera';
 import FlipCameraIosIcon from '@mui/icons-material/FlipCameraIos';
 import './imagewebcam.css';
 
-
-
 const ImageWebCam = () => {
   const camera = useRef(null);
-  const [numberOfCameras, setNumberOfCameras] = useState(0);
-  const setImage = useSetRecoilState(CurrentImageState)
-  const setImageflag = useSetRecoilState(CurrentCamFlag)
-  const [image1, setImage1] = useState([]);
+  const setImage = useSetRecoilState(CurrentImageState);
+  const setImageFlag = useSetRecoilState(CurrentCamFlag);
+  const [imageList, setImageList] = useState([]);
   const [cameraError, setCameraError] = useState(false);
+  const [devices, setDevices] = useState([]);
+  const [activeDeviceId, setActiveDeviceId] = useState(null);
+  const [isBackCamera, setIsBackCamera] = useState(true);
 
   useEffect(() => {
     const checkCameraAccessibility = async () => {
@@ -29,97 +28,79 @@ const ImageWebCam = () => {
     checkCameraAccessibility();
   }, []);
 
-  const [devices, setDevices] = useState([]);
-  const [activeDeviceId, setActiveDeviceId] = useState(undefined);
   useEffect(() => {
-    (async () => {
-      const devices = await navigator.mediaDevices.enumerateDevices();
-      const videoDevices = devices.filter((i) => i.kind == 'videoinput');
+    const getVideoDevices = async () => {
+      const deviceList = await navigator.mediaDevices.enumerateDevices();
+      const videoDevices = deviceList.filter(device => device.kind === 'videoinput');
       setDevices(videoDevices);
-    })();
-  });
+
+      const backCamera = videoDevices.find(device => device.label.toLowerCase().includes('back')) || videoDevices[0];
+      if (backCamera) {
+        setActiveDeviceId(backCamera.deviceId);
+      }
+    };
+
+    getVideoDevices();
+  }, []);
+
+
+  const handleTakePhoto = async () => {
+    if (camera.current) {
+      const photo = await camera.current.takePhoto();
+      setImage(photo);
+      setImageList([photo, ...imageList]);
+      setImageFlag(false);
+    }
+  };
+
+  const toggleCamera = () => {
+    if (devices.length > 1) {
+      const nextCameraId = isBackCamera ? devices.find(device => device.label.toLowerCase().includes('front'))?.deviceId : devices.find(device => device.label.toLowerCase().includes('back'))?.deviceId;
+      if (nextCameraId) {
+        setActiveDeviceId(nextCameraId);
+        setIsBackCamera(!isBackCamera);
+      } else {
+        alert("No other camera available.");
+      }
+    } else {
+      alert("Only one camera available.");
+    }
+  };
 
   return (
     <>
-      {!cameraError && <div>
-        <Camera
-          ref={camera}
-          numberOfCamerasCallback={setNumberOfCameras}
-          aspectRatio={4 / 3}
-          // facingMode="environment"
-          videoSourceDeviceId={devices[2]?.deviceId}
-          errorMessages={
-            {
-              noCameraAccessible: 'camera device is not accessible or connected!!!',
+      {!cameraError ? (
+        <div>
+          <Camera
+            ref={camera}
+            numberOfCamerasCallback={setNumberOfCameras => setDevices.length}
+            aspectRatio={4 / 3}
+            videoSourceDeviceId={activeDeviceId}
+            errorMessages={{
+              noCameraAccessible: 'Camera device is not accessible or connected!',
               permissionDenied: 'Permission denied. Please refresh and give camera permission.',
-              switchCamera:
-                'It is not possible to switch camera to different one because there is only one video device accessible.',
-              canvas: 'Canvas is not supported.'
-            }
-          }
-
-        />
-        {/* <select
-          onChange={(event) => {
-            setActiveDeviceId(event.target.value);
-          }}
-        >
-          {devices.map((d , i) => (
-            <option key={d.deviceId} value={d.deviceId}>
-              {d.label}{i}
-            </option>
-          ))}
-        </select> */}
-
-
-
-
-        <div style={{ display: 'flex', justifyContent: 'center' }}>
-          <div style={{ display: 'flex', gap: '12px', margin: '20px 0px' }}>
-            <button
-              onClick={() => {
-                if (camera.current) {
-                  const photo = camera.current.takePhoto();
-                  setImage(photo);
-                  setImage1([photo, ...image1]);
-                  setImageflag(false)
-                }
-              }}
-              className="cameraclickflip"
-            >
-              <CameraIcon />
-            </button>
-            {/* <button
-              disabled={numberOfCameras <= 1}
-              onClick={() => {
-                if (camera.current) {
-                  const result = camera.current.switchCamera();
-                }
-              }}
-              className="cameraclickflip"
-            >
-              <FlipCameraIosIcon />{activeDeviceId}
-            </button> */}
+              switchCamera: 'Cannot switch cameras as only one is accessible.',
+              canvas: 'Canvas is not supported.',
+            }}
+          />
+          <div style={{ display: 'flex', justifyContent: 'center' }}>
+            <div style={{ display: 'flex', gap: '12px', margin: '20px 0px' }}>
+              <button onClick={handleTakePhoto} className="cameraclickflip">
+                <CameraIcon />
+              </button>
+              <button onClick={toggleCamera} className="cameraclickflip">
+                <FlipCameraIosIcon />
+              </button>
+            </div>
           </div>
         </div>
-      </div>
-      }
-      {
-        cameraError &&
-        <div sx={{width:'auto'}}> 
-          {/* <div style={{ textAlign: 'end', marginRight: '12px', marginTop: '7px' }}>
-            <HighlightOffIcon style={{ fontSize: '35px' }} 
-            onClick={() => {
-              setCameraError(false)
-              setImageflag(true)
-              }} 
-              />
-          </div> */}
-          <p style={{ fontSize: '18px', marginLeft: '12px', color: 'red',fontWeight:'bold',textAlign:'center'}}>
-            camera device is not accessible or connected!!!
+      ) : (
+        <div>
+          <p style={{ fontSize: '18px', marginLeft: '12px', color: 'red', fontWeight: 'bold', textAlign: 'center' }}>
+            Camera device is not accessible or connected!
           </p>
         </div>
-      }
+      )}
     </>
   );
 };

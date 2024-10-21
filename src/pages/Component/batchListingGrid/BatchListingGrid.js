@@ -5,144 +5,144 @@ import SearchIcon from '@mui/icons-material/Search';
 import MenuRoundedIcon from '@mui/icons-material/MenuRounded';
 import { Divider, Drawer } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import topLogo from '../../assets/oraillogo.png'
-import { CommonAPI } from "../../../Utils/CommonApi";
+import topLogo from '../../assets/oraillogo.png';
+import { CommonAPI } from '../../../Utils/API/CommonApi'
 import { toast } from "react-toastify";
 
 const BatchListingGrid = () => {
+  const [menuFlag, setMenuFlag] = useState(false);
+  const [batchList, setBatchList] = useState([]);
+  const [batchFilterList, setBatchFilterList] = useState([]);
+  const [startDate, setStartDate] = useState();
+  const [endDate, setEndDate] = useState();
+  const [selectedMetalType, setSelectedMetalType] = useState('');
+  const [selectedMetalColor, setSelectedMetalColor] = useState('');
+  const [selectedStatus, setSelectedStatus] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const [menuFlag, setMenuFlag] = useState(false)
-  const [batchList,setBatchList] = useState([]);
-  const [batchFilterList,setBatchFilterList] =  useState([]);
-  const [startDate,setStartDate] = useState();
-  const [endDate,setEndDate] = useState();
-
-  const navigation = useNavigate();
-
-
-  useEffect(()=>{
-    console.log("date",startDate,endDate)
-
-    let filterDate
-
-    if(endDate && !startDate){
-      toast.error("First Choose the Starting Date !!")
-      setEndDate(undefined);
-      return;
-    }
+  const navigate = useNavigate();
 
 
-    if(startDate){
-      filterDate = batchList?.filter((ele)=>{
-        const itemDate = ele.CastingIssDate.split('T')[0];
-        return itemDate == startDate 
-      })
-      setBatchFilterList(filterDate)
-    }
 
-    if(startDate && endDate){
-      filterDate = batchList?.filter((ele)=>{
-      const itemDate = ele.CastingIssDate.split('T')[0];
-      return itemDate >= startDate && itemDate <= endDate;
-    })
-    setBatchFilterList(filterDate)
-    }
+  useEffect(() => {
+    const fetchBatchData = async () => {
+      setLoading(true);
+      try {
+        const deviceT = JSON.parse(localStorage.getItem("initmfg"))?.deviceToken;
+        const bodyparam = { deviceToken: deviceT };
+        const encodedBodyParam = btoa(JSON.stringify(bodyparam));
+        const body = {
+          con: `{\"id\":\"\",\"mode\":\"TREELIST\",\"appuserid\":\"\"}`,
+          p: encodedBodyParam,
+          f: "formname (album)"
+        };
 
-    if(!startDate && !endDate){
-      setBatchFilterList([]);
-    }
-
-    
-    // filterDate = batchList?.filter((ele)=>{
-    //   const itemDate = ele.CastingIssDate.split('T')[0];
-    //   return itemDate >= startDate && itemDate <= endDate;
-    // })
-
-
-  },[startDate,endDate])
-
-  const replaceEmptyStrings = obj => {
-    for (let key in obj) {
-        if (obj[key] === "") {
-            obj[key] = "-";
-        }
-    }
-};
-
-  const GETTREELIST = async() => {
-
-    let deviceT = JSON.parse(localStorage.getItem("initmfg"))?.deviceToken
-
-    let bodyparam = {"deviceToken":`${deviceT}`}
-
-    let ecodedbodyparam = btoa(JSON.stringify(bodyparam))
-
-    let body = {
-        "con":`{\"id\":\"\",\"mode\":\"TREELIST\",\"appuserid\":\"\"}`,
-        "p":`${ecodedbodyparam}`,  
-        "f":"formname (album)"
-    }
-
-    await CommonAPI(body).then((res)=>{
-        if(res){
-          let ListData = res?.Data?.rd
-
-          ListData?.forEach((ele,i) => {
-            ele.id = i+1;
+        const res = await CommonAPI(body);
+        if (res) {
+          const ListData = res?.Data?.rd;
+          ListData.forEach((ele, i) => {
+            ele.id = i + 1;
             ele.CastingIssDate = ele.CastingIssDate.split('T')[0];
-            replaceEmptyStrings(ele); 
+            replaceEmptyStrings(ele);
           });
-
-          console.log("res",ListData) 
-          setBatchList(ListData)
+          setBatchList(ListData);
         }
-    }).catch((err)=>{
-      console.log("GETTREELIST ERROR",err)
-      toast.error("something went wrong please try again !!")
-    })
-  }
+      } catch (err) {
+        console.error("GETTREELIST ERROR", err);
+        toast.error("Something went wrong, please try again!");
+      } finally {
+        setLoading(false);
+      }
+    };
 
+    fetchBatchData();
+  }, []);
 
-  useEffect(()=>{
-    GETTREELIST();
-  },[])
-
-  const handleSearch = (e) =>{
-    const query = e.target.value.toLowerCase();
-
-    const results = batchList.filter(item => {
-      return Object.values(item).some(value => 
-        value.toString().toLowerCase().includes(query)
-      );
+  const replaceEmptyStrings = (obj) => {
+    Object.keys(obj).forEach(key => {
+      if (obj[key] === "") {
+        obj[key] = "-";
+      }
     });
+  };
 
-    console.log("result",results);
+  const handleSearch = (e) => {
+    const query = e.target.value.toLowerCase();
+    const filteredResults = batchList.filter(item =>
+      Object.values(item).some(value =>
+        value.toString().toLowerCase().includes(query)
+      )
+    );
+    setBatchFilterList(filteredResults);
+  };
 
-    setBatchFilterList(results)  
-  }
+  useEffect(() => {
+    if (batchList) {
+      let data = batchFilterList?.length != 0 ? batchFilterList : batchList;
 
+      if (selectedMetalColor) {
 
+        const matchMetalColor = data?.filter((item) => {
+          return item?.MetalColor?.toLowerCase() == selectedMetalColor?.toLowerCase();
 
+        });
+        console.log("kksdjs", matchMetalColor)
+        console.log("batchFilterList", batchFilterList)
+        setBatchFilterList(matchMetalColor);
+      }
+
+      if (selectedMetalType) {
+        const matchMetalType = data?.filter((item) => {
+          return item?.MetalType?.toLowerCase() == selectedMetalType?.toLowerCase();
+
+        });
+        console.log("matchMetalType", matchMetalType)
+        setBatchFilterList(matchMetalType);
+      }
+
+      if (selectedStatus) {
+        const matchStatus = data?.filter((item) => {
+          return item?.status?.toLowerCase() == selectedStatus?.toLowerCase();
+
+        });
+        console.log("matchStatus", matchStatus)
+        setBatchFilterList(matchStatus);
+      }
+    }
+  }, [selectedMetalType, selectedMetalColor, selectedStatus, startDate, endDate, batchList]);
 
   const columns = [
     { field: "id", headerName: "Sr#", width: 80 },
     { field: "CastingIssDate", headerName: "Date", width: 130 },
     { field: "Batch#", headerName: "Batch#", width: 130 },
-    {
-      field: "Barcode",
-      headerName: "Employee",
-      width: 130,
-    },
+    { field: "Barcode", headerName: "Employee", width: 130 },
     { field: "TreeWt", headerName: "Tree Wt", width: 100 },
-    {
-      field: "Investment",
-      headerName: "Department batch no#",
-      width: 170,
-    },
+    { field: "Investment", headerName: "Department batch no#", width: 170 },
     { field: "MetalType", headerName: "Metal Type", width: 130 },
     { field: "MetalColor", headerName: "Metal Color", width: 130 },
-    { field: "serialjobs", headerName: "serial Jobs", width: 150 },
-    { field: "status", headerName: "Status", width: 150 },
+    { field: "serialjobs", headerName: "Serial Jobs", width: 150 },
+    {
+      field: "status",
+      headerName: "Status",
+      width: 150, 
+      renderCell: (params) => {
+        const { value, row } = params;
+        return value === "investment issue" ? (
+          <a
+            href="#"
+            onClick={(e) => {
+              e.preventDefault();
+              navigate(`/investmentFirst?flask=${row?.flaskbarcode}`, { state: { ...row } });
+            }}
+            style={{ color: 'blue', textDecoration: 'underline', textTransform:'capitalize' }}
+          >
+            {value}
+          </a>
+        ) : (
+          value
+        );
+      }
+    },
     { field: "Issuewt", headerName: "Issue", width: 100 },
     { field: "Returnwt", headerName: "Return", width: 100 },
     { field: "requirepowder", headerName: "Powder Weight", width: 120 },
@@ -150,192 +150,21 @@ const BatchListingGrid = () => {
     { field: "alloywt", headerName: "Alloy Wt(pure)", width: 130 },
     { field: "flaskbarcode", headerName: "Flask", width: 100 },
     { field: "LabelPrint", headerName: "Label Print", width: 100 },
-    { field: "Image",
-     headerName: "View", 
-     width: 100,
-     renderCell: (params) => {
-      const {value} = params;
-      const isBase64 = value && value.startsWith('data:image');
-      return isBase64 ? (
-        <img src={value} alt="Image" style={{ width: '100%', height: 'auto' }} />
-      ) : (
-        "-"
-      );
-
-     }
+    {
+      field: "Image",
+      headerName: "View",
+      width: 100,
+      renderCell: (params) => {
+        const { value } = params;
+        return value && value.startsWith('data:image') ? (
+          <img src={value} alt="Image" style={{ width: '100%', height: 'auto' }} />
+        ) : (
+          "-"
+        );
+      }
     },
   ];
 
-  const rows = [
-    {
-      id: 1,
-      sr: 1,
-      date: "24-march-23",
-      batch: "AB",
-      employee: "E0001",
-      treewt: "90wt",
-      departmentbatchno: "Investment(B1)",
-      metaltype: "18K Gold",
-      metalcolor: "Yellow",
-      serialjobs: "1/101(see more)",
-      status: "Investment issue",
-      issue: "90wt",
-      return: "-",
-      powderweight: "400gm",
-      metalwt: "50wt",
-      alloywt: "40wt",
-      flask: "F1",
-      labelprint: "Prints",
-      view: "image",
-    },
-    {
-      id: 2,
-      sr: 2,
-      date: "24-march-23",
-      batch: "AB",
-      employee: "E0001",
-      treewt: "90wt",
-      departmentbatchno: "Investment(B1)",
-      metaltype: "18K Gold",
-      metalcolor: "Yellow",
-      serialjobs: "1/101(see more)",
-      status: "Investment issue",
-      issue: "90wt",
-      return: "-",
-      powderweight: "400gm",
-      metalwt: "50wt",
-      alloywt: "40wt",
-      flask: "F1",
-      labelprint: "Prints",
-      view: "image",
-    },
-    {
-      id: 3,
-      sr: 3,
-      date: "24-march-23",
-      batch: "AB",
-      employee: "E0001",
-      treewt: "90wt",
-      departmentbatchno: "Investment(B1)",
-      metaltype: "18K Gold",
-      metalcolor: "Yellow",
-      serialjobs: "1/101(see more)",
-      status: "Investment issue",
-      issue: "90wt",
-      return: "-",
-      powderweight: "400gm",
-      metalwt: "50wt",
-      alloywt: "40wt",
-      flask: "F1",
-      labelprint: "Prints",
-      view: "image",
-    },
-    {
-      id: 4,
-      sr: 4,
-      date: "24-march-23",
-      batch: "AB",
-      employee: "E0001",
-      treewt: "90wt",
-      departmentbatchno: "Investment(B1)",
-      metaltype: "18K Gold",
-      metalcolor: "Yellow",
-      serialjobs: "1/101(see more)",
-      status: "Investment issue",
-      issue: "90wt",
-      return: "-",
-      powderweight: "400gm",
-      metalwt: "50wt",
-      alloywt: "40wt",
-      flask: "F1",
-      labelprint: "Prints",
-      view: "image",
-    },
-    {
-      id: 5,
-      sr: 5,
-      date: "24-march-23",
-      batch: "AB",
-      employee: "E0001",
-      treewt: "90wt",
-      departmentbatchno: "Investment(B1)",
-      metaltype: "18K Gold",
-      metalcolor: "Yellow",
-      serialjobs: "1/101(see more)",
-      status: "Investment issue",
-      issue: "90wt",
-      return: "-",
-      powderweight: "400gm",
-      metalwt: "50wt",
-      alloywt: "40wt",
-      flask: "F1",
-      labelprint: "Prints",
-      view: "image",
-    },
-    {
-      id: 6,
-      sr: 6,
-      date: "24-march-23",
-      batch: "AB",
-      employee: "E0001",
-      treewt: "90wt",
-      departmentbatchno: "Investment(B1)",
-      metaltype: "18K Gold",
-      metalcolor: "Yellow",
-      serialjobs: "1/101(see more)",
-      status: "Investment issue",
-      issue: "90wt",
-      return: "-",
-      powderweight: "400gm",
-      metalwt: "50wt",
-      alloywt: "40wt",
-      flask: "F1",
-      labelprint: "Prints",
-      view: "image",
-    },
-    {
-      id: 7,
-      sr: 7,
-      date: "24-march-23",
-      batch: "AB",
-      employee: "E0001",
-      treewt: "90wt",
-      departmentbatchno: "Investment(B1)",
-      metaltype: "18K Gold",
-      metalcolor: "Yellow",
-      serialjobs: "1/101(see more)",
-      status: "Investment issue",
-      issue: "90wt",
-      return: "-",
-      powderweight: "400gm",
-      metalwt: "50wt",
-      alloywt: "40wt",
-      flask: "F1",
-      labelprint: "Prints",
-      view: "image",
-    },
-    {
-      id: 8,
-      sr: 8,
-      date: "24-march-23",
-      batch: "AB",
-      employee: "E0001",
-      treewt: "90wt",
-      departmentbatchno: "Investment(B1)",
-      metaltype: "18K Gold",
-      metalcolor: "Yellow",
-      serialjobs: "1/101(see more)",
-      status: "Investment issue",
-      issue: "90wt",
-      return: "-",
-      powderweight: "400gm",
-      metalwt: "50wt",
-      alloywt: "40wt",
-      flask: "F1",
-      labelprint: "Prints",
-      view: "image",
-    },
-  ];
 
   const GridHeadDate = useCallback(() => (
     <>
@@ -343,65 +172,75 @@ const BatchListingGrid = () => {
         <label>Date: &nbsp;</label>
         <input
           type="date"
-          style={{
-            border: "1px solid #e2e2e2",
-            outline: "none",
-            width: "120px",
-            height: "30px",
-            borderRadius: "8px",
-          }}
+          style={{ border: "1px solid #e2e2e2", outline: "none", width: "120px", height: "30px", borderRadius: "8px" }}
           value={startDate}
-          onChange={(e)=>setStartDate(e.target.value)}
+          onChange={(e) => setStartDate(e.target.value)}
         />
       </div>
       <div>
         <label>&nbsp;&nbsp;To: &nbsp;</label>
         <input
           type="date"
-          style={{
-            border: "1px solid #e2e2e2",
-            outline: "none",
-            width: "120px",
-            height: "30px",
-            borderRadius: "8px",
-          }}
+          style={{ border: "1px solid #e2e2e2", outline: "none", width: "120px", height: "30px", borderRadius: "8px" }}
           value={endDate}
-          onChange={(e)=>setEndDate(e.target.value)}
+          onChange={(e) => setEndDate(e.target.value)}
         />
       </div>
     </>
-  ), []);
+  ), [startDate, endDate]);
+
   const GridHeadSelect = useCallback(() => (
     <>
-      <div>
+      <div style={{ display: 'flex', justifyContent: 'start', alignItems: 'center', marginLeft: '12px' }}>
         <label>Metal Type</label>
       </div>
-
       <div style={{ marginLeft: '12px' }}>
-        <select style={{ width: '150px', padding: '4px', backgroundColor: '#f0f0f0', border: '1px solid #b8b8b8', borderRadius: '6px' }}>
-          <option style={{}}>All Type</option>
-          <option style={{}}>Gold 14K WHITE</option>
-          <option style={{}}>Gold 14K YELLOW</option>
-          <option style={{}}>Gold 18K WHITE</option>
-          <option style={{}}>Gold 18K YELLOW</option>
+        <select
+          style={{ width: '150px', height: '30px', padding: '4px', backgroundColor: '#fff', border: '1px solid #1dksk', borderRadius: '6px' }}
+          onChange={(e) => setSelectedMetalType(e.target.value)}
+          value={selectedMetalType}
+        >
+          <option>All Type</option>
+          <option>Gold 14K</option>
+          <option>Gold 18K</option>
+          <option>Gold 22K</option>
         </select>
       </div>
 
+      <div style={{ display: 'flex', justifyContent: 'start', alignItems: 'center', marginLeft: '12px' }}>
+        <label>Metal Color</label>
+      </div>
       <div style={{ marginLeft: '12px' }}>
-        <label>Status</label>
+        <select
+          style={{ width: '150px', height: '30px', padding: '4px', backgroundColor: '#fff', border: '1px solid #1dksk', borderRadius: '6px' }}
+          onChange={(e) => setSelectedMetalColor(e.target.value)}
+          value={selectedMetalColor}
+        >
+          <option>All Colors</option>
+          <option>Shine Gold</option>
+          <option>Yellow</option>
+          <option>Rose</option>
+        </select>
       </div>
 
+      <div style={{ display: 'flex', justifyContent: 'start', alignItems: 'center', marginLeft: '12px' }}>
+        <label>Status</label>
+      </div>
       <div style={{ marginLeft: '12px' }}>
-        <select style={{ width: '150px', padding: '4px', backgroundColor: '#f0f0f0', border: '1px solid #b8b8b8', borderRadius: '6px' }}>
-          <option style={{}}>All Type</option>
-          <option style={{}}>Investment Process</option>
-          <option style={{}}>Burnout Process</option>
-          <option style={{}}>Alloying</option>
-          <option style={{}}>casting Completed</option>
+        <select
+          style={{ width: '150px', height: '30px', padding: '4px', backgroundColor: '#fff', border: '1px solid #1dksk', borderRadius: '6px' }}
+          onChange={(e) => setSelectedStatus(e.target.value)}
+          value={selectedStatus}
+        >
+          <option>All Status</option>
+          <option>Investment Process</option>
+          <option>Burnout Process</option>
+          <option>Alloying</option>
+          <option>Casting Completed</option>
         </select>
       </div>
     </>
-  ), []);
+  ), [selectedMetalType, selectedMetalColor, selectedStatus]);
 
   return (
     <>
@@ -411,32 +250,18 @@ const BatchListingGrid = () => {
           <div style={{ display: 'flex', alignItems: 'center' }}>
             <p className='headerV2Title' >BATCH LIST</p>
           </div>
-
-          {/* <div style={{display : 'flex' ,alignItems: 'stretch'}}>
-            <p style={{margin : '0px 5px',cursor:'pointer', fontSize: '14px',textDecoration: 'underline', color: 'blue'}} onClick={() => navigation('/investmentFirst')}>INVESTMENT PROCESS</p>
-            <p style={{margin : '0px 5px',cursor:'pointer', fontSize: '14px',textDecoration: 'underline', color: 'blue'}} onClick={() => navigation('/burnOut')}>BURNOUT</p>
-            <p style={{margin : '0px 5px',cursor:'pointer', fontSize: '14px',textDecoration: 'underline', color: 'blue'}} onClick={() => navigation('/unlock')}>UNLOCK ALLOYING</p>
-          </div> */}
         </div>
 
         <div className="menu_responsive">
-          {/* <div className="grid_head btn_group">
-            <button className="grid-btn" onClick={()=>navigation('/investmentFirst')}>
-              INVESTMENT PROCESS
-            </button>
-            <button className="grid-btn" onClick={() => navigation('/burnOut')}>BURNOUT</button>
-          </div> */}
-
-
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             <div className="grid_head date">{GridHeadDate()}</div>
-
+            <div className="grid_head select_metaltype">{GridHeadSelect()}</div>
             <div className="grid_head_search">
               <div
                 style={{
-                  backgroundColor: "#f9f9f9",
+                  backgroundColor: "#fff",
                   border: "1px solid #e2e2e2",
-                  borderRadius: "24px",
+                  borderRadius: "6px",
                   display: "flex",
                   // boxShadow: '2px 4px 3px #dbdbdb',
                 }}
@@ -449,25 +274,23 @@ const BatchListingGrid = () => {
                   type="text"
                   placeholder="Search..."
                   style={{
-                    backgroundColor: "#f9f9f9",
+                    backgroundColor: "#fff",
                     outline: "none",
                     border: "none",
-                    height: "27px",
+                    height: "30px",
                     width: "280px",
-                    borderRadius: "24px",
+                    borderRadius: "6px",
                     paddingInlineStart: "12px",
                   }}
-                  onChange={(e)=>handleSearch(e)}
+                  onChange={(e) => handleSearch(e)}
                 />
               </div>
             </div>
-
-            <div className="grid_head select_metaltype">{GridHeadSelect()}</div>
           </div>
 
           <div
             style={{ display: "flex", alignItems: "center", cursor: 'pointer' }}
-            onClick={() => navigation("/homeone")}
+            onClick={() => navigate("/homeone")}
           >
             <img src={topLogo} style={{ width: "75px" }} />
             <p
@@ -483,28 +306,31 @@ const BatchListingGrid = () => {
           </div>
         </div>
       </div>
-
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <div style={{ width: "100%" }} className="DataGridTable">
-          <DataGrid
-            rows={batchFilterList?.length == 0  ? batchList : batchFilterList}
-            columns={columns.map((column) => ({
-              ...column,
-              headerClassName: "customHeaderCell", // Apply custom CSS class to header cells
-            }))}
-            pageSize={5}
-            rowsPerPageOptions={[5, 10, 20]}
-            checkboxSelection={false}
-
-          />
+      {loading ? (
+        <div style={{ height: '90vh', display: 'flex', justifyContent: 'center', alignItems: 'center', fontSize: '20px', fontWeight: '600' }}>Loading...</div>
+      ) : (
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <div style={{ width: "100%" }} className="DataGridTable">
+            <DataGrid
+              rows={batchFilterList?.length == 0 ? batchList : batchFilterList}
+              columns={columns?.map((column) => ({
+                ...column,
+                headerClassName: "customHeaderCell",
+              }))}
+              pageSize={5}
+              rowsPerPageOptions={[5, 10, 20]}
+              checkboxSelection={false}
+              className="mui_DataGridCl"
+            />
+          </div>
         </div>
-      </div>
+      )}
       <Drawer anchor="left" open={menuFlag} onClose={() => setMenuFlag(false)}>
         <div style={{ paddingLeft: '30px' }}>
           <h1>
