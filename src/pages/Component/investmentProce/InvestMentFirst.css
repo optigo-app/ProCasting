@@ -1,6 +1,4 @@
-
-
-.investTopBox1{
+.investTopBox1 {
     width: auto;
     display: flex;
     /* align-items: center; */
@@ -8,40 +6,55 @@
     margin-top: 20px;
 }
 
-.investTopBox22{
- width:auto;
+.investTopBox22 {
+    width: auto;
 }
 
-.investTopBox3{
-    width:auto;
-    display:flex;
-    align-items:center;
-    flex-direction:column;
+.investTopBox3 {
+    width: auto;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
 }
 
-.investSideFixedImg{
+.inputError {
+    border: 1px solid red !important;
+}
+
+.errorMessage {
+    color: red;
+    margin-bottom: 10px;
+}
+
+.errorMessage {
+    color: red;
+    margin-top: 10px;
+}
+
+.investSideFixedImg {
     width: 35%;
     /* position: absolute;
     right: 0px; */
-    width:auto;
+    width: auto;
     padding: 3px;
 }
 
-.invest_btn_div{
+.invest_btn_div {
     display: flex;
     justify-content: center;
     margin-top: 15px;
 }
 
-.invest_btn{
+.invest_btn {
     height: 30px;
-    padding:5px 10px;
-    border:none;
+    padding: 5px 10px;
+    border: none;
     outline: none;
     background-color: #b8b8b8;
     border-radius: 10px;
 }
-.mainTitleBarCode{
+
+.mainTitleBarCode {
     margin: 0px;
     display: flex;
     align-items: center;
@@ -54,14 +67,15 @@
     margin-bottom: 25px;
 }
 
-.investTopBox2{
+.investTopBox2 {
     width: 30%;
     border: 1px solid;
     margin-top: 30px;
     margin-left: 50px;
     /* style={{ marginLeft: '30px', display: 'flex', alignItems: 'center', flexDirection: 'column' }} */
 }
-.investTreeCount{
+
+.investTreeCount {
     background-color: #eceded;
     text-align: center;
     font-size: 22px;
@@ -71,7 +85,7 @@
     border-radius: 20px;
 }
 
-.investPowder{
+.investPowder {
     background-color: #eceded;
     height: 100px;
     border-radius: 10px;
@@ -85,7 +99,7 @@
     font-weight: 700;
 }
 
-.investReqPowder{
+.investReqPowder {
     background-color: #eceded;
     height: 60px;
     width: 250px;
@@ -101,52 +115,57 @@
     font-weight: 700;
 }
 
-.investDestilInputDiv{
+.investDestilInputDiv {
     display: flex;
     align-items: center;
     margin-top: 15px;
 }
-.investDestilInputTitle{
+
+.investDestilInputTitle {
     font-size: 19px;
     margin: 0px;
     display: flex;
     align-items: left;
     width: 150px;
 }
-.investDestilInputTitleNew{
+
+.investDestilInputTitleNew {
     font-size: 20px;
     margin: 0px;
     display: flex;
     width: 150px;
 }
-.investDestilInput1{
+
+.investDestilInput1 {
 
     /* background-color: #d9d9d8; */
     background-color: white;
     border: 1px solid #d9d9d8;
     /* height: 45px;*/
-    width: 100px; 
+    width: 100px;
     font-size: 20px;
     padding: 12px;
     border-radius: 8px;
 }
 
-.investDestilInput1::-webkit-outer-spin-button,.investDestilInput1::-webkit-inner-spin-button{
+.investDestilInput1::-webkit-outer-spin-button,
+.investDestilInput1::-webkit-inner-spin-button {
     -webkit-appearance: none;
     margin: 0;
 }
-.investAddGlassBtn{
+
+.investAddGlassBtn {
     height: 35px;
     width: 100px;
-    border:none;
-    outline:none;
+    border: none;
+    outline: none;
     background-color: #dbdbdd;
     font-size: 16px;
     font-weight: 600;
     border-radius: 20px;
 }
 
-.investStartBtn{
+.investStartBtn {
     background-color: #ffde59;
     height: 50px;
     width: 100px;
@@ -154,28 +173,29 @@
     margin-top: 20px;
 }
 
-.investTableRow{
+.investTableRow {
     border-bottom: 1px solid gray;
     padding: 10px;
     font-weight: normal;
 }
 
-.not{
+.not {
     padding: 5px;
     font-size: 20px;
     border-bottom: 1px solid gray;
 }
 
-.sett{
+.sett {
     border-bottom: none;
 }
 
 
-.allScanInvestdataMain{
+.allScanInvestdataMain {
     display: flex;
     align-items: center;
 }
-.allInvestScanData{
+
+.allInvestScanData {
     display: flex;
     list-style: none;
     width: 100px;
@@ -189,7 +209,7 @@
     margin: 5px 0px;
 }
 
-.DrawerImg{
+.DrawerImg {
     width: 100%;
     height: 80vh;
     object-fit: cover;
@@ -201,17 +221,17 @@
     width: 35%;
 }
 
-.invest_upload_btn{
+.invest_upload_btn {
     height: 37px;
     width: 130px;
-    border:none;
-    outline:none;
+    border: none;
+    outline: none;
     background-color: black;
     font-size: 16px;
-    color:white;
+    color: white;
     font-weight: 600;
     border-radius: 20px;
-    margin:3px;
+    margin: 3px;
 }
 
 /* .btncom:active{

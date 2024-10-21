@@ -18,18 +18,22 @@ import BarcodeScanner from "react-barcode-reader";
 import scaneCodeImage from "../../assets/scanBarcode.gif";
 import idle from "../../assets/idle.gif";
 import RemoveCircleRoundedIcon from "@mui/icons-material/RemoveCircleRounded";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import uploadcloud from "../../assets/uploadCloud.png";
 import { useRecoilValue } from "recoil";
 import { CurrentImageState } from "../../recoil/Recoil";
 import ImageWebCam from "../imageTag/ImageWebCam";
 import topLogo from "../../assets/oraillogo.png";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import notiSound from "../../sound/Timeout.mpeg";
 import Sound from "react-sound";
-import { CommonAPI } from "../../../Utils/CommonApi";
+import { CommonAPI } from '../../../Utils/API/CommonApi'
 import { TotalTime, convertToMilliseconds } from "../../../Utils/globalFunction";
+import ProfileMenu from "../../../Utils/ProfileMenu";
+import { CgProfile } from "react-icons/cg";
+import DeleteTreeModal from "../../../Utils/DeleteTreeModal";
+import { fetchFlaskList } from "../../../Utils/API/GetFlaskList";
 
 export default function InvestMentFirst() {
   const [inputValue, setInputValue] = useState("");
@@ -65,68 +69,67 @@ export default function InvestMentFirst() {
   const [glossFlag, setGlossFlag] = useState(false);
   const [investTime, setInvestTime] = useState();
   const [TreeVal, setTreeVal] = useState();
-  const [TreeFlaskBindList,setTreeFlaskBindList] = useState();
-  const [InvestApiTime,setInvestApiTime] = useState({startTime:"",endTime:""})
-  const [castingStatus,setCastingStatus] = useState(null)
-  const [FlaskImg,setFlaskImg] = useState('');
-  const [FlaskinvestId,setFlaskInvestId] = useState();
+  const [TreeFlaskBindList, setTreeFlaskBindList] = useState();
+  const [InvestApiTime, setInvestApiTime] = useState({ startTime: "", endTime: "" })
+  const [castingStatus, setCastingStatus] = useState(null)
+  const [FlaskImg, setFlaskImg] = useState('');
+  const [FlaskinvestId, setFlaskInvestId] = useState();
   // const [countDownTime,setCountDownTime] = useState()
   const [isCompleted, setIsCompleted] = useState(false);
+  const location = useLocation();
 
-  const staticMilliseconds = 3000; // Static value for 7 minutes (in milliseconds)
-  const [timeLeft, setTimeLeft] = useState(staticMilliseconds); // Set initial time
-  const [isActive, setIsActive] = useState(false); // Start or stop the timer
+  const staticMilliseconds = 3000;
+  const [timeLeft, setTimeLeft] = useState(staticMilliseconds);
+  const [isActive, setIsActive] = useState(false);
+  const [openMenu, setOpenMenu] = useState(false);
+  const [anchorEl, setAnchorEl] = useState(null);
+
+
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+    setOpenMenu(true);
+  };
+
+  const handleMenuClose = () => {
+    setOpenMenu(false);
+    setAnchorEl(null);
+  };
+
 
   useEffect(() => {
     let timerInterval = null;
-  
+
     if (isActive && timeLeft > 0) {
       timerInterval = setInterval(() => {
-        setTimeLeft((prevTime) => prevTime - 1000); // Decrease time by 1 second
+        setTimeLeft((prevTime) => prevTime - 1000);
       }, 1000);
     } else if (timeLeft === 0 && isActive) {
       clearInterval(timerInterval);
-      // Check if the timer is still active and hasn't shown the toast before
       if (isActive) {
-        toast.success("Your Time is over");
-        setIsActive(false); // Disable active state after toast runs
+        toast.error("Your Time is over");
+        setIsActive(false);
       }
     }
-  
-    return () => clearInterval(timerInterval); // Cleanup interval on component unmount
+
+    return () => clearInterval(timerInterval);
   }, [isActive, timeLeft]);
 
   const startTimer = () => {
-    setIsActive(true); // Activate the timer
+    setIsActive(true);
     setShowTimmer(true)
   };
 
   const onComplete = useCallback(() => {
-    setIsCompleted(true); // Update state to trigger re-render
-    console.log('Countdown completed!');
-    // Add any other logic you want to execute when the countdown finishes
-  },[])
+    setIsCompleted(true);
+  }, [])
 
-  console.log("FlaskImg",FlaskImg)
 
-  // useEffect(()=>{
-  //   setCountDownTime(Date.now() + convertToMilliseconds("invest"))
-  // },[])
 
   const invProRef = useRef(null);
   const fileInputRef = useRef(null);
   const naviagtion = useNavigate();
 
   const [playStatus, setPlayStatus] = useState(Sound.status.STOPPED);
-
-  // useEffect(()=>{
-  //   if(fetchFlag === true){
-  //     let data = JSON.parse(localStorage.getItem("InvestTimer"))
-  //     setInvestTime(data);
-  //   }
-  //   },[fetchFlag])
-
-  // console.log("enteredValueseviIndex", eviIndex)
 
   const handleStartTimeDate = () => {
     const currentStartTime = new Date().toLocaleTimeString();
@@ -136,8 +139,6 @@ export default function InvestMentFirst() {
     }));
   };
 
-
-
   const handleEndTimeDate = () => {
     const currentEndTime = new Date().toLocaleTimeString();
     setInvestApiTime((prevState) => ({
@@ -146,261 +147,252 @@ export default function InvestMentFirst() {
     }));
   };
 
-  const GetTreeDataApi = async(castUniqueno) =>{
-
-    // let getDataOfSavedTree =  JSON.parse(localStorage.getItem("SavedTree"))
-    // let castuniqueno = getDataOfSavedTree[getDataOfSavedTree?.length -1]
-
+  const GetTreeDataApi = async (castUniqueno) => {
     let empData = JSON.parse(localStorage.getItem("getemp"))
-    let deviceT = JSON.parse(localStorage.getItem("initmfg"))?.deviceToken 
-    let treeUniqueno = JSON.parse(localStorage.getItem("SavedTree")) 
+    let deviceT = JSON.parse(localStorage.getItem("initmfg"))?.deviceToken
+    let treeUniqueno = JSON.parse(localStorage.getItem("SavedTree"))
 
     let uniquenotree;
 
-    if(treeUniqueno){
+    if (treeUniqueno) {
       uniquenotree = treeUniqueno[0]?.CastUniqueno
     }
 
     let bodyparam = {
-     "castuniqueno": `${castUniqueno}`,
-     "empid": `${empData?.empid}`,
-     "empuserid":`${empData?.empuserid}`,
-     "empcode": `${empData?.empcode}`,
-     "deviceToken": `${deviceT}`
-   }
-
-   let ecodedbodyparam = btoa(JSON.stringify(bodyparam))
-
-   let body = {
-     "con":`{\"id\":\"\",\"mode\":\"GETTREEQR\",\"appuserid\":\"${empData?.empuserid}\"}`,
-     "p":`${ecodedbodyparam}`,  
-     "f":"formname (album)"
-   }   
-
-   let treeVal;
-
-   if(castUniqueno){
-    await CommonAPI(body).then((res)=>{
-      if(res?.Data.rd[0].stat == 1){
-         //  setQrData(res?.Data.rd[0])
-         console.log(res?.Data.rd[0])
-
-         if(castingStatus === null){
-          setCastingStatus(res?.Data.rd[0]?.procastingstatus)
-        }
-
-         treeVal = res?.Data.rd[0]
-         setTreeVal(res?.Data.rd[0])
-
-      }
-          console.log("resTreeQr",res);
-    }).catch((err)=>{
-         console.log("err",err) 
-    })
-   }
-  else{
-      toast.error("CastUniqueNo. not Available!!")
-   }
-
-   return treeVal;
- }
-
-
- const getTreeFalskBindList = async() =>{
-
-  let empData = JSON.parse(localStorage.getItem("getemp"))
-  let deviceT = JSON.parse(localStorage.getItem("initmfg"))?.deviceToken 
-
-  let bodyparam = {
-    "deviceToken": `${deviceT}`
-  }
-
-  let ecodedbodyparam = btoa(JSON.stringify(bodyparam))
-
-  let body = {
-    "con":`{\"id\":\"\",\"mode\":\"GETTREEFLASKBINDLIST\",\"appuserid\":\"${empData?.empuserid}\"}`,
-    "p":`${ecodedbodyparam}`,  
-    "f":"formname (album)"
-  }
-
-  await CommonAPI(body).then((res)=>{
-    if(res?.Data.rd?.length){
-      setTreeFlaskBindList(res?.Data.rd)
+      "castuniqueno": `${castUniqueno}`,
+      "empid": `${empData?.empid}`,
+      "empuserid": `${empData?.empuserid}`,
+      "empcode": `${empData?.empcode}`,
+      "deviceToken": `${deviceT}`
     }
-  }).catch((err)=>{
-      console.log("err",err) 
-  })
 
- }
+    let ecodedbodyparam = btoa(JSON.stringify(bodyparam))
 
- const InvestFlaskBind = async() =>{
+    let body = {
+      "con": `{\"id\":\"\",\"mode\":\"GETTREEQR\",\"appuserid\":\"${empData?.empuserid}\"}`,
+      "p": `${ecodedbodyparam}`,
+      "f": "formname (album)"
+    }
+
+    let treeVal;
+
+    if (castUniqueno) {
+      await CommonAPI(body).then((res) => {
+        if (res?.Data.rd[0].stat == 1) {
+          //  setQrData(res?.Data.rd[0])
+          // console.log(res?.Data.rd[0])
+
+          if (castingStatus === null) {
+            setCastingStatus(res?.Data.rd[0]?.procastingstatus)
+          }
+
+          treeVal = res?.Data.rd[0]
+          setTreeVal(res?.Data.rd[0])
+
+        }
+      }).catch((err) => {
+        console.log("err", err)
+      })
+    }
+    else {
+      toast.error("CastUniqueNo. not Available!!")
+    }
+
+    return treeVal;
+  }
+
+  const getTreeFalskBindList = async () => {
+
     let empData = JSON.parse(localStorage.getItem("getemp"))
-    let deviceT = JSON.parse(localStorage.getItem("initmfg"))?.deviceToken 
+    let deviceT = JSON.parse(localStorage.getItem("initmfg"))?.deviceToken
 
     let bodyparam = {
-      flaskids:enteredValues.map(ele=>ele?.flaskid).join(),
-      investmentid: ([...new Set(enteredValues.map(ele=>ele?.investmentid))]).join(','),
-      powderwt:`${weightInp}`,
-      waterwt:`${waterWeight}`,
+      "deviceToken": `${deviceT}`
+    }
+
+    let ecodedbodyparam = btoa(JSON.stringify(bodyparam))
+
+    let body = {
+      "con": `{\"id\":\"\",\"mode\":\"GETTREEFLASKBINDLIST\",\"appuserid\":\"${empData?.empuserid}\"}`,
+      "p": `${ecodedbodyparam}`,
+      "f": "formname (album)"
+    }
+
+    await CommonAPI(body).then((res) => {
+      if (res?.Data.rd?.length) {
+        setTreeFlaskBindList(res?.Data.rd)
+      }
+    }).catch((err) => {
+      console.log("err", err)
+    })
+
+  }
+
+  const InvestFlaskBind = async () => {
+    let empData = JSON.parse(localStorage.getItem("getemp"))
+    let deviceT = JSON.parse(localStorage.getItem("initmfg"))?.deviceToken
+
+    let bodyparam = {
+      flaskids: enteredValues.map(ele => ele?.flaskid).join(),
+      investmentid: ([...new Set(enteredValues.map(ele => ele?.investmentid))]).join(','),
+      powderwt: `${weightInp}`,
+      waterwt: `${waterWeight}`,
       watertemp: `${waterTemp}`,
       tds: `${TDS}`,
-      phvalue:`${phValue}`,
+      phvalue: `${phValue}`,
       empid: `${empData?.empid}`,
-      empuserid:`${empData?.empuserid}`,
+      empuserid: `${empData?.empuserid}`,
       empcode: `${empData?.empcode}`,
       deviceToken: `${deviceT}`
-   }
-
-   let ecodedbodyparam = btoa(JSON.stringify(bodyparam))
-
-   let body = {
-    "con":`{\"id\":\"\",\"mode\":\"INVESTFLASKBIND\",\"appuserid\":\"${empData?.empuserid}\"}`,
-    "p":`${ecodedbodyparam}`,  
-    "f":"formname (INVESTFLASKBIND)"
-   }
-
-   await CommonAPI(body).then((res)=>{
-    if(res){
-      let invevstid= res?.Data?.rd[0]?.investmentid
-      setFlaskInvestId(invevstid)
-      handleStartTimeDate()
-
     }
-   }
-  ).catch((err)=>console.log("err",err))
 
+    let ecodedbodyparam = btoa(JSON.stringify(bodyparam))
 
- } 
-
- const ValidFlaskForInvest = async(flaskid) =>{
-  let empData = JSON.parse(localStorage.getItem("getemp"))
-  let deviceT = JSON.parse(localStorage.getItem("initmfg"))?.deviceToken 
-
-  let bodyparam = {
-    // flaskids:enteredValues.map(ele=>ele?.flaskid).join(),
-    flaskids:`${flaskid}`,
-    empid: `${empData?.empid}`,
-    empuserid:`${empData?.empuserid}`,
-    empcode: `${empData?.empcode}`,
-    deviceToken: `${deviceT}`
- }
-
- let ecodedbodyparam = btoa(JSON.stringify(bodyparam))
-
-  let body = {
-  "con":`{\"id\":\"\",\"mode\":\"VALDNFLASKFORINVEST\",\"appuserid\":\"${empData?.empuserid}\"}`,
-  "p":`${ecodedbodyparam}`,  
-  "f":"formname (VALDNFLASKFORINVEST)"
-  }
-
-  let finalVal;
-
-  await CommonAPI(body).then((res)=>{
-    if(res){
-      console.log("VALDNFLASKFORINVEST",res)
-      finalVal = res?.Data?.rd[0]
+    let body = {
+      "con": `{\"id\":\"\",\"mode\":\"INVESTFLASKBIND\",\"appuserid\":\"${empData?.empuserid}\"}`,
+      "p": `${ecodedbodyparam}`,
+      "f": "formname (INVESTFLASKBIND)"
     }
-  }).catch((err)=>console.log("err",err))
 
-  return finalVal
- }
+    await CommonAPI(body).then((res) => {
+      if (res) {
+        let resStatus = res?.Data?.rd[0]
+        if (resStatus?.stat != 0) {
+          let invevstid = res?.Data?.rd[0]?.investmentid;
+          setFlaskInvestId(invevstid)
+          handleStartTimeDate()
+          setSaveData(true);
+          setShowTimmerBtn(true);
+        } else {
+          toast.error(resStatus?.stat_msg)
+        }
+      }
+    }
+    ).catch((err) => console.log("err", err))
 
 
- const InvestInfoSave = async() =>{
-  let empData = JSON.parse(localStorage.getItem("getemp"))
-  let deviceT = JSON.parse(localStorage.getItem("initmfg"))?.deviceToken 
-
-  let bodyparam = {
-    investmentid: FlaskinvestId ?? 0,
-    investmentstartdate: InvestApiTime?.startTime,
-    investmentenddate: InvestApiTime?.endTime,
-    investmentphoto: fileBase64,
-    empid: `${empData?.empid}`,
-    empuserid:`${empData?.empuserid}`,
-    empcode: `${empData?.empcode}`,
-    deviceToken: `${deviceT}`
   }
 
- let ecodedbodyparam = btoa(JSON.stringify(bodyparam))
+  const ValidFlaskForInvest = async (flaskid) => {
+    let empData = JSON.parse(localStorage.getItem("getemp"))
+    let deviceT = JSON.parse(localStorage.getItem("initmfg"))?.deviceToken
 
+    let bodyparam = {
+      flaskids: `${flaskid}`,
+      empid: `${empData?.empid}`,
+      empuserid: `${empData?.empuserid}`,
+      empcode: `${empData?.empcode}`,
+      deviceToken: `${deviceT}`
+    }
 
-  let body ={
-    "con":`{\"id\":\"\",\"mode\":\"INVESTINFOSAVE\",\"appuserid\":\"${empData?.empuserid}\"}`,
-    "p":`${ecodedbodyparam}`,  
-    "f":"formname (album)"
+    let ecodedbodyparam = btoa(JSON.stringify(bodyparam))
+
+    let body = {
+      "con": `{\"id\":\"\",\"mode\":\"VALDNFLASKFORINVEST\",\"appuserid\":\"${empData?.empuserid}\"}`,
+      "p": `${ecodedbodyparam}`,
+      "f": "formname (VALDNFLASKFORINVEST)"
+    }
+
+    let finalVal;
+
+    await CommonAPI(body).then((res) => {
+      if (res) {
+        finalVal = res?.Data?.rd[0]
+      }
+    }).catch((err) => console.log("err", err))
+
+    return finalVal
   }
 
 
- await CommonAPI(body).then((res)=>{
-  if(res){
-    handleEndTimeDate()
-    toast.success("Invest Info Save!!")
-    naviagtion("/homeone")
+  const InvestInfoSave = async () => {
+    let empData = JSON.parse(localStorage.getItem("getemp"))
+    let deviceT = JSON.parse(localStorage.getItem("initmfg"))?.deviceToken;
+    let data = location?.state;
+
+    let bodyparam = {
+      investmentid: FlaskinvestId ?? data?.investmentid,
+      // investmentid: FlaskinvestId ?? 0,
+      investmentstartdate: InvestApiTime?.startTime ?? data?.investmentDate,
+      investmentenddate: InvestApiTime?.endTime ?? new Date(),
+      investmentphoto: fileBase64 != '' ? fileBase64 : CurrentImageValue ?? CurrentImageValue,
+      empid: `${empData?.empid}`,
+      empuserid: `${empData?.empuserid}`,
+      empcode: `${empData?.empcode}`,
+      deviceToken: `${deviceT}`
+    }
+
+    let ecodedbodyparam = btoa(JSON.stringify(bodyparam))
+
+    let body = {
+      "con": `{\"id\":\"\",\"mode\":\"INVESTINFOSAVE\",\"appuserid\":\"${empData?.empuserid}\"}`,
+      "p": `${ecodedbodyparam}`,
+      "f": "formname (album)"
+    }
+
+
+    await CommonAPI(body).then((res) => {
+      if (res) {
+        handleEndTimeDate()
+        toast.success("Invest Info Save!!")
+        naviagtion("/homeone")
+      }
+    }
+    ).catch((err) => {
+      toast.error("Error!!")
+    })
+
   }
- }
-).catch((err)=>{
-  console.log("err",err)
-  toast.error("Error!!")
-})
-
- }
-
- useEffect(()=>{
-   if(CurrentImageValue){
-    InvestInfoSave()
-    toast.success("Photo upload!!")
-   }
- },[CurrentImageValue])
-
-
- const DeleteFlaskForInvest = async(flaskid) =>{
-
-  let empData = JSON.parse(localStorage.getItem("getemp"))
-  let deviceT = JSON.parse(localStorage.getItem("initmfg"))?.deviceToken 
-
-  let bodyparam = {
-    investmentid: ([...new Set(enteredValues.map(ele=>ele?.investmentid))]).join(','),
-    flaskids: `${flaskid}`,
-    empid: `${empData?.empid}`,
-    empuserid:`${empData?.empuserid}`,
-    empcode: `${empData?.empcode}`,
-    deviceToken: `${deviceT}`
-  }  
-
-  let ecodedbodyparam = btoa(JSON.stringify(bodyparam))
-
-  let body ={
-    "con":`{\"id\":\"\",\"mode\":\"DELFLASKFROMINVEST\",\"appuserid\":\"${empData?.empuserid}\"}`,
-    "p":`${ecodedbodyparam}`,  
-    "f":"formname (album)"
-  }
-
-  await CommonAPI(body).then((res)=>console.log("DELFLASKFROMINVEST",res)).catch((err)=>console.log("err",err))
-
- }
-
- useEffect(()=>{
-//   GetTreeDataApi()
-  getTreeFalskBindList()
- },[])
 
   useEffect(() => {
-    // if (greenImg) {
-    //   setWeightInp("3000");
-    //   setWaterWeight("2100");
-    // }
-    // if (blueImg) {
-    //   setWeightInp("3000");
-    //   setWaterWeight("2100");
-    // }
-    // if (orangeImg) {
-    //   setWeightInp("3000");
-    //   setWaterWeight("2100");
-    // }
+    if (CurrentImageValue) {
+      InvestInfoSave()
+      toast.success("Photo upload!!")
+    }
+  }, [CurrentImageValue])
 
-    if(enteredValues){
-      setWeightInp(enteredValues[enteredValues?.length-1]?.requirepowder);
-      setWaterWeight(enteredValues[enteredValues?.length-1]?.requirewater);
+
+  const DeleteFlaskForInvest = async (flaskid) => {
+
+    let empData = JSON.parse(localStorage.getItem("getemp"))
+    let deviceT = JSON.parse(localStorage.getItem("initmfg"))?.deviceToken
+
+    let bodyparam = {
+      investmentid: ([...new Set(enteredValues.map(ele => ele?.investmentid))]).join(','),
+      flaskids: `${flaskid}`,
+      empid: `${empData?.empid}`,
+      empuserid: `${empData?.empuserid}`,
+      empcode: `${empData?.empcode}`,
+      deviceToken: `${deviceT}`
+    }
+
+    let ecodedbodyparam = btoa(JSON.stringify(bodyparam))
+
+    let body = {
+      "con": `{\"id\":\"\",\"mode\":\"DELFLASKFROMINVEST\",\"appuserid\":\"${empData?.empuserid}\"}`,
+      "p": `${ecodedbodyparam}`,
+      "f": "formname (album)"
+    }
+
+    await CommonAPI(body).then((res) =>
+      console.log("DELFLASKFROMINVEST", res)
+
+    ).catch((err) => console.log("err", err))
+
+  }
+
+  useEffect(() => {
+    getTreeFalskBindList()
+    let flasklist = JSON.parse(sessionStorage.getItem("flasklist"));
+    if (!flasklist) {
+      fetchFlaskList()
+    }
+  }, [])
+
+  useEffect(() => {
+    if (enteredValues) {
+      setWeightInp(enteredValues[enteredValues?.length - 1]?.requirepowder);
+      setWaterWeight(enteredValues[enteredValues?.length - 1]?.requirewater);
     }
   }, [enteredValues]);
 
@@ -436,73 +428,7 @@ export default function InvestMentFirst() {
     }
   }, [enteredValues]);
 
-  // useEffect(() => {
-    // if (scanInp?.length) {
-    //   setTimeout(() => {
-    //     if (!openYourBagDrawer && isImageVisible) {
-    //       setEnteredValues([...enteredValues, { label: scanInp }]);
-    //     }
-    //   }, 500);
-    // }
-
-    // let scanData = async() =>{
-    //   if (scanInp?.length) {
-    //     // setTimeout(() => {
-    //       // if (!openYourBagDrawer && isImageVisible) {
-    //       setInputError(false);
-  
-    //       let flasklist = JSON.parse(sessionStorage.getItem("flasklist"))
-    
-    //       let FinalFlaskList = flasklist?.filter((ele)=> scanInp == ele?.flaskbarcode)
-    
-    //       let investmentVal;
-    
-    //       if(FinalFlaskList?.length > 0){
-    //         let bindTreeFlask = TreeFlaskBindList?.filter((ele)=>ele?.flaskid == FinalFlaskList[0]?.flaskid)
-    //         let TreeData ;
-  
-    //       if(bindTreeFlask?.length > 0){
-  
-    //         if(FlaskImg?.length == 0){
-    //           let resData = await ValidFlaskForInvest(FinalFlaskList[0]?.flaskid)
-    //           let initmfg = JSON.parse(localStorage.getItem("initmfg"))
-    //           let ImgPath = `${initmfg?.UploadLogicalPath}${initmfg?.ukey}/procasting/${resData?.flaskimage}`
-    //           console.log("ImgPath",ImgPath);
-    //           setFlaskImg(ImgPath)
-    //         }
-    //         TreeData =  await GetTreeDataApi(bindTreeFlask[0]?.castuniqueno)
-
-    //         console.log("scanInp",bindTreeFlask[0]?.castuniqueno);
-
-  
-    //         investmentVal = {...TreeData,...FinalFlaskList[0],investmentid:bindTreeFlask[0]?.investmentid}
-    //         setEnteredValues([...enteredValues, investmentVal]);
-    //       }
-    //       else{
-    //         // toast.error("Flask Invalid!!")
-    //       }
-    //       // }else{
-    //         // toast.error("not Valid Flask!!")
-    //       // }
-    //       // setInputValue("");
-    //     }
-    //     // },500)
-    //   }
-    // }
-
-  //   scanData();
-   
-  // }, [scanInp]);
-
-  // setTimeout(() => {
-  //   if (scanInp?.length > 0) {
-  //     setScanInp("");
-  //   }
-  // }, 510);
-
-
-
-  const handleScan = (data) => {};
+  const handleScan = (data) => { };
 
   const handleError = (error) => {
     console.error("Error while scanning:", error);
@@ -522,94 +448,87 @@ export default function InvestMentFirst() {
     setInputValue(event.target.value);
   };
 
-  const handleGoButtonClick = async() => {
+  const handleGoButtonClick = async () => {
+    debugger
     if (inputValue === "" || inputValue === undefined) {
       setInputError(true);
     } else {
       setInputError(false);
-      
-      let flaskids = JSON.parse(sessionStorage.getItem("bindedFlask"))
+
       let flasklist = JSON.parse(sessionStorage.getItem("flasklist"))
 
-      let FinalFlaskList = flasklist?.filter((ele)=> inputValue == ele?.flaskbarcode)
+      let FinalFlaskList = flasklist?.filter((ele) => inputValue == ele?.flaskbarcode)
 
       let investmentVal;
 
-      if(FinalFlaskList?.length > 0){
-        let bindTreeFlask = TreeFlaskBindList?.filter((ele)=>ele?.flaskid == FinalFlaskList[0]?.flaskid)
-        let TreeData ;
-        if(bindTreeFlask?.length > 0){
-          if(FlaskImg?.length == 0){
-            let resData = await ValidFlaskForInvest(FinalFlaskList[0]?.flaskid)
-            if(resData){
+      if (FinalFlaskList?.length > 0) {
+        let bindTreeFlask = TreeFlaskBindList?.filter((ele) => ele?.flaskid == FinalFlaskList[0]?.flaskid)
+        let TreeData;
+        if (bindTreeFlask?.length > 0) {
+          let resData = await ValidFlaskForInvest(FinalFlaskList[0]?.flaskid)
+          if (resData?.stat == 1) {
+            TreeData = await GetTreeDataApi(bindTreeFlask[0]?.castuniqueno)
+            investmentVal = { ...TreeData, ...FinalFlaskList[0], investmentid: bindTreeFlask[0]?.investmentid }
+            setEnteredValues([...enteredValues, investmentVal]);
+            if (FlaskImg?.length != 0) {
               let initmfg = JSON.parse(localStorage.getItem("initmfg"))
-              let ImgPath = `${initmfg?.UploadLogicalPath}${initmfg?.ukey}/procasting/${resData?.flaskimage}`
-              console.log("ImgPath",ImgPath);
+              let ImgPath = `${initmfg?.UploadLogicalPath}${initmfg?.ukey}/procasting/`
               setFlaskImg(ImgPath)
             }
+          } else {
+            toast.error(resData?.stat_msg)
           }
-          TreeData = await GetTreeDataApi(bindTreeFlask[0]?.castuniqueno)
-          investmentVal = {...TreeData,...FinalFlaskList[0],investmentid:bindTreeFlask[0]?.investmentid}
-          setEnteredValues([...enteredValues, investmentVal]);
-        }else{
+        } else {
           toast.error("Flask Invalid!!")
         }
-        console.log("TreeData",bindTreeFlask)
-       
-      }else{
-        toast.error("not Valid Flask!!")
+
+      } else {
+        toast.error("Invalid Flask Id!")
       }
-      
+
       setInputValue("");
     }
   };
 
-  const handleGoButtonClickHidden = async() => {
+  const handleGoButtonClickHidden = async () => {
     if (scanInp === "" || scanInp === undefined) {
       setInputError(true);
     } else {
       setInputError(false);
-      
-      let flaskids = JSON.parse(sessionStorage.getItem("bindedFlask"))
+
       let flasklist = JSON.parse(sessionStorage.getItem("flasklist"))
 
-      let FinalFlaskList = flasklist?.filter((ele)=> scanInp == ele?.flaskbarcode)
+      let FinalFlaskList = flasklist?.filter((ele) => scanInp == ele?.flaskbarcode)
 
       let investmentVal;
 
-      if(FinalFlaskList?.length > 0){
-        let bindTreeFlask = TreeFlaskBindList?.filter((ele)=>ele?.flaskid == FinalFlaskList[0]?.flaskid)
-        let TreeData ;
-        if(bindTreeFlask?.length > 0){
-          if(FlaskImg?.length == 0){
-            let resData = await ValidFlaskForInvest(FinalFlaskList[0]?.flaskid)
-            if(resData){
+      if (FinalFlaskList?.length > 0) {
+        let bindTreeFlask = TreeFlaskBindList?.filter((ele) => ele?.flaskid == FinalFlaskList[0]?.flaskid)
+        let TreeData;
+        if (bindTreeFlask?.length > 0) {
+          let resData = await ValidFlaskForInvest(FinalFlaskList[0]?.flaskid)
+          if (resData?.stat == 1) {
+            TreeData = await GetTreeDataApi(bindTreeFlask[0]?.castuniqueno)
+            investmentVal = { ...TreeData, ...FinalFlaskList[0], investmentid: bindTreeFlask[0]?.investmentid }
+            setEnteredValues([...enteredValues, investmentVal]);
+            if (FlaskImg?.length == 0) {
               let initmfg = JSON.parse(localStorage.getItem("initmfg"))
-              let ImgPath = `${initmfg?.UploadLogicalPath}${initmfg?.ukey}/procasting/${resData?.flaskimage}`
-              console.log("ImgPath",ImgPath);
+              let ImgPath = `${initmfg?.UploadLogicalPath}${initmfg?.ukey}/procasting/`
               setFlaskImg(ImgPath)
             }
+          } else {
+            toast.error(resData?.stat_msg)
           }
-          TreeData = await GetTreeDataApi(bindTreeFlask[0]?.castuniqueno)
-          investmentVal = {...TreeData,...FinalFlaskList[0],investmentid:bindTreeFlask[0]?.investmentid}
-          setEnteredValues([...enteredValues, investmentVal]);
-        }else{
-          toast.error("Flask Invalid!!")
+        } else {
+          toast.error("Flask Invalid!")
         }
-        console.log("TreeData",bindTreeFlask)
-       
-      }else{
-        toast.error("not Valid Flask!!")
+      } else {
+        toast.error("Invalid Flask Id!")
       }
-      
+
       setScanInp("");
     }
   };
-
-
-
-  console.log("enterdvalue",enteredValues);
-
 
   const handleInputChangen = (e) => {
     setEnteredTime(e.target.value);
@@ -643,100 +562,89 @@ export default function InvestMentFirst() {
     }
   };
 
-  const notify = () => toast.success("SAVED SUCCESSFULLY");
+  const [errorMessage, setErrorMessage] = useState('');
+  const [inputErrors, setInputErrors] = useState({
+    weight: false,
+    water: false,
+    temp: false,
+    tds: false,
+    ph: false,
+  });
 
   const saveDataHandle = () => {
-    if (weightInp === undefined || weightInp === "" ) {
-      toast.error("Enter powder weight")
-    } else if(waterWeight === undefined || waterWeight === "") {
-      toast.error("Enter water Weight")
-    } else if(waterTemp === undefined || waterTemp === ""){
-      toast.error("Enter Water Temperature")
-    } else if( TDS === undefined || TDS === ""){
-      toast.error("Enetr TDS");
-    } else if( phValue === undefined || phValue === ""){
-      toast.error("Enetr phValue");
-    } 
-    else {
-      setSaveData(true);
-      notify();
-      InvestFlaskBind()
-      // const updateData = enteredValues?.map((ev, i) => {
-      //   if (!ev["ImgBtn"]) {
-      //     ev["ImgBtn"] = (
-      //       <button
-      //         onClick={() => {
-      //           setIsImgUpload(true)
-      //           setEviIndex(i)
-      //         }}
-      //         className="invest_upload_btn"
-      //       >
-      //         Upload Image
-      //       </button>
-      //     );
-      //   }
-      //   return ev;
-      // });
+    let hasError = false;
+    setErrorMessage('');
 
-     // setEnteredValues(updateData);
-      setShowTimmerBtn(true);
+    if (!weightInp) {
+      setInputErrors(prev => ({ ...prev, weight: true }));
+      setErrorMessage(prev => (prev ? prev + ', ' : '') + "Enter powder weight");
+      hasError = true;
+    } else {
+      setInputErrors(prev => ({ ...prev, weight: false }));
+    }
+
+    if (!waterWeight) {
+      setInputErrors(prev => ({ ...prev, water: true }));
+      setErrorMessage(prev => (prev ? prev + ', ' : '') + "Enter water weight");
+      hasError = true;
+    } else {
+      setInputErrors(prev => ({ ...prev, water: false }));
+    }
+
+    if (!waterTemp) {
+      setInputErrors(prev => ({ ...prev, temp: true }));
+      setErrorMessage(prev => (prev ? prev + ', ' : '') + "Enter water temperature");
+      hasError = true;
+    } else {
+      setInputErrors(prev => ({ ...prev, temp: false }));
+    }
+
+    if (!TDS) {
+      setInputErrors(prev => ({ ...prev, tds: true }));
+      setErrorMessage(prev => (prev ? prev + ', ' : '') + "Enter TDS");
+      hasError = true;
+    } else {
+      setInputErrors(prev => ({ ...prev, tds: false }));
+    }
+
+    if (!phValue) {
+      setInputErrors(prev => ({ ...prev, ph: true }));
+      setErrorMessage(prev => (prev ? prev + ', ' : '') + "Enter pH value");
+      hasError = true;
+    } else {
+      setInputErrors(prev => ({ ...prev, ph: false }));
+    }
+
+    if (!hasError) {
+      setErrorMessage('')
+      InvestFlaskBind();
     }
   };
 
-  // useEffect(()=>{
-  //   if(glossFlag){
-  //     const d = new Date();
-
-  //     let hour =
-  //       d.getHours().toString().length === 1 ? `0${d.getHours()}` : d.getHours();
-  
-  //     let min =
-  //       d.getMinutes().toString().length === 1
-  //         ? `0${d.getMinutes()}`
-  //         : d.getMinutes();
-  
-  //     let sec =
-  //       d.getSeconds().toString().length === 1
-  //         ? `0${d.getSeconds()}`
-  //         : d.getSeconds();
-          
-  //     localStorage.setItem(
-  //       "InvestTimer",
-  //       JSON.stringify(`${hour}:${min}:${sec}`)
-  //     );
-  //   }
-  // },[glossFlag])
-
-  useEffect(()=>{
+  useEffect(() => {
     localStorage.removeItem("InvestTimer")
-  },[])
+  }, [])
 
   const [toastShown, setToastShown] = useState(false);
 
   const playAudio = () => {
-    setPlayStatus(Sound.status.PLAYING);
-  
+    setPlayStatus(Sound?.status?.PLAYING);
+
     setTimeout(() => {
-      setPlayStatus(Sound.status.STOPPED);
-    }, 30000); 
+      setPlayStatus(Sound?.status?.STOPPED);
+    }, 30000);
   };
-  
+
   let TimeNotify = useCallback(() => {
     if (!toastShown) {
-      toast.error("Time is Over!!!!", { theme: "colored" });
+      toast.error("Time is Over!...", { theme: "colored" });
       setToastShown(true);
     }
     playAudio();
   }, [toastShown]);
-  
-
-  const  Completionist= useCallback(() => {
-    // console.log("investTime", investTime);
-    // console.log("completedXCV", completed?.completed);
-
-    // setGlossFlag(true)
 
 
+  const Completionist = useCallback(() => {
     const d = new Date();
 
     let hour =
@@ -752,36 +660,16 @@ export default function InvestMentFirst() {
         ? `0${d.getSeconds()}`
         : d.getSeconds();
 
-    // let timeFinish =false;
-
-    // if (isCompleted === true) {
-      // TimeNotify();
-      // setFetchFlag(true);
-      // setGlossFlag(true);
-      // localStorage.setItem(
-      //   "InvestTimer",
-      //   JSON.stringify(`${hour}:${min}:${sec}`)
-      // );
-    // }
-    // let finishTime = JSON.parse(localStorage.getItem("InvestTimer"));
-
-    // invTimer='ASDAD';
-
     return (
       <div style={{ textTransform: "uppercase" }}>
         Gloss of completion time :
-        {/* {timeFinish ? (
-          <span style={{ fontWeight: "bold" }}>{finishTime}</span>
-        ) : ( */}
-          <span style={{ fontWeight: "bold" }}>
-            {hour}:{min}:{sec}
-          </span>
-        {/* )} */}
+        <span style={{ fontWeight: "bold" }}>
+          {hour}:{min}:{sec}
+        </span>
       </div>
     )
-  },[])
+  }, [])
 
-  // console.log("showTimmer",showTimmer);
 
   const renderer = ({ minutes, seconds, completed }) => {
     if (completed) {
@@ -800,15 +688,6 @@ export default function InvestMentFirst() {
 
   const handleStartTime = () => {
     setShowTimmer(true);
-    // setEviIndex((pre) => [...pre, evi]);
-
-    // const updatedData = enteredValues.map((d, index) => {
-    //   if (!d.timer && evi === index) {
-    //     d.timer = <Countdown date={Date.now() + 30000} renderer={renderer} />;
-    //   }
-    //   return d;
-    // });
-    // setEnteredValues(updatedData);
   };
 
   const handleRemoveItem = (indexToRemove) => {
@@ -838,32 +717,6 @@ export default function InvestMentFirst() {
     setOpenDelete(false);
   };
 
-  // const handleFileUpload = (event) => {
-  //   const file = event.target.files[0];
-
-  //   if (file) {
-  //     const reader = new FileReader();
-  //     reader.onloadend = () => {
-  //       const base64String = reader.result;
-  //       const updatedData = enteredValues.map((d, index) => {
-  //         if (eviIndex === index) {
-  //           d.ImgUrl = base64String
-  //         }
-  //         return d;
-  //       });
-  //       setEnteredValues(updatedData);
-  //       setFileBase64(base64String)
-  //       // console.log('Base64 representation:', base64String);
-  //     };
-  //     reader.readAsDataURL(file);
-  //   }
-
-  // };
-
-  // const handleButtonClick = () => {
-  //   fileInputRef.current.click();
-  // };
-
   useEffect(() => {
     if (CurrentImageValue.length > 0) {
       const updatedData = enteredValues.map((d, index) => {
@@ -878,19 +731,90 @@ export default function InvestMentFirst() {
     }
   }, [CurrentImageValue]);
 
+
   const handelUploadImg = useCallback((event) => {
-    // setFetchFlag(true)
-    // let data = JSON.parse(localStorage.getItem("InvestTimer"));
-    // setInvestTime(data);
-    event.stopPropagation(); 
-    // InvestInfoSave()
+    event.stopPropagation();
     setIsImgUpload(true);
     setGlossFlag(true);
-    // setCountDownTime(Date.now())
+  }, []);
 
-  },[]);
 
-  console.log("icompleted",isCompleted);
+  const [flaskbinddate, setFlaskBindData] = useState('');
+  const [elapsedTime, setElapsedTime] = useState({ hours: 0, minutes: 0, seconds: 0 });
+  const [showTime, setShowTime] = useState(false);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      let data = location?.state;
+      if (data) {
+        setWeightInp(data?.powderwt);
+        setWaterWeight(data?.waterwt);
+        setWaterTemp(data?.watertemp);
+        setTDS(data?.tds);
+        setPhValue(data?.phvalue);
+
+        let initmfg = JSON.parse(localStorage.getItem("initmfg"));
+        let ImgPath = `${initmfg?.UploadLogicalPath}${initmfg?.ukey}/procasting/`;
+        setFlaskImg(ImgPath);
+
+        let castuniqueno = data["Batch#"]?.match(/\d+/)[0];
+        castuniqueno = parseInt(castuniqueno, 10);
+
+        try {
+          const TreeData = await GetTreeDataApi(castuniqueno);
+          const investmentVal = { ...TreeData };
+          setEnteredValues(prevValues => [...prevValues, { ...investmentVal, flaskbarcode: data?.flaskbarcode }]);
+          setShowTimmerBtn(true);
+          setShowTimmer(true);
+          setIsActive(false);
+
+          let bindTreeFlask = TreeFlaskBindList?.filter((ele) => ele?.castuniqueno === castuniqueno);
+          if (bindTreeFlask?.length > 0) {
+            setFlaskBindData(bindTreeFlask[0]?.flaskbinddate);
+          }
+
+        } catch (error) {
+          console.error('Error fetching tree data:', error);
+        }
+      }
+    };
+
+    fetchData();
+  }, [location]);
+
+  useEffect(() => {
+    const data = location?.state;
+    debugger;
+    if (data) {
+      setShowTime(true);
+      const castuniqueno = data["Batch#"]?.match(/\d+/)?.[0] ?? '';
+      const parsedCastUniqueno = castuniqueno ? parseInt(castuniqueno, 10) : null;
+      const bindTreeFlask = TreeFlaskBindList?.filter((ele) => ele?.castuniqueno === parsedCastUniqueno);
+      if (bindTreeFlask?.length > 0) {
+        let date = bindTreeFlask[0]?.flaskbinddate;
+        // let date = '2024-10-14T13:55:25.373';
+        if (!date) return;
+
+        const startTime = new Date(date);
+
+        const interval = setInterval(() => {
+          const currentTime = new Date();
+          const elapsedMilliseconds = currentTime - startTime;
+
+          const hours = Math.floor(elapsedMilliseconds / (1000 * 60 * 60));
+          const minutes = Math.floor((elapsedMilliseconds % (1000 * 60 * 60)) / (1000 * 60));
+          const seconds = Math.floor((elapsedMilliseconds % (1000 * 60)) / 1000);
+
+          setElapsedTime({ hours, minutes, seconds });
+          setShowTime(false);
+        }, 1000);
+
+        return () => clearInterval(interval);
+      }
+    }
+  }, [location, TreeFlaskBindList]);
+
+
 
   return (
     <div>
@@ -906,8 +830,6 @@ export default function InvestMentFirst() {
         onError={handleError}
         facingMode="environment"
       />
-      <ToastContainer />
-
       <Dialog
         fullWidth
         open={isImgUpload}
@@ -956,73 +878,13 @@ export default function InvestMentFirst() {
         </div>
       </Dialog>
 
-      <Dialog
+      <DeleteTreeModal
         open={openDelete}
         onClose={handleCloseDelete}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
-        <DialogTitle
-          id="alert-dialog-title"
-          style={{ margin: "20px", paddingInline: "100px" }}
-        >
-          {"ARE YOU SURE TO DELETE ?"}
-        </DialogTitle>
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            marginBottom: "20px",
-          }}
-        >
-          <Button onClick={handleConfirmation}>YES</Button>
-          <Button onClick={handleClickOpenDelete}>NO</Button>
-        </div>
-      </Dialog>
-
-      {/* <Dialog 
-        className="uploadImage" 
-        open={isImgUpload} 
-        onClose={() =>{
-          setIsImgUpload(false)
-          setTimeout(()=>{
-            setFileBase64('')
-          },150)
-        }}
-        >
-        <div
-          style={{
-            width: "360px",
-            height: "390px",
-            display: "flex",
-            justifyContent: "space-between",
-            flexDirection: "column",
-            alignItems: "center",
-            padding: "20px",
-          }}
-        >
-          <img src={!fileBase64.length ? uploadcloud : fileBase64 } style={{ width: "100%",height:'100%',objectFit: "contain" }} />
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              position: "relative",
-            }}
-          >
-            <input
-              type="file"
-              id="fileInput"
-              accept="image/*"
-              style={{ display: "none" }}
-              ref={fileInputRef}
-              onChange={(e) => handleFileUpload(e)}
-            />
-            <label htmlFor="fileInput">
-              <button onClick={handleButtonClick}>Upload</button>
-            </label>
-          </div>
-        </div>
-      </Dialog> */}
+        title="ARE YOU SURE TO DELETE ?"
+        onconfirm={handleConfirmation}
+        onclickDelete={handleClickOpenDelete}
+      />
 
       <Dialog
         className="showImage"
@@ -1041,36 +903,20 @@ export default function InvestMentFirst() {
           }}
         >
           <img
-            // src={enteredValues[eviIndex]?.ImgUrl}
             src={fileBase64}
             style={{ width: "100%", objectFit: "cover" }}
           />
-          {/* <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              position: "relative",
-            }}
-          >
-            <input
-              type="file"
-              id="fileInput"
-              accept="image/*"
-              style={{ display: "none" }}
-              ref={fileInputRef}
-              onChange={(e) => handleFileUpload(e)}
-            />
-            <label htmlFor="fileInput">
-              <button onClick={handleButtonClick}>Change Image</button>
-            </label>
-          </div> */}
         </div>
       </Dialog>
 
       <div>
         <div className="TopBtnDivMainOneV2">
           <div style={{ display: "flex", alignItems: "center" }}>
+            <CgProfile style={{ height: '30px', width: '30px', marginLeft: '15px' }} onClick={handleClick} />
             <p className="headerV2Title"> INVESTMENT PROCESS</p>
+            {openMenu &&
+              <ProfileMenu open={openMenu} anchorEl={anchorEl} handleClose={handleMenuClose} />
+            }
           </div>
           <div
             style={{ display: "flex", alignItems: "center", cursor: "pointer" }}
@@ -1094,7 +940,6 @@ export default function InvestMentFirst() {
             display: "flex",
             marginTop: "0px",
             justifyContent: "space-around",
-            // border:'1px solid red',
             position: "relative",
           }}
         >
@@ -1109,9 +954,7 @@ export default function InvestMentFirst() {
             <div
               style={{
                 display: "flex",
-                // width: "80%",
                 gap: "80px",
-                // justifyContent: "space-around",
                 position: "relative",
               }}
             >
@@ -1214,8 +1057,6 @@ export default function InvestMentFirst() {
               <div className="investTopBox22">
                 <div
                   style={{
-                    // minWidth: "134px",
-                    // width:'auto',
                     overflow: "auto",
                     height: "250px",
                     display: "flex",
@@ -1244,122 +1085,73 @@ export default function InvestMentFirst() {
                 </div>
               </div>
               <div className="investTopBox3">
-                <div
-                  style={{
-                    display: "flex",
-                    marginTop: "15px",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                >
+                <div style={{ display: "flex", marginTop: "15px", alignItems: "center", justifyContent: "center" }}>
                   <p className="investDestilInputTitleNew">Powder Weight:</p>
                   <input
                     type="number"
-                    // value={
-                    //   (greenImg && "3000") ||
-                    //   (blueImg && "3000") ||
-                    //   (orangeImg && "3000") ||
-                    //   (weight && "") ||
-                    //   (defaultImg && "")
-                    // }
                     value={weightInp}
-                    onChange={(e) => setWeightInp(e.target.value)}
-                    className="investDestilInput1"
-                  />
-                </div>
-                <div
-                  style={{
-                    display: "flex",
-                    marginTop: "15px",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                >
-                  <p className="investDestilInputTitleNew">Water Weight:</p>
-                  <input
-                    type="number"
-                    // value={
-                    //   (greenImg && "3000") ||
-                    //   (blueImg && "3000") ||
-                    //   (orangeImg && "3000") ||
-                    //   (weight && "") ||
-                    //   (defaultImg && "")
-                    // }
-                    value={waterWeight}
-                    onChange={(e) => setWaterWeight(e.target.value)}
-                    className="investDestilInput1"
-                  />
-                </div>
-                <div
-                  style={{
-                    display: "flex",
-                    marginTop: "15px",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                >
-                  <p className="investDestilInputTitleNew">Water Temp. :</p>
-                  <input
-                    type="number"
-                    // value={
-                    //   (greenImg && "3000") ||
-                    //   (blueImg && "3000") ||
-                    //   (orangeImg && "3000") ||
-                    //   (weight && "") ||
-                    //   (defaultImg && "")
-                    // }
-                    value={waterTemp}
-                    onChange={(e) => setWaterTemp(e.target.value)}
-                    className="investDestilInput1"
-                  />
-                </div>
-                <div
-                  style={{
-                    display: "flex",
-                    marginTop: "15px",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                >
-                  <p className="investDestilInputTitleNew">TDS:</p>
-                  <input
-                    type="number"
-                    className="investDestilInput1"
-                    value={TDS}
-                    onChange={(e) => setTDS(e.target.value)}
-                  />
-                </div>
-                <div
-                  style={{
-                    display: "flex",
-                    marginTop: "15px",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                >
-                  <p className="investDestilInputTitleNew">PHvalue:</p>
-                  <input
-                    type="number"
-                    className="investDestilInput1"
-                    value={phValue}
-                    onChange={(e) => setPhValue(e.target.value)}
+                    onChange={(e) => {
+                      setWeightInp(e.target.value);
+                      if (e.target.value) setInputErrors(prev => ({ ...prev, weight: false }));
+                    }}
+                    className={`investDestilInput1 ${inputErrors.weight ? 'inputError' : ''}`}
                   />
                 </div>
 
-                <div
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    marginTop: "15px",
-                  }}
-                >
-                  <button
-                    // className="investAddGlassBtn"
-                    onClick={saveDataHandle}
-                    className="homeNoteTitleV2"
-                  >
-                    Save
-                  </button>
+                <div style={{ display: "flex", marginTop: "15px", alignItems: "center", justifyContent: "center" }}>
+                  <p className="investDestilInputTitleNew">Water Weight:</p>
+                  <input
+                    type="number"
+                    value={waterWeight}
+                    onChange={(e) => {
+                      setWaterWeight(e.target.value);
+                      if (e.target.value) setInputErrors(prev => ({ ...prev, water: false }));
+                    }}
+                    className={`investDestilInput1 ${inputErrors.water ? 'inputError' : ''}`}
+                  />
+                </div>
+
+                <div style={{ display: "flex", marginTop: "15px", alignItems: "center", justifyContent: "center" }}>
+                  <p className="investDestilInputTitleNew">Water Temp. :</p>
+                  <input
+                    type="number"
+                    value={waterTemp}
+                    onChange={(e) => {
+                      setWaterTemp(e.target.value);
+                      if (e.target.value) setInputErrors(prev => ({ ...prev, temp: false }));
+                    }}
+                    className={`investDestilInput1 ${inputErrors.temp ? 'inputError' : ''}`}
+                  />
+                </div>
+
+                <div style={{ display: "flex", marginTop: "15px", alignItems: "center", justifyContent: "center" }}>
+                  <p className="investDestilInputTitleNew">TDS:</p>
+                  <input
+                    type="number"
+                    className={`investDestilInput1 ${inputErrors.tds ? 'inputError' : ''}`}
+                    value={TDS}
+                    onChange={(e) => {
+                      setTDS(e.target.value);
+                      if (e.target.value) setInputErrors(prev => ({ ...prev, tds: false }));
+                    }}
+                  />
+                </div>
+
+                <div style={{ display: "flex", marginTop: "15px", alignItems: "center", justifyContent: "center" }}>
+                  <p className="investDestilInputTitleNew">pH value:</p>
+                  <input
+                    type="number"
+                    className={`investDestilInput1 ${inputErrors.ph ? 'inputError' : ''}`}
+                    value={phValue}
+                    onChange={(e) => {
+                      setPhValue(e.target.value);
+                      if (e.target.value) setInputErrors(prev => ({ ...prev, ph: false }));
+                    }}
+                  />
+                </div>
+                {errorMessage && <div className="errorMessage">All fields are required!</div>}
+                <div style={{ display: "flex", flexDirection: "column", marginTop: "15px" }}>
+                  <button onClick={saveDataHandle} className="homeNoteTitleV2">Save</button>
                 </div>
               </div>
             </div>
@@ -1410,33 +1202,35 @@ export default function InvestMentFirst() {
                       // /> 
                       <div>
                         {isActive ? (
-                          <h3 style={{margin:'0px',padding:'0px',fontWeight:'500',fontSize:'22px'}}>
+                          <h3 style={{ margin: '0px', padding: '0px', fontWeight: '500', fontSize: '22px' }}>
                             Filling + Pouring Timer : {Math.floor(timeLeft / 60000)}m{" "}
                             {Math.floor((timeLeft % 60000) / 1000)}s
                           </h3>
                         ) : (
-                          <h3 style={{margin:'0px',padding:'0px',fontWeight:'500',fontSize:'22px'}}>
-                             {`Gloss of completion time: ${new Date().toLocaleTimeString()}`}
+                          // <h3 style={{ margin: '0px', padding: '0px', fontWeight: '500', fontSize: '22px' }}>
+                          //   {`Gloss of completion time: ${flaskbinddate !== '' ? `${elapsedTime?.hours}h ${elapsedTime?.minutes}m ${elapsedTime?.seconds}s` : new Date().toLocaleTimeString()}`}
+                          // </h3>
+                          <h3 style={{ margin: '0px', padding: '0px', fontWeight: '500', fontSize: '22px' }}>
+                            Gloss of completion time:{' '}
+                            {!showTime
+                              ? (elapsedTime?.hours > 0 || elapsedTime?.minutes > 0 || elapsedTime?.seconds > 0
+                                ? `${elapsedTime.hours > 0 ? `${elapsedTime.hours}h ` : ''}${elapsedTime.minutes > 0 ? `${elapsedTime.minutes}m ` : ''}${elapsedTime.seconds > 0 ? `${elapsedTime.seconds}s` : ''}`.trim()
+                                : new Date().toLocaleTimeString())
+                              : ''}
                           </h3>
                         )}
                       </div>
                     )}
 
-
-                      
                     {!CurrentImageValue.length ? (
                       <div>
                         Gloss Off Time :{" "}
-                        {/* <span style={{ fontWeight: "bold" }}>{TotalTime("invest")}</span> */}
                         <span style={{ fontWeight: "bold" }}>{"4:00:00"}</span>
                       </div>
                     ) : (
                       ""
                     )}
                   </div>
-                  {/* <div>
-                  hello
-                </div> */}
                 </div>
               )}
 
@@ -1453,10 +1247,10 @@ export default function InvestMentFirst() {
                       key={index}
                       style={{
                         backgroundColor:
-                          (value?.procastingstatus=="Wax Setting" && "#b1d8b7") ||
-                          (value?.procastingstatus=="Regular" && "#a396c8") ||
-                          (value?.procastingstatus=="Plastic" && "orange") ||
-                          (value?.procastingstatus=="" && "#add8e6"),
+                          (value?.procastingstatus == "Wax Setting" && "#b1d8b7") ||
+                          (value?.procastingstatus == "Regular" && "#a396c8") ||
+                          (value?.procastingstatus == "Plastic" && "orange") ||
+                          (value?.procastingstatus == "" && "#add8e6"),
                         margin: "5px",
                       }}
                     >
@@ -1476,24 +1270,12 @@ export default function InvestMentFirst() {
                       </tr>
                       <tr>
                         <th
-                          className={`investTableRow ${
-                            !showTimmerBtn && "sett"
-                          }`}
+                          className={`investTableRow ${!showTimmerBtn && "sett"
+                            }`}
                         >
-                          {/* {(greenImg && "Wax Setting") ||
-                            (blueImg && "Regular") ||
-                            (orangeImg && "RPT")} */}
-                            {value?.procastingstatus == "" ? "NA" : value?.procastingstatus}
+                          {value?.procastingstatus == "" ? "NA" : value?.procastingstatus}
                         </th>
                       </tr>
-
-                      {/* {!value?.ImgUrl && (
-                      // {!CurrentImageValue && (
-                      // {!CurrentImageValue && (
-                      <tr>
-                        <th className="btncom">{value?.ImgBtn}</th>
-                      </tr>
-                    )} */}
                       {value?.ImgUrl && (
                         <tr>
                           <th className="btncom">
@@ -1510,22 +1292,17 @@ export default function InvestMentFirst() {
                           </th>
                         </tr>
                       )}
-
-                      {/* <tr>
-                    <th style={{ color: "red" }}>{value?.timer}</th>
-                  </tr> */}
                     </table>
                   ))}
                 </div>
               )}
 
-              {showTimmer  && (
+              {showTimmer && (
                 <div style={{ display: "flex", marginTop: "50px" }}>
                   {CurrentImageValue.length ? (
                     <button
                       onClick={() => {
                         setIsImgShow(true);
-                        // setEviIndex(index);
                         setFileBase64(CurrentImageValue);
                       }}
                       className="invest_upload_btn"
@@ -1542,23 +1319,18 @@ export default function InvestMentFirst() {
                   )}
                 </div>
               )}
-
-              {/* <div>hello</div> */}
             </div>
           </div>
 
-          <div className="investSideFixedImg" style={{visibility:!FlaskImg && 'hidden'}}>
+          <div className="investSideFixedImg" style={{ visibility: !FlaskImg && 'hidden' }}>
             <img
               src={
-                // (greenImg && greenImges) ||
-                // (blueImg && blueImges) ||
-                // (orangeImg && orangeImges)
-                FlaskImg
+                `${FlaskImg}${TreeVal?.statuscolor}`
               }
               alt="Img..."
               className="DrawerImg"
             />
-          </div> 
+          </div>
         </div>
       </div>
     </div>

@@ -1,25 +1,26 @@
-
-
-.addDeatilMain{
+.addDeatilMain {
     display: flex;
     margin-left: 50px;
     margin-block: 20px;
 }
-.addFLaskMain{
+
+.addFLaskMain {
     display: flex;
     margin-inline: 23px;
 }
-.addFlaskQRMAin{
+
+.addFlaskQRMAin {
     display: flex;
     flex-direction: column;
     width: 20%;
     margin: 30px;
 }
-.addFlaskDeatilMain{
+
+.addFlaskDeatilMain {
     margin-top: 20px;
 }
 
-.addflaskInput{
+.addflaskInput {
     background-color: #dde9f1;
     border: none;
     height: 40px;
@@ -27,7 +28,8 @@
     font-size: 20px;
     text-align: center;
 }
-.addflaskInputID{
+
+.addflaskInputID {
     background-color: #dde9f1;
     border: none;
     height: 40px;
@@ -37,14 +39,15 @@
     /* padding-left: 10px;
     padding-top: 5px; */
 }
-.addflaskInputID::placeholder{
+
+.addflaskInputID::placeholder {
     font-size: 20px;
 }
 
-.addSaveNewBtn{
+.addSaveNewBtn {
     height: 40px;
     width: 150px;
-    border: none;   
+    border: none;
     margin-left: 20px;
     background-color: #dbdbdb;
     border-radius: 20px;
@@ -55,18 +58,24 @@
     cursor: pointer;
 }
 
-.div-small{
-    position:relative;
-    display:flex;
-    flex-direction:column;
+.div-small {
+    position: relative;
+    display: flex;
+    flex-direction: column;
 }
 
-.div-small-text{
-    position:absolute;
-    bottom:0;
-    right:0;
-    color:#757585;
-    padding-right:4px;
-    padding-bottom:1.5px;
+.div-small-text {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    color: #757585;
+    padding-right: 4px;
+    padding-bottom: 1.5px;
     font-size: 11px;
+}
+
+.profileFIcon {
+    display: flex;
+    justify-content: start;
+    align-items: center;
 }

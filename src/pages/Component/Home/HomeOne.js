@@ -22,10 +22,12 @@ import slider3 from '../../assets/slider/investment.png'
 import slider1 from '../../assets/slider/tree.png'
 import { Carousel } from 'react-responsive-carousel'
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
-import { CommonAPI } from '../../../Utils/CommonApi'
+import { CommonAPI } from '../../../Utils/API/CommonApi'
 import { toast } from 'react-toastify'
 import { useSetRecoilState } from 'recoil'
 import { CurrentImageState } from '../../recoil/Recoil'
+import { fetchTreeGridList } from '../../../Utils/API/TreelistAPI'
+import BatchDataJson from '../../../Utils/BatchData.json'
 
 const fullScreenStyle = {
     // minHeight: '100vh',
@@ -40,20 +42,21 @@ const fullScreenStyle = {
 
 export default function HomeOne() {
 
-    const [initMfg,setInitMfg] = useState();
-    const [empInfo,setEmpInfo] = useState();
-
+    const [initMfg, setInitMfg] = useState();
+    const [empInfo, setEmpInfo] = useState();
+    const [treeList, setTreeList] = useState([]);
     const [open, setOpen] = useState(false);
     const [open1, setOpen1] = useState(false);
     const [openTree, setOpenTree] = useState(false);
     const [scannedValue, setScannedValue] = useState();
     const [scannedValue1, setScannedValue1] = useState();
+    const [suggestionValue, setsuggestionValue] = useState(false);
     const [scannedValueError, setScannedValueError] = useState(false);
     const [scannedValueError1, setScannedValueError1] = useState(false);
     const [editLocalVal, setEditLocalVal] = useState(false)
     const scanRef = useRef(null);
     const navigation = useNavigate();
-    const setInvestImage=useSetRecoilState(CurrentImageState)
+    const setInvestImage = useSetRecoilState(CurrentImageState)
 
     useEffect(() => {
         if (scanRef.current) {
@@ -61,9 +64,9 @@ export default function HomeOne() {
         }
     }, [])
 
-    useEffect(()=>{
+    useEffect(() => {
         setInvestImage('')
-    },[])
+    }, [])
 
     // useEffect(() => {
     //     document.body.style.backgroundColor = 'lightblue';
@@ -86,38 +89,38 @@ export default function HomeOne() {
         setEditLocalVal(false)
         setOpen1(true);
         localStorage.setItem('EditTreePage', false)
-
-
     };
+
     const handleClickOpenEdit = () => {
         setEditLocalVal(true)
         setOpen(true);
         localStorage.setItem('EditTreePage', true)
     };
+
     const handleClose = () => {
         setOpen(false);
         setScannedValue('');
         setScannedValueError(false);
     };
 
-    const ValidBatch = async() =>{
+    const ValidBatch = async () => {
         let deviceT = JSON.parse(localStorage.getItem("initmfg"))?.deviceToken
         let empData = JSON.parse(localStorage.getItem("getemp"))
 
-        let bodyparam = {CastBatchNo:scannedValue1,deviceToken:deviceT}
+        let bodyparam = { CastBatchNo: scannedValue1, deviceToken: deviceT }
 
         let ecodedbodyparam = btoa(JSON.stringify(bodyparam))
 
         let body = {
-            "con":`{\"id\":\"\",\"mode\":\"VALDTREEBATCH\",\"appuserid\":\"${empData?.empuserid}\"}`,
-            "p":`${ecodedbodyparam}`,  
-            "f":"formname (album)"
+            "con": `{\"id\":\"\",\"mode\":\"VALDTREEBATCH\",\"appuserid\":\"${empData?.empuserid}\"}`,
+            "p": `${ecodedbodyparam}`,
+            "f": "formname (album)"
         }
 
-        await CommonAPI(body).then((res)=>{
-            if(res?.Data?.rd[0]?.stat===1){
-                navigation('/createTreeOneV2',{state:{mode:false,CastBatch:scannedValue1?.toUpperCase()}})
-            }else{
+        await CommonAPI(body).then((res) => {
+            if (res?.Data?.rd[0]?.stat === 1) {
+                navigation('/createTreeOneV2', { state: { mode: false, CastBatch: scannedValue1?.toUpperCase() } })
+            } else {
                 toast.error(res?.Data?.rd[0]?.stat_msg)
             }
         })
@@ -125,8 +128,62 @@ export default function HomeOne() {
 
     };
 
+    useEffect(() => {
+        const getTreeQrData = async () => {
+            try {
+                const response = await fetchTreeGridList();
+                if (response?.Data?.rd[0]?.stat !== 0) {
+
+                    const ListData = response?.Data?.rd;
+
+                    const transformedData = ListData?.map(item => {
+                        const batchKey = item['Batch#'];
+                        const scanBatch = batchKey?.split(' ')[0];
+
+                        return {
+                            ScanBatch: scanBatch
+                        };
+                    });
+                    const commaSeparatedValues = transformedData?.map(item => item?.ScanBatch)?.join(', ');
+
+                    const filteredCombinations = BatchDataJson?.combinations?.filter(
+                        combo => !commaSeparatedValues?.includes(combo)
+                    );
+                    
+                    setScannedValue1(filteredCombinations[0])
+                    // let showSuggestion = [];
+                    // if (suggestionValue) {
+                    //     if (scannedValue1) {
+                    //         showSuggestion = filteredCombinations?.filter(val =>
+                    //             val.includes(scannedValue1)
+                    //         )?.slice(0, 5);
+                    //     }
+                    //     if (scannedValue1)
+                    //         setTreeList(showSuggestion);
+                    // }
+                } else {
+                    setTreeList([]);
+                }
+            } catch (error) {
+                console.error("Error:", error);
+            }
+        };
+        getTreeQrData();
+    }, [scannedValue1])
+
+    console.log('scannedValue1', scannedValue1)
+
+    const handleSuggestionClick = (suggestion) => {
+        setScannedValue1(suggestion);
+        setTreeList([]);
+        setsuggestionValue(true)
+    };
+
+
+    console.log('treelsgjhshjdhjash', treeList)
+
     const handleCloseContiue1 = (e) => {
-        if(e.key === 'Enter'){
+        if (e.key === 'Enter') {
             if (scannedValue1 === undefined || scannedValue1 === '') {
                 setScannedValueError1(true)
             } else {
@@ -138,6 +195,7 @@ export default function HomeOne() {
             }
         }
     }
+
     const handleCloseContiue11 = () => {
         if (scannedValue1 === undefined || scannedValue1 === '') {
             setScannedValueError1(true)
@@ -149,31 +207,32 @@ export default function HomeOne() {
             // navigation(editTree === false ? '/createTreeOne' : '/createTreeOne', { state: { editTree: editTree ? 'true' : 'false' } })
         }
     }
+
     const handleCloseContiueedit = (e) => {
-        if(e.key === 'Enter'){
+        if (e.key === 'Enter') {
             if (scannedValue === undefined || scannedValue === '') {
                 setScannedValueError(true)
             } else {
                 setScannedValueError(false)
                 // setScannedValue('AB')
-                navigation('/createTreeOneV2',{state:{mode:true,CastBatch:scannedValue?.toUpperCase()}})
+                navigation('/createTreeOneV2', { state: { mode: true, CastBatch: scannedValue?.toUpperCase() } })
                 // navigation(editTree === false ? '/createTreeOne' : '/createTreeOne', { state: { editTree: editTree ? 'true' : 'false' } })
             }
         }
     }
     const handleCloseContiueedit1 = (e) => {
-            if (scannedValue === undefined || scannedValue === '') {
-                setScannedValueError(true)
-            } else {
-                setScannedValueError(false)
-                // setScannedValue('AB')
-                navigation('/createTreeOneV2',{state:{mode:true,CastBatch:scannedValue?.toUpperCase()}})
-                // navigation(editTree === false ? '/createTreeOne' : '/createTreeOne', { state: { editTree: editTree ? 'true' : 'false' } })
-            }
-        
+        if (scannedValue === undefined || scannedValue === '') {
+            setScannedValueError(true)
+        } else {
+            setScannedValueError(false)
+            // setScannedValue('AB')
+            navigation('/createTreeOneV2', { state: { mode: true, CastBatch: scannedValue?.toUpperCase() } })
+            // navigation(editTree === false ? '/createTreeOne' : '/createTreeOne', { state: { editTree: editTree ? 'true' : 'false' } })
+        }
+
     }
-    
-   
+
+
 
     const printQR = (url) => {
         window.open(url)
@@ -188,87 +247,64 @@ export default function HomeOne() {
 
     // console.log("navigator",navigator)
 
-    useEffect(()=>{
+    useEffect(() => {
 
-        const GET_EMP_PROCASTINGSTAUS = async(mode) =>{
+        const GET_EMP_PROCASTINGSTAUS = async (mode) => {
 
             let deviceT = JSON.parse(localStorage.getItem("initmfg"))?.deviceToken
 
-            let bodyparam = {"deviceToken":`${deviceT}`}
-    
+            let bodyparam = { "deviceToken": `${deviceT}` }
+
             let ecodedbodyparam = btoa(JSON.stringify(bodyparam))
-    
+
             let body = {
-                "con":`{\"id\":\"\",\"mode\":\"${mode}\",\"appuserid\":\"\"}`,
-                "p":`${ecodedbodyparam}`,  
-                "f":"formname (album)"
+                "con": `{\"id\":\"\",\"mode\":\"${mode}\",\"appuserid\":\"\"}`,
+                "p": `${ecodedbodyparam}`,
+                "f": "formname (album)"
             }
 
-            await CommonAPI(body).then((res)=>{
-                if(res){
-                    if(mode === "GETEMP"){
-                        localStorage.setItem("getemp",JSON.stringify(res?.Data?.rd[0]))
+            await CommonAPI(body).then((res) => {
+                if (res) {
+                    if (mode === "GETEMP") {
+                        localStorage.setItem("getemp", JSON.stringify(res?.Data?.rd[0]))
                         setEmpInfo(res?.Data?.rd[0])
                     }
-                    if(mode === "GETPROCASTINGSTAUS"){
-                        localStorage.setItem("getprocastingstatus",JSON.stringify(res?.Data?.rd))
+                    if (mode === "GETPROCASTINGSTAUS") {
+                        localStorage.setItem("getprocastingstatus", JSON.stringify(res?.Data?.rd))
                     }
                     // if(mode === "TREELIST"){
                     //     localStorage.setItem("treelist",JSON.stringify(res?.Data?.rd))
                     // }
                 }
-            }).catch((err)=>console.log("GET_EMP_PROCASTINGSTAUS_CASTJOBLIST",err))
+            }).catch((err) => console.log("GET_EMP_PROCASTINGSTAUS_CASTJOBLIST", err))
 
         }
 
         GET_EMP_PROCASTINGSTAUS("GETEMP")
         GET_EMP_PROCASTINGSTAUS("GETPROCASTINGSTAUS")
 
-        // const INITMFGAPI = async() => {
-        //     let bodyparam = {
-        //         "deviceID": "DeviceID_SMIT1",
-        //         "deviceName":`${navigator?.userAgentData?.platform ?? ""}`,
-        //         "brand": `${navigator?.userAgentData?.brands[1]?.brand ?? ""}`,
-        //         "model": "mymodel",
-        //         "manufacturer": "mymanufacturer",
-        //         "appver": `${navigator?.userAgentData?.brands[1]?.version ?? ""}`,
-        //         "appvercode": `${navigator?.userAgentData?.brands[1]?.version ?? ""}`,
-        //         "device_type": `${navigator?.userAgentData?.platform ?? ""}`,
-        //         "onesignal_uid": "abc123_onesignal_uid"
-        //     }
-    
-        //     let ecodedbodyparam = btoa(JSON.stringify(bodyparam))
-            
-        //     let body = {
-        //         "con":"{\"id\":\"\",\"mode\":\"INITMFG\",\"appuserid\":\"\"}",
-        //         "p":`${ecodedbodyparam}`,  
-        //         "f":"formname (album)"
-        //     }
+    }, [])
 
-        //     await CommonAPI(body).then((res)=>{
-        //         if(res?.Message == "Success"){
+    // const pages = [
+    //     { id: 2, pagename: "Bind Flask" },
+    //     { id: 3, pagename: "Investment" },
+    //     { id: 4, pagename: "Burn Out" },
+    //     { id: 7, pagename: "List" }
+    // ];
 
-        //             localStorage.setItem("initmfg",JSON.stringify(res?.Data?.rd[0]))
+    // const allTitles = [
+    //     { title: "Tree", onClick: handleClickOpenTree },
+    //     { title: "Bind Flask", onClick: () => navigation('/addFlask') },
+    //     { title: "Investment", onClick: () => navigation('/investmentFirst') },
+    //     { title: "Burn Out", onClick: () => navigation('/burnOut') },
+    //     { title: "Unlock", onClick: () => navigation('/unlock') },
+    //     { title: "Show List", onClick: () => navigation('/batchListingGrid') },
+    //     { title: "DashBoard", onClick: () => navigation('/batchListing') }
+    // ];
 
-        //             setInitMfg(res?.Data?.rd[0])
-
-        //             GET_EMP_PROCASTINGSTAUS(res,"GETEMP")
-        //             GET_EMP_PROCASTINGSTAUS(res,"GETPROCASTINGSTAUS")
-        //             alert(res?.Data?.rd[0])
-        //             toast.success(res?.Data?.rd[0])
-        //             // GET_EMP_PROCASTINGSTAUS(res,"TREELIST")
-        //         }else{
-        //             toast.error(res?.Message)
-        //             // setTimeout(()=>{
-        //             //     navigation("/")
-        //             // },1000)
-        //         }
-        //     }).catch((err)=>console.log("err",err))
-        // }
-
-        // INITMFGAPI();
-    },[])
-
+    // const filteredTitles = allTitles.filter(titleObj =>
+    //     pages.some(page => page.pagename === titleObj.title)
+    // );
 
     return (
         <div>
@@ -278,7 +314,7 @@ export default function HomeOne() {
             />
             <Dialog
                 open={open1}
-                onClose={()=>setOpen1(false)}
+                onClose={() => setOpen1(false)}
                 aria-labelledby="alert-dialog-title"
                 aria-describedby="alert-dialog-description"
                 className='scanTreeDilogMain'
@@ -294,12 +330,59 @@ export default function HomeOne() {
                         <img src={scaneCodeImage} className='createImageQrCode' />
                         <input type='text' autoFocus value={scannedValue} ref={scanRef} onChange={(text) => setScannedValue(text.target.value)} onKeyDown={handleCloseContiue1} style={{ width: '2px', position: 'absolute', zIndex: '-1' }} />
                     </DialogContentText> */}
-                    <div>
-                        <input type='text'  value={scannedValue1} autoFocus onChange={(e) => setScannedValue1(e.target.value)} onKeyDown={handleCloseContiue1} className='scaneTreeInputBox1' />
+                    {/* <div>
+                        <input type='text'
+                            value={scannedValue1}
+                            autoFocus
+                            onChange={(e) => setScannedValue1(e.target.value)}
+                            onKeyDown={handleCloseContiue1}
+                            className='scaneTreeInputBox1' />
                         {scannedValueError1 && <p style={{ color: 'red', fontSize: '18px', margin: '5px' }}>FIRST SCAN TREE</p>}
+                    </div> */}
+                    <div style={{ position: 'relative' }}>
+                        <input
+                            type="text"
+                            value={scannedValue1}
+                            autoFocus
+                            onChange={(e) => setScannedValue1(e.target.value)}
+                            onKeyDown={handleCloseContiue1}
+                            className='scaneTreeInputBox1'
+                        />
+                        {scannedValueError1 && <p style={{ color: 'red', fontSize: '18px', margin: '5px' }}>FIRST SCAN TREE</p>}
+                        {/* {treeList?.length > 0 && (
+                            <ul style={{
+                                border: '1px solid #ccc',
+                                borderRadius: '4px',
+                                margin: 0,
+                                padding: '0',
+                                position: 'absolute',
+                                backgroundColor: '#fff',
+                                width: '100%',
+                                listStyleType: 'none',
+                                zIndex: 1000
+                            }}>
+                                {treeList?.map((suggestion, index) => (
+                                    <li
+                                        key={index}
+                                        onClick={() => handleSuggestionClick(suggestion)}
+                                        style={{
+                                            padding: '3px 8px',
+                                            cursor: 'pointer',
+                                            backgroundColor: '#fff',
+                                            borderBottom: '1px solid #ccc',
+                                            textTransform: 'uppercase'
+                                        }}
+                                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f0f0f0'}
+                                        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#fff'}
+                                    >
+                                        {suggestion}
+                                    </li>
+                                ))}
+                            </ul>
+                        )} */}
                     </div>
-                    <div style={{ display: 'flex', justifyContent: 'center'}}>
-                        <button onClick={handleCloseContiue11}  className='homePopupContineBtn'>CONTINUE</button>
+                    <div style={{ display: 'flex', justifyContent: 'center' }}>
+                        <button onClick={handleCloseContiue11} className='homePopupContineBtn'>CONTINUE</button>
                     </div>
                 </div>
 
@@ -328,7 +411,7 @@ export default function HomeOne() {
                         {scannedValueError && <p style={{ color: 'red', fontSize: '18px', margin: '5px' }}>FIRST SCAN TREE</p>}
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'center', marginTop: '50px', marginBottom: '25px' }}>
-                        <button onClick={handleCloseContiueedit1}  className='homePopupContineBtn'>CONTINUE</button>
+                        <button onClick={handleCloseContiueedit1} className='homePopupContineBtn'>CONTINUE</button>
                     </div>
                 </div>
 
@@ -365,6 +448,11 @@ export default function HomeOne() {
 
                 <div className='homeSideBar1'>
                     <div className='homeOneSider1TitleMain'>
+                        {/* {filteredTitles.map((item, index) => (
+                            <p key={index} className='homeOneSider1Title' onClick={item.onClick}>
+                                {item.title}
+                            </p>
+                        ))} */}
                         <p className='homeOneSider1Title' onClick={handleClickOpenTree}>Tree</p>
                         <p className='homeOneSider1Title' onClick={() => navigation('/addFlask')}>Bind Flask</p>
                         <p className='homeOneSider1Title' onClick={() => navigation('/investmentFirst')}>Investment</p>
@@ -420,48 +508,6 @@ export default function HomeOne() {
                     </div>
                 </div>
             </div>
-            {/* <p className='mainTitle'>PROCASTING</p>
-            <div>
-                <div style={{ display: 'flex', justifyContent: 'center', marginTop: '50px' }}>
-                    <img src={Logo} className='logoImg' />
-                </div>
-                <div className='bothBtnDiv'>
-                    <div className='NoteMain'>
-                        <img src={Note} className='Noteimg' onClick={handleClickOpenTree} />
-                        <p className='NoteImgTitle'>TREE</p>
-                    </div>
-
-                    <div className='NoteMain'>
-                        <img src={Note} className='Noteimg' onClick={() => navigation('/addFlask')} />
-                        <p className='NoteImgTitle'>BIND FLASK</p>
-                    </div>
-
-                    <div className='NoteMain'>
-                        <img src={Note} className='Noteimg' onClick={() => navigation('/investmentFirst')} />
-                        <p className='NoteImgTitle'>INVESTMENT</p>
-                    </div>
-
-                    <div className='NoteMain'>
-                        <img src={Note} className='Noteimg' onClick={() => navigation('/burnOut')} />
-                        <p className='NoteImgTitle'>BURN OUT</p>
-                    </div>
-
-                    <div className='NoteMain'>
-                        <img src={Note} className='Noteimg' onClick={() => navigation('/unlock')} />
-                        <p className='NoteImgTitle'>UNLOCK</p>
-                    </div>
-
-                    <div className='NoteMain'>
-                        <img src={Note} className='Noteimg' onClick={() => navigation('/batchListingGrid')} />
-                        <p className='NoteImgTitle'>SHOW LIST</p>
-                    </div>
-
-                    <div className='NoteMain'>
-                        <img src={Note} className='Noteimg' onClick={() => navigation('/batchListing')} />
-                        <p className='NoteImgTitle'>DASHBOARD</p>
-                    </div>
-                </div>
-            </div> */}
         </div>
     )
 }

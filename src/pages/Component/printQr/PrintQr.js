@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import QRCode from 'qrcode.react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { CommonAPI } from '../../../Utils/CommonApi';
+import { CommonAPI } from '../../../Utils/API/CommonApi'
 import "./printqr.css"
 
 export default function PrintQr() {

@@ -14,8 +14,11 @@ import topLogo from '../../assets/oraillogo.png'
 import { useNavigate } from "react-router-dom";
 import notiSound from "../../sound/Timeout.mpeg";
 import Sound from "react-sound";
-import { CommonAPI } from "../../../Utils/CommonApi";
+import { CommonAPI } from '../../../Utils/API/CommonApi'
 import { convertToMilliseconds } from "../../../Utils/globalFunction";
+import { CgProfile } from "react-icons/cg";
+import ProfileMenu from "../../../Utils/ProfileMenu";
+import DeleteTreeModal from "../../../Utils/DeleteTreeModal";
 
 
 
@@ -32,7 +35,7 @@ export default function UnlockAlloying() {
   const [isImageVisiblePopup, setIsImageVisiblePopup] = useState(true);
   const [shotTableBtn, setShowTableBtn] = useState(false);
   const [showTable, setShowTable] = useState(false);
-  const [castingStatus,setCastingStatus] = useState(null)
+  const [castingStatus, setCastingStatus] = useState(null)
 
   const [showTimmer, setShowTimmer] = useState(false);
 
@@ -46,101 +49,104 @@ export default function UnlockAlloying() {
   const naviagtion = useNavigate();
   const scanRef = useRef(null);
   const [playStatus, setPlayStatus] = useState(Sound.status.STOPPED);
-  const [timerCompleted,setTimerCompleted] = useState(false);
-  const [TreeFlaskBindList,setTreeFlaskBindList] = useState();
+  const [timerCompleted, setTimerCompleted] = useState(false);
+  const [TreeFlaskBindList, setTreeFlaskBindList] = useState();
 
   const [scanInp, setScanInp] = useState('');
 
-  console.log("timerCompleted",timerCompleted);
+  console.log("timerCompleted", timerCompleted);
+  const [openMenu, setOpenMenu] = useState(false);
+  const [anchorEl, setAnchorEl] = useState(null);
 
-  const getTreeFalskBindList = async() =>{
+
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+    setOpenMenu(true);
+  };
+
+  const handleMenuClose = () => {
+    setOpenMenu(false);
+    setAnchorEl(null);
+  };
+
+
+  const getTreeFalskBindList = async () => {
 
     let empData = JSON.parse(localStorage.getItem("getemp"))
-    let deviceT = JSON.parse(localStorage.getItem("initmfg"))?.deviceToken 
-  
+    let deviceT = JSON.parse(localStorage.getItem("initmfg"))?.deviceToken
+
     let bodyparam = {
       "deviceToken": `${deviceT}`
     }
-  
+
     let ecodedbodyparam = btoa(JSON.stringify(bodyparam))
-  
+
     let body = {
-      "con":`{\"id\":\"\",\"mode\":\"GETTREEFLASKBINDLIST\",\"appuserid\":\"${empData?.empuserid}\"}`,
-      "p":`${ecodedbodyparam}`,  
-      "f":"formname (album)"
+      "con": `{\"id\":\"\",\"mode\":\"GETTREEFLASKBINDLIST\",\"appuserid\":\"${empData?.empuserid}\"}`,
+      "p": `${ecodedbodyparam}`,
+      "f": "formname (album)"
     }
-  
-    await CommonAPI(body).then((res)=>{
-      if(res?.Data.rd?.length){
+
+    await CommonAPI(body).then((res) => {
+      if (res?.Data.rd?.length) {
         setTreeFlaskBindList(res?.Data.rd)
       }
-    }).catch((err)=>{
-        console.log("err",err) 
+    }).catch((err) => {
+      console.log("err", err)
     })
-  
-   }
 
-   console.log("enteredValues",enteredValues);
+  }
 
-   useEffect(()=>{
+  console.log("enteredValues", enteredValues);
+
+  useEffect(() => {
     getTreeFalskBindList();
-   },[])
+  }, [])
 
-   const GetTreeDataApi = async(castUniqueno) =>{
-
-    // let getDataOfSavedTree =  JSON.parse(localStorage.getItem("SavedTree"))
-    // let castuniqueno = getDataOfSavedTree[getDataOfSavedTree?.length -1]
-
+  const GetTreeDataApi = async (castUniqueno) => {
     let empData = JSON.parse(localStorage.getItem("getemp"))
-    let deviceT = JSON.parse(localStorage.getItem("initmfg"))?.deviceToken 
-    let treeUniqueno = JSON.parse(localStorage.getItem("SavedTree")) 
-
-    
+    let deviceT = JSON.parse(localStorage.getItem("initmfg"))?.deviceToken
+    let treeUniqueno = JSON.parse(localStorage.getItem("SavedTree"))
 
     let bodyparam = {
-     "castuniqueno": `${castUniqueno}`,
-     "empid": `${empData?.empid}`,
-     "empuserid":`${empData?.empuserid}`,
-     "empcode": `${empData?.empcode}`,
-     "deviceToken": `${deviceT}`
-   }
+      "castuniqueno": `${castUniqueno}`,
+      "empid": `${empData?.empid}`,
+      "empuserid": `${empData?.empuserid}`,
+      "empcode": `${empData?.empcode}`,
+      "deviceToken": `${deviceT}`
+    }
 
-   let ecodedbodyparam = btoa(JSON.stringify(bodyparam))
+    let ecodedbodyparam = btoa(JSON.stringify(bodyparam))
 
-   let body = {
-     "con":`{\"id\":\"\",\"mode\":\"GETTREEQR\",\"appuserid\":\"${empData?.empuserid}\"}`,
-     "p":`${ecodedbodyparam}`,  
-     "f":"formname (album)"
-   }   
+    let body = {
+      "con": `{\"id\":\"\",\"mode\":\"GETTREEQR\",\"appuserid\":\"${empData?.empuserid}\"}`,
+      "p": `${ecodedbodyparam}`,
+      "f": "formname (album)"
+    }
 
-   let treeVal={};
+    let treeVal = {};
 
-   if(castUniqueno){
-    await CommonAPI(body).then((res)=>{
-      if(res?.Data.rd[0].stat == 1){
-         //  setQrData(res?.Data.rd[0])
-         console.log(res?.Data.rd[0])
-
-         if(castingStatus === null){
-          setCastingStatus(res?.Data.rd[0]?.procastingstatus)
+    if (castUniqueno) {
+      await CommonAPI(body).then((res) => {
+        if (res?.Data.rd[0].stat == 1) {
+          console.log(res?.Data.rd[0])
+          if (castingStatus === null) {
+            setCastingStatus(res?.Data.rd[0]?.procastingstatus)
+          }
+          treeVal = res?.Data.rd[0]
         }
+        console.log("resTreeQr", res);
+      }).catch((err) => {
+        console.log("err", err)
+      })
+    } else {
+      toast.error("CastUniqueNo. not Available!")
+    }
 
-         treeVal = res?.Data.rd[0]
-        //  setTreeVal(res?.Data.rd[0])
+    return treeVal;
+  }
 
-      }
-          console.log("resTreeQr",res);
-    }).catch((err)=>{
-         console.log("err",err) 
-    })
-   }else{
-      toast.error("CastUniqueNo. not Available!!")
-   }
-
-   return treeVal;
- }
-
-  const AlloyingUnlock = async() =>{
+  const AlloyingUnlock = async () => {
 
     let empData = JSON.parse(localStorage.getItem("getemp"))
     let deviceT = JSON.parse(localStorage.getItem("initmfg"))?.deviceToken
@@ -152,22 +158,60 @@ export default function UnlockAlloying() {
       "empcode": `${empData?.empcode}`,
       "deviceToken": `${deviceT}`,
       "onesignal_uid": "abc123_onesignal_uid"
-  }
+    }
 
     let ecodedbodyparam = btoa(JSON.stringify(bodyparam))
 
     let body = {
-      "con":`{\"id\":\"\",\"mode\":\"ALLOYINGUNLOCK\",\"appuserid\":\"${empData?.empuserid}\"}`,
-      "p":`${ecodedbodyparam}`,  
-      "f":"formname (album)"
-  }
+      "con": `{\"id\":\"\",\"mode\":\"ALLOYINGUNLOCK\",\"appuserid\":\"${empData?.empuserid}\"}`,
+      "p": `${ecodedbodyparam}`,
+      "f": "formname (album)"
+    }
 
-    await CommonAPI(body).then((res)=>{
-      console.log("ALLOYINGUNLOCK",res)
+    await CommonAPI(body).then((res) => {
+      console.log("ALLOYINGUNLOCK", res)
       setShowTableBtn(true)
       toast.success("Successfully Unlocked  !!")
-    }).catch((err)=>console.log("err",err))
-}
+    }).catch((err) => console.log("err", err))
+  }
+
+
+  const ValidateAlloyingUnlock = async (castUniqueno, flaskId) => {
+    try {
+      let empData = JSON.parse(localStorage.getItem("getemp"));
+      let deviceT = JSON.parse(localStorage.getItem("initmfg"))?.deviceToken;
+
+      let bodyparam = {
+        castuniqueno: castUniqueno ?? "",
+        flaskid: flaskId ?? '',
+        empid: empData?.empid ?? "",
+        empcode: empData?.empcode ?? "",
+        deviceToken: deviceT ?? "",
+        onesignal_uid: "abc123_onesignal_uid"
+      };
+
+      let encodedBodyParam = btoa(JSON.stringify(bodyparam));
+
+      let body = {
+        con: JSON.stringify({
+          id: "",
+          mode: "VALDNALLOYING",
+          appuserid: empData?.empuserid
+        }),
+        p: encodedBodyParam,
+        f: "formname (album)"
+      };
+
+      const res = await CommonAPI(body);
+      if (res?.Data?.rd[0]?.stat !== 0) {
+        return res?.Data?.rd[0];
+      } else {
+        toast.error(res?.Data?.rd[0]?.stat_msg)
+      }
+    } catch (err) {
+      console.error("Error during validation:", err);
+    }
+  };
 
   useEffect(() => {
     if (scanRef.current) {
@@ -175,67 +219,8 @@ export default function UnlockAlloying() {
     }
   }, []);
 
-//   useEffect(() => {
-
-
-//     const scanData = async() => {
-//       if (scanInp?.length) {
-
-//           // setTimeout(() => {
-//               // if (!openYourBagDrawer && isImageVisible) {
-//               // if (isImageVisible) {
-//                   // setEnteredValues([...enteredValues, scanInp]);
-  
-//                   if(enteredValues?.length < 1){
-
-//                     // setInputError(false);
-//                     let flasklist = JSON.parse(sessionStorage.getItem("flasklist"))
-              
-//                     let FinalFlaskList = flasklist?.filter((ele)=> scanInp == ele?.flaskbarcode)
-              
-//                     let investmentVal;
-                    
-//                     if(FinalFlaskList?.length > 0){
-
-//                     let bindTreeFlask = TreeFlaskBindList?.filter((ele)=>ele?.flaskid == FinalFlaskList[0]?.flaskid)
-
-                    
-//                     let TreeData;
-                    
-//                     if(bindTreeFlask?.length > 0){
-//                       console.log("scanInp",bindTreeFlask)
-//                       TreeData = await GetTreeDataApi(bindTreeFlask[0]?.castuniqueno)
-//                       investmentVal = {...TreeData,...FinalFlaskList[0],investmentid:bindTreeFlask?.investmentid}
-//                       setEnteredValues([...enteredValues, investmentVal]);
-//                       setScanInp("");
-//                     }
-
-
-//                   }
-                  
-//                   if(enteredValues?.length === 1 ){
-//                     toast.error("First compelete the Unlock process of Flask!!!")
-//                   }
-//                   // setFlashCode(scanInp)
-//               // }
-//             }
-//           // }, 500)
-//       }
-//     } 
-
-//     scanData();
-
-// }, [scanInp])
-
-// setTimeout(() => {
-//     if (scanInp?.length > 0) {
-//         setScanInp('')
-//     }
-// }, 510);
-
 
   useEffect(() => {
-    // console.log('inout', inputValueHiddenPopup);
     setTimeout(() => {
       if (inputValueHiddenPopup.length) {
         setEnteredValuesPopup([...enteredValuesPopup, inputValueHiddenPopup]);
@@ -277,7 +262,7 @@ export default function UnlockAlloying() {
     } else {
       // setOpen(true);
       AlloyingUnlock();
-      
+
     }
 
   };
@@ -287,29 +272,15 @@ export default function UnlockAlloying() {
     setOpenPopupNumber(val)
 
   }
-  const generateFormattedString = (data) => {
-    // return `(${data.map(value => `(${value})`).join(', ')})`;
-  };
 
-  // useEffect(()=>{
-  //   let updateTable = (firtstTableData || []).map((data, index) => {
-  //     if (data && !data.timer) {
-  //       return { ...data, timer: <Countdown date={Date.now() + 30000} renderer={renderer} /> };
-  //     }
-  //     return data;
-  //   });
-  //   setFirstTableData((prev)=>[...prev,updateTable])
-  // },[])
-
-  
-
-  console.log("convertToMilliseconds",enteredValuesPopup?.length);
+  console.log("convertToMilliseconds", enteredValuesPopup?.length);
 
 
   const handleAddData = () => {
+    debugger;
     if (openPoupuNumber === 1) {
       let CompeletedFlag;
-      if(enteredValuesPopup ?.length > 0 ){
+      if (enteredValuesPopup?.length > 0) {
         let timer = <span style={{ fontSize: '25px', color: 'red' }}><Countdown date={Date.now() + convertToMilliseconds("unlock")} renderer={renderer} /></span>
         setFirstTableData((prev) => [
           ...prev,
@@ -351,13 +322,15 @@ export default function UnlockAlloying() {
   };
   console.log('fistTsbl....', firtstTableData);
 
+
+
   const handleClose = () => {
     setOpen(false);
     setEnteredValuesPopup([])
   };
 
   const handleInputChange = (event) => {
-    
+
     setInputValue(event.target.value);
     setFlashCode(event.target.value);
 
@@ -365,71 +338,83 @@ export default function UnlockAlloying() {
 
   const handelScanInp = (target) => {
     setScanInp(target)
-}
+  }
 
   const handleInputChangeHiddenPopup = (event) => {
     setInputValueHiddenPopup(event.target.value);
   };
 
-  const handleGoButtonClick = async() => {
+  const handleGoButtonClick = async () => {
     if (inputValue === "" || inputValue === undefined) {
       setInputError(true);
     } else {
-      if(enteredValues?.length < 1){
+      if (enteredValues?.length < 1) {
         setInputError(false);
-        let flasklist = JSON.parse(sessionStorage.getItem("flasklist"))
-  
-        let FinalFlaskList = flasklist?.find((ele)=> inputValue == ele?.flaskbarcode)
-  
+        let flasklist = JSON?.parse(sessionStorage.getItem("flasklist"))
+
+        let FinalFlaskList = flasklist?.find((ele) => inputValue == ele?.flaskbarcode)
+
+        if (!FinalFlaskList) {
+          return toast.error('Invalid Flask Id!')
+        }
+
         let investmentVal;
-        
-        if(Object.keys(FinalFlaskList)?.length > 0){
-            let bindTreeFlask = TreeFlaskBindList?.find((ele)=>ele?.flaskid == FinalFlaskList?.flaskid)
-  
-        let TreeData = await GetTreeDataApi(bindTreeFlask?.castuniqueno)
-  
-        investmentVal = {...TreeData,...FinalFlaskList,investmentid:bindTreeFlask?.investmentid}
-        setEnteredValues([...enteredValues, investmentVal]);
-        setInputValue("");
+
+        if (FinalFlaskList && Object?.keys(FinalFlaskList)?.length > 0) {
+          let bindTreeFlask = TreeFlaskBindList?.find((ele) => ele?.flaskid == FinalFlaskList?.flaskid)
+          let TreeData = await GetTreeDataApi(bindTreeFlask?.castuniqueno);
+          if (TreeData && Object.keys(TreeData).length > 0) {
+            let validateFlask = await ValidateAlloyingUnlock(bindTreeFlask?.castuniqueno, FinalFlaskList?.flaskid)
+            console.log('validateFlask: ', validateFlask);
+            if (validateFlask?.stat != 0) {
+              investmentVal = { ...TreeData, ...FinalFlaskList, investmentid: bindTreeFlask?.investmentid };
+              setEnteredValues([...enteredValues, investmentVal]);
+              setInputValue("");
+            }
+          }
+        }
+
+        if (enteredValues?.length === 1) {
+          toast.error("First compelete the Unlock process of Flask!!!")
+        }
+
       }
-      
-      if(enteredValues?.length === 1 ){
-        toast.error("First compelete the Unlock process of Flask!!!")
-      }
-     
     }
-   }
   }
-  const handleGoButtonClickHidden = async() => {
+
+  const handleGoButtonClickHidden = async () => {
     if (scanInp === "" || scanInp === undefined) {
       setInputError(true);
     } else {
-      if(enteredValues?.length < 1){
+      if (enteredValues?.length < 1) {
         setInputError(false);
         let flasklist = JSON.parse(sessionStorage.getItem("flasklist"))
-  
-        let FinalFlaskList = flasklist?.find((ele)=> scanInp == ele?.flaskbarcode)
-  
-        let investmentVal;
-        
-        if(Object.keys(FinalFlaskList)?.length > 0){
-            let bindTreeFlask = TreeFlaskBindList?.find((ele)=>ele?.flaskid == FinalFlaskList?.flaskid)
-  
-        let TreeData = await GetTreeDataApi(bindTreeFlask?.castuniqueno)
-  
-        if(Object.keys(TreeData)?.length > 0){
-          investmentVal = {...TreeData,...FinalFlaskList,investmentid:bindTreeFlask?.investmentid}
-          setEnteredValues([...enteredValues, investmentVal]);
+
+        let FinalFlaskList = flasklist?.find((ele) => scanInp == ele?.flaskbarcode)
+        if (!FinalFlaskList) {
+          return toast.error('Invalid Flask Id!')
         }
-        setScanInp("");
+        let investmentVal;
+
+        if (FinalFlaskList && Object?.keys(FinalFlaskList)?.length > 0) {
+          let bindTreeFlask = TreeFlaskBindList?.find((ele) => ele?.flaskid == FinalFlaskList?.flaskid)
+          let TreeData = await GetTreeDataApi(bindTreeFlask?.castuniqueno)
+          if (TreeData && Object.keys(TreeData)?.length > 0) {
+            let validateFlask = await ValidateAlloyingUnlock(bindTreeFlask?.castuniqueno, FinalFlaskList?.flaskid)
+            if (validateFlask?.stat != 0) {
+              investmentVal = { ...TreeData, ...FinalFlaskList, investmentid: bindTreeFlask?.investmentid }
+              setEnteredValues([...enteredValues, investmentVal]);
+            }
+          }
+          setScanInp("");
+        }
+
+        if (enteredValues?.length === 1) {
+          toast.error("First compelete the Unlock process of Flask!!!")
+        }
+
       }
-      
-      if(enteredValues?.length === 1 ){
-        toast.error("First compelete the Unlock process of Flask!!!")
-      }
-     
     }
-   }
   }
 
   const handleKeyDown = (event) => {
@@ -447,7 +432,7 @@ export default function UnlockAlloying() {
 
   const handleConfirmation = () => {
     setEnteredValuesPopup(enteredValuesPopup.filter((_, index) => index !== selectedIndex));
-    console.log("indexToRemove",firtstTableData);
+    console.log("indexToRemove", firtstTableData);
 
     setOpenDelete(false);
   };
@@ -470,33 +455,25 @@ export default function UnlockAlloying() {
       return <Completionist />;
     } else {
       return (
-        <span style={{ textAlign: 'center' ,display:'flex',flexDirection:'row',justifyContent:'center',alignItems:'center',gap:'8px'}}>
+        <span style={{ textAlign: 'center', display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: '8px' }}>
           <span style={{ fontWeight: 'bold' }}>{`${seconds}s`}</span>
-          <span style={{fontSize:'16px'}}>Remaining</span>
+          <span style={{ fontSize: '16px' }}>Remaining</span>
         </span>
       );
     }
   };
 
-  
+
   const [toastShown, setToastShown] = useState(false);
   const playAudio = () => {
     setPlayStatus(Sound.status.PLAYING);
-  
+
     setTimeout(() => {
       setPlayStatus(Sound.status.STOPPED);
-    }, 30000); 
+    }, 30000);
   };
-  
-  // let TimeNotify = useCallback(() => {
-  //   if (!toastShown) {
-  //     toast.error("Time is Over!!!!", { theme: "colored" });
-  //     setToastShown(true);
-  //   }
-  //   playAudio();
-  // }, [toastShown]);
 
-  let TimeNotify = () => toast.error(`Time is Over!!!!`, { theme: "colored" });
+  let TimeNotify = () => toast.error(`Time is Over!`);
 
   const Completionist = useCallback(() => {
 
@@ -527,28 +504,20 @@ export default function UnlockAlloying() {
         onScan={handleScan}
         onError={handleError}
       />
- <Sound
+      <Sound
         url={notiSound}
         playStatus={playStatus}
         onFinishedPlaying={() => setPlayStatus(Sound.status.STOPPED)}
         volume={100}
       />
 
-      <Dialog
+      <DeleteTreeModal
         open={openDelete}
         onClose={handleCloseDelete}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
-        <DialogTitle id="alert-dialog-title" style={{ margin: '20px', paddingInline: '100px' }}>
-          {"ARE YOU SURE TO DELETE ?"}
-        </DialogTitle>
-        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '20px' }}>
-          <Button onClick={handleConfirmation}>YES</Button>
-          <Button onClick={handleClickOpenDelete}>NO</Button>
-        </div>
-      </Dialog>
-
+        title="ARE YOU SURE TO DELETE ?"
+        onconfirm={handleConfirmation}
+        onclickDelete={handleClickOpenDelete}
+      />
 
       <Dialog
         open={open}
@@ -622,15 +591,21 @@ export default function UnlockAlloying() {
           </div>
         </DialogTitle>
         <div style={{ display: "flex", justifyContent: "center" }}>
-          <Button variant="contained"  onClick={handleAddData} style={{ margin: "-20px 0px 20px",backgroundColor:'black',color:'white'}}>
+          <Button variant="contained" onClick={handleAddData} style={{ margin: "-20px 0px 20px", backgroundColor: 'black', color: 'white' }}>
             ADD TO TABLE
           </Button>
         </div>
       </Dialog>
       <div className="TopBtnDivMainOneV2">
-        <p className="headerV2Title">
-          ALLOYING UNLOCK PROCESS
-        </p>
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+          <CgProfile style={{ height: '30px', width: '30px', marginLeft: '15px' }} onClick={handleClick} />
+          <p className="headerV2Title">
+            ALLOYING UNLOCK PROCESS
+          </p>
+          {openMenu &&
+            <ProfileMenu open={openMenu} anchorEl={anchorEl} handleClose={handleMenuClose} />
+          }
+        </div>
         <div style={{ display: 'flex', alignItems: 'center' }} onClick={() => naviagtion('/homeone')}>
           <img src={topLogo} style={{ width: '75px' }} />
           <p style={{ fontSize: '25px', opacity: '0.6', margin: '0px 10px', fontWeight: 500 }}><span style={{ color: '#00FFFF', opacity: '1' }}>Pro</span>Casting</p>
@@ -702,7 +677,7 @@ export default function UnlockAlloying() {
             <input
               type="text"
               className="unlovcDestilInput"
-              value={enteredValues[enteredValues?.length -1]?.flaskbarcode ?? ""}
+              value={enteredValues[enteredValues?.length - 1]?.flaskbarcode ?? ""}
             // onChange={(e) => setFlashCode(e.target.value)}
             />
           </div>
@@ -711,13 +686,13 @@ export default function UnlockAlloying() {
             <input
               type="text"
               className="unlovcDestilInput"
-              value={enteredValues[enteredValues?.length -1]?.CastBatchNo ?? ""}
+              value={enteredValues[enteredValues?.length - 1]?.CastBatchNo ?? ""}
             />
           </div>
           <div className="investDestilInputDiv">
             <p className='investDestilInputTitle'>WEIGHT:</p>
             <input type='text' disabled className='unlovcDestilInput' style={{ outline: 'none', backgroundColor: '#eceded' }}
-              value={enteredValues[enteredValues?.length -1]?.TreeWeight ?? ""}
+              value={enteredValues[enteredValues?.length - 1]?.TreeWeight ?? ""}
             />
           </div>
           <div className="investDestilInputDiv">
@@ -734,156 +709,56 @@ export default function UnlockAlloying() {
         </div>
       </div>
       <div>
-        {shotTableBtn && <Button  onClick={() => {
+        {shotTableBtn && <Button onClick={() => {
           setShowTable(true)
           setShowTableBtn(false)
         }}
-          style={{ marginInline: '2%', marginTop: '10px', width: '200px',backgroundColor:'black',color:'white'}}>
+          style={{ marginInline: '2%', marginTop: '10px', width: '200px', backgroundColor: 'black', color: 'white' }}>
 
-          <Typography sx={{textTransform:'capitalize',fontWeight:'600',fontFamily:'sans-serif',letterSpacing:0.5,backgroundColor:'black',color:'white'}}>Move To Table</Typography>
+          <Typography sx={{ textTransform: 'capitalize', fontWeight: '600', fontFamily: 'sans-serif', letterSpacing: 0.5, backgroundColor: 'black', color: 'white' }}>Move To Table</Typography>
         </Button>}
         {showTable &&
           <div style={{ display: 'flex', justifyContent: 'center', marginTop: '10px' }}>
 
-            {firtstTableData?.length === 0 ? <div className='tableDataMain' onClick={() => handleOpenPopup(1)}>
-              <div style={{ display: 'flex', justifyContent: 'space-around', borderBottom: firtstTableData?.length && '1px solid #e1e1e1', paddingBottom: firtstTableData?.length && '5px' }}>
-                <p className="unlockTableTitle">TABLE 1</p>
-                {firtstTableData?.length !== 0 && timerCompleted &&
-                  <div style={{ display: 'flex', alignItems: 'center' }}>
-                    {/* <p className="unlockTableTitleNum" >{time}</p> */}
-                    <p className="unlockTableTitleText">Minutes Remaining</p>
-                  </div>
-                }
-              </div>
+            {firtstTableData?.length === 0 ?
+              <div className='tableDataMain' onClick={() => handleOpenPopup(1)}>
+                <div style={{ display: 'flex', justifyContent: 'space-around', borderBottom: firtstTableData?.length && '1px solid #e1e1e1', paddingBottom: firtstTableData?.length && '5px' }}>
+                  <p className="unlockTableTitle">TABLE 1</p>
+                  {firtstTableData?.length !== 0 && timerCompleted &&
+                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                      {/* <p className="unlockTableTitleNum" >{time}</p> */}
+                      <p className="unlockTableTitleText">Minutes Remaining</p>
+                    </div>
+                  }
+                </div>
                 <p className="UnlockformDataTable">
-                {firtstTableData?.length !== 0 && firtstTableData.join(', ')}
-              </p>
-            </div>
+                  {firtstTableData?.length !== 0 && firtstTableData.join(', ')}
+                </p>
+              </div>
               :
               <div style={{ display: 'flex', flexDirection: 'column' }}>
-                {firtstTableData.map((data, index) =>
-                  {
-                    console.log("data",data)
-                    return (
-                  <div className='tableDataMain' onClick={() => handleOpenPopup(1)}>
-                    <div style={{ display: 'flex', justifyContent: 'space-around' }}>
-                      <p className="unlockTableTitle">TABLE 1</p>
-                      
-                     <div style={{ display: 'flex', alignItems: 'center', flexDirection: 'column', justifyContent: 'center', marginTop: '5px' }}>
-                        {data?.timer}
-                        {/* {!timerCompleted &&<p className="unlockTableTitleText">Minutes Remaining</p>} */}
+                {firtstTableData.map((data, index) => {
+                  console.log("data", data)
+                  return (
+                    <div className='tableDataMain' onClick={() => handleOpenPopup(1)}>
+                      <div style={{ display: 'flex', justifyContent: 'space-around' }}>
+                        <p className="unlockTableTitle">TABLE 1</p>
+
+                        <div style={{ display: 'flex', alignItems: 'center', flexDirection: 'column', justifyContent: 'center', marginTop: '5px' }}>
+                          {data?.timer}
+                          {/* {!timerCompleted &&<p className="unlockTableTitleText">Minutes Remaining</p>} */}
+                        </div>
                       </div>
+                      <hr style={{ color: 'gray' }} />
+                      <p className="UnlockformDataTable" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: '-5px' }}>
+                        {firtstTableData?.length !== 0 && data.flaskID?.join(', ')}
+                      </p>
                     </div>
-                    <hr style={{color:'gray'}}/>
-                    <p className="UnlockformDataTable" style={{display:'flex',justifyContent:'center',alignItems:'center',marginTop:'-5px'}}>
-                      {firtstTableData?.length !== 0 && data.flaskID?.join(', ')}
-                    </p>
-                  </div>
-                  )}
-                  )}
+                  )
+                }
+                )}
               </div>
             }
-
-            {/* {secondTableData?.length === 0 ? <div className='tableDataMain' onClick={() => handleOpenPopup(2)}>
-              <div style={{ display: 'flex', justifyContent: 'space-around' }}>
-                <p className="unlockTableTitle">TABLE 2</p>
-                {secondTableData?.length !== 0 &&
-                  <div style={{ display: 'flex', alignItems: 'center' }}>
-                    {timerCompleted && <p className="unlockTableTitleText">Minutes Remaining</p>}
-                  </div>
-                }
-              </div>
-              <p className="UnlockformDataTable">
-                {secondTableData?.length !== 0 && secondTableData.join(', ')}
-              </p>
-            </div>
-              :
-              <div style={{ display: 'flex', flexDirection: 'column' }}>
-                {secondTableData.map((data, index) =>
-                  <div className='tableDataMain' onClick={() => handleOpenPopup(2)}>
-                    <div style={{ display: 'flex', justifyContent: 'space-around' }}>
-                      <p className="unlockTableTitle">TABLE 2</p>
-                      <div  style={{ display: 'flex', alignItems: 'center', flexDirection: 'column', justifyContent: 'center', marginTop: '5px' }}>
-                        {data?.timer}
-
-                      </div>
-                    </div>
-                    <hr style={{color:'gray'}}/>
-                    <p className="UnlockformDataTable" style={{display:'flex',justifyContent:'center',alignItems:'center',marginTop:'-5px'}}>
-                      {secondTableData?.length !== 0 && data.flaskID?.join(', ')}
-                    </p>
-                  </div>)}
-              </div>
-            } */}
-
-            {/* {thirdTableData?.length === 0 ? <div className='tableDataMain' onClick={() => handleOpenPopup(3)}>
-              <div style={{ display: 'flex', justifyContent: 'space-around' }}>
-                <p className="unlockTableTitle">TABLE 3</p>
-                {thirdTableData?.length !== 0 &&
-                  <div style={{ display: 'flex', alignItems: 'center' }}>
-                    <p className="unlockTableTitleNum" >10</p>
-                    <p className="unlockTableTitleText">Minutes Remaining</p>
-                  </div>
-                }
-              </div>
-              <p className="UnlockformDataTable">
-                {thirdTableData?.length !== 0 && thirdTableData.join(', ')}
-              </p>
-            </div>
-              :
-              <div style={{ display: 'flex', flexDirection: 'column' }}>
-                {thirdTableData.map((data, index) =>
-                  <div className='tableDataMain' onClick={() => handleOpenPopup(3)}>
-                    <div style={{ display: 'flex', justifyContent: 'space-around' }}>
-                      <p className="unlockTableTitle">TABLE 3</p>
-                      <div  style={{ display: 'flex', alignItems: 'center', flexDirection: 'column', justifyContent: 'center', marginTop: '5px' }}>
-                        {data?.timer}
-
-                      </div>
-                    </div>
-                    <hr style={{color:'gray'}}/>
-                    <p className="UnlockformDataTable" style={{display:'flex',justifyContent:'center',alignItems:'center',marginTop:'-5px'}}>
-                      {thirdTableData?.length !== 0 && data.flaskID?.join(', ')}
-                    </p>
-                  </div>)}
-              </div>
-            } */}
-                        {/* <p className="unlockTableTitleText">Minutes Remaining</p> */}
-
-
-            {/* {fourthTableData?.length === 0 ? <div className='tableDataMain' onClick={() => handleOpenPopup(4)}>
-              <div style={{ display: 'flex', justifyContent: 'space-around' }}>
-                <p className="unlockTableTitle">TABLE 4</p>
-                {fourthTableData?.length !== 0 &&
-                  <div style={{ display: 'flex', alignItems: 'center' }}>
-                    <p className="unlockTableTitleNum" >10</p>
-                    <p className="unlockTableTitleText">Minutes Remaining</p>
-                  </div>
-                }
-              </div>
-              <p className="UnlockformDataTable">
-                {fourthTableData?.length !== 0 && fourthTableData.join(', ')}
-              </p>
-            </div>
-              :
-              <div style={{ display: 'flex', flexDirection: 'column' }}>
-                {fourthTableData.map((data, index) =>
-                  <div className='tableDataMain' onClick={() => handleOpenPopup(4)}>
-                    <div style={{ display: 'flex', justifyContent: 'space-around' }}>
-                      <p className="unlockTableTitle">TABLE 4</p>
-                      <div  style={{ display: 'flex', alignItems: 'center', flexDirection: 'column', justifyContent: 'center', marginTop: '5px' }}>
-                        {data?.timer}
-
-                       
-                      </div>
-                    </div>
-                    <hr style={{color:'gray'}}/>
-                    <p className="UnlockformDataTable" style={{display:'flex',justifyContent:'center',alignItems:'center',marginTop:'-5px'}}>
-                      {fourthTableData?.length !== 0 && data.flaskID?.join(', ')}
-                    </p>
-                  </div>)}
-              </div>
-            } */}
           </div>
         }
       </div>
