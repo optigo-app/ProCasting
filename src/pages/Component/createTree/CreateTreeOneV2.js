@@ -147,7 +147,7 @@ export default function CreateTreeOneV2() {
                             setFinalWeight(treeData?.TreeWeight)
                             setInputWeightValue(treeData?.TreeWeight)
                             setShowBtnFlag(true)
-                            setValidateTypeColor({ metaltype: `${treeData?.metaltype} ${treeData?.metalpurity}`, metalcolor: `${treeData?.MetalColor}`, procastingstatusid: `${treeData?.procastingstatusid}` })
+                            setValidateTypeColor({ metaltype: `${treeData?.metaltype} ${treeData?.metalpurity}`, metalcolor: `${treeData?.MetalColor}`, procastingstatusid: `${treeData?.procastingstatusid}`, Locationname: `${treeData?.Locationname}` })
                         }
                     }
                 }).catch((err) => {
@@ -591,7 +591,20 @@ export default function CreateTreeOneV2() {
             if (rightJobs?.length === 0) {
                 filterJob = jobList?.filter((ele) => (ele?.job?.includes("(") ? ele?.job?.split(" ")[0] : (ele?.job?.includes("_") ? ele?.job?.split("_")[0] : ele?.job)) == inputValueHidden)[0]
             } else {
-                filterJob = jobList?.filter((ele) => (ele?.job?.includes("(") ? ele?.job?.split(" ")[0] : (ele?.job?.includes("_") ? ele?.job?.split("_")[0] : ele?.job)) == inputValueHidden && ele?.metaltype == (validateTypeColor?.metaltype) && ele?.metalcolor == (validateTypeColor?.metalcolor) && ele?.Locationname == (validateTypeColor?.Locationname))[0]
+                filterJob = jobList?.filter((ele) => {
+                    const isJobMatch = (ele?.job?.includes("(")
+                        ? ele?.job?.split(" ")[0]
+                        : (ele?.job?.includes("_")
+                            ? ele?.job?.split("_")[0]
+                            : ele?.job)) === inputValue;
+
+                    const isMetalTypeMatch = ele?.metaltype === validateTypeColor?.metaltype;
+                    const isMetalColorMatch = ele?.metalcolor === validateTypeColor?.metalcolor;
+                    const isLocationNameMatch = ele?.Locationname === validateTypeColor?.Locationname;
+                    const isProcastingStatusMatch = [1, 2].includes(ele?.procastingstatusid);
+
+                    return isJobMatch && isMetalTypeMatch && isMetalColorMatch && isLocationNameMatch && isProcastingStatusMatch;
+                })[0];
             }
 
             if (rightJobs?.length === 0) {
