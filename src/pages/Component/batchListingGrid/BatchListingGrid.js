@@ -67,10 +67,11 @@ const BatchListingGrid = () => {
   };
 
   const handleSearch = (e) => {
-    const query = e.target.value.toLowerCase();
-    const filteredResults = batchList.filter(item =>
-      Object.values(item).some(value =>
-        value.toString().toLowerCase().includes(query)
+    debugger
+    const query = e.target?.value?.toLowerCase();
+    const filteredResults = batchList?.filter(item =>
+      Object.values(item)?.some(value =>
+        value?.toString()?.toLowerCase()?.includes(query)
       )
     );
     setBatchFilterList(filteredResults);
@@ -78,38 +79,24 @@ const BatchListingGrid = () => {
 
   useEffect(() => {
     if (batchList) {
-      let data = batchFilterList?.length != 0 ? batchFilterList : batchList;
+      let data = batchFilterList?.length !== 0 ? batchFilterList : batchList;
 
-      if (selectedMetalColor) {
+      if (selectedMetalColor || selectedMetalType || selectedStatus) {
+        const filteredData = data.filter((item) => {
+          const matchesMetalColor = selectedMetalColor ? item?.MetalColor?.toLowerCase() === selectedMetalColor?.toLowerCase() : true;
+          const matchesMetalType = selectedMetalType ? item?.MetalType?.toLowerCase() === selectedMetalType?.toLowerCase() : true;
+          const matchesStatus = selectedStatus ? item?.status?.toLowerCase() === selectedStatus?.toLowerCase() : true;
 
-        const matchMetalColor = data?.filter((item) => {
-          return item?.MetalColor?.toLowerCase() == selectedMetalColor?.toLowerCase();
-
+          return matchesMetalColor && matchesMetalType && matchesStatus;
         });
-        console.log("kksdjs", matchMetalColor)
-        console.log("batchFilterList", batchFilterList)
-        setBatchFilterList(matchMetalColor);
-      }
-
-      if (selectedMetalType) {
-        const matchMetalType = data?.filter((item) => {
-          return item?.MetalType?.toLowerCase() == selectedMetalType?.toLowerCase();
-
-        });
-        console.log("matchMetalType", matchMetalType)
-        setBatchFilterList(matchMetalType);
-      }
-
-      if (selectedStatus) {
-        const matchStatus = data?.filter((item) => {
-          return item?.status?.toLowerCase() == selectedStatus?.toLowerCase();
-
-        });
-        console.log("matchStatus", matchStatus)
-        setBatchFilterList(matchStatus);
+        setBatchFilterList(filteredData);
+      } else {
+        setBatchFilterList(batchList);
       }
     }
   }, [selectedMetalType, selectedMetalColor, selectedStatus, startDate, endDate, batchList]);
+
+  console.log('bathjjh', batchFilterList)
 
   const columns = [
     { field: "id", headerName: "Sr#", width: 80 },
@@ -124,7 +111,7 @@ const BatchListingGrid = () => {
     {
       field: "status",
       headerName: "Status",
-      width: 150, 
+      width: 150,
       renderCell: (params) => {
         const { value, row } = params;
         return value === "investment issue" ? (
@@ -134,7 +121,7 @@ const BatchListingGrid = () => {
               e.preventDefault();
               navigate(`/investmentFirst?flask=${row?.flaskbarcode}`, { state: { ...row } });
             }}
-            style={{ color: 'blue', textDecoration: 'underline', textTransform:'capitalize' }}
+            style={{ color: 'blue', textDecoration: 'underline', textTransform: 'capitalize' }}
           >
             {value}
           </a>
@@ -200,10 +187,11 @@ const BatchListingGrid = () => {
           onChange={(e) => setSelectedMetalType(e.target.value)}
           value={selectedMetalType}
         >
-          <option>All Type</option>
-          <option>Gold 14K</option>
-          <option>Gold 18K</option>
-          <option>Gold 22K</option>
+          <option value="">All Type</option>
+          <option value="GOLD 10K">GOLD 10K</option>
+          <option value="GOLD 14K">GOLD 14K</option>
+          <option value="GOLD 18K">GOLD 18K</option>
+          <option value="GOLD 22K">GOLD 22K</option>
         </select>
       </div>
 
@@ -216,10 +204,14 @@ const BatchListingGrid = () => {
           onChange={(e) => setSelectedMetalColor(e.target.value)}
           value={selectedMetalColor}
         >
-          <option>All Colors</option>
-          <option>Shine Gold</option>
-          <option>Yellow</option>
-          <option>Rose</option>
+          <option value="">All Colors</option>
+          <option value="Shine Gold">Shine Gold</option>
+          <option value="White Gold">White Gold</option>
+          <option value="Yellow">Yellow</option>
+          <option value="Y">Y</option>
+          <option value="golden">golden</option>
+          <option value="ROSE">ROSE</option>
+          <option value="RoseGold">RoseGold</option>
         </select>
       </div>
 
@@ -232,15 +224,19 @@ const BatchListingGrid = () => {
           onChange={(e) => setSelectedStatus(e.target.value)}
           value={selectedStatus}
         >
-          <option>All Status</option>
-          <option>Investment Process</option>
-          <option>Burnout Process</option>
-          <option>Alloying</option>
-          <option>Casting Completed</option>
+          <option value="">All Status</option>
+          <option value="Casting issue">Casting issue</option>
+          <option value="Casting completed">Casting completed</option>
+          <option value="Investment issue">Investment issue</option>
+          <option value="Investment return">Investment return</option>
+          <option value="Burnout issue">Burnout issue</option>
+          <option value="Burnout return">Burnout return</option>
+          <option value="Alloying">Alloying</option>
         </select>
       </div>
     </>
   ), [selectedMetalType, selectedMetalColor, selectedStatus]);
+
 
   return (
     <>

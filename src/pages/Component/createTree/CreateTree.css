@@ -6,32 +6,12 @@
     font-family: 'EB Garamond, serif';
 }
 
-.saveNewBtn {
-    border: none;
-    width: 160px;
-    cursor: pointer;
-    background-color: #7d7f85;
-    border-radius: 20px;
-    color: #fff;
-    text-align: center;
-    font-size: 16px;
-    font-weight: 600;
-    margin-top: 15px;
-    padding: 8px;
-}
-
-.saveNewBtn:hover{
-    background-color: #a9a9a9;
-    color: #000;
-}
-
 .saveEndNewBtn {
     border: none;
     width: 160px;
     cursor: pointer;
-    background-color: #7d7f85;
+    background-color: #dbdbdb;
     border-radius: 20px;
-    color: #fff;
     text-align: center;
     font-size: 16px;
     font-weight: 600;
@@ -41,7 +21,6 @@
 
 .saveEndNewBtn:hover{
     background-color: #a9a9a9;
-    color: #000;
 }
 .homeNoteTitleV2{
     border: none;
