@@ -5,3 +5,14 @@
     border-radius: 20px;
     margin: 10px;
 }
+.cardSkeltonCard{
+    width: 100%;
+    margin: 10px;
+}
+.skeltonCard{
+    box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px !important;
+    border-radius: 20px !important;
+}
+.muiskelton{
+    background-color: #f1f1f1 !important;
+}

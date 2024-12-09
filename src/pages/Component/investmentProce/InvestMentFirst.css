@@ -234,6 +234,11 @@
     margin: 3px;
 }
 
+.ShowImageImageMain {
+    width: 35%;
+    text-align: center;
+}
+
 /* .btncom:active{
 
     display: none;

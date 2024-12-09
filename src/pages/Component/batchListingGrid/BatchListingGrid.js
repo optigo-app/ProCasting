@@ -13,16 +13,16 @@ const BatchListingGrid = () => {
   const [menuFlag, setMenuFlag] = useState(false);
   const [batchList, setBatchList] = useState([]);
   const [batchFilterList, setBatchFilterList] = useState([]);
-  const [startDate, setStartDate] = useState();
-  const [endDate, setEndDate] = useState();
   const [selectedMetalType, setSelectedMetalType] = useState('');
   const [selectedMetalColor, setSelectedMetalColor] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('');
   const [loading, setLoading] = useState(false);
 
+  const today = new Date()?.toISOString()?.split("T")[0];
+  const [startDate, setStartDate] = useState(today);
+  const [endDate, setEndDate] = useState(today);
+
   const navigate = useNavigate();
-
-
 
   useEffect(() => {
     const fetchBatchData = async () => {
@@ -67,7 +67,6 @@ const BatchListingGrid = () => {
   };
 
   const handleSearch = (e) => {
-    debugger
     const query = e.target?.value?.toLowerCase();
     const filteredResults = batchList?.filter(item =>
       Object.values(item)?.some(value =>
@@ -81,22 +80,25 @@ const BatchListingGrid = () => {
     if (batchList) {
       let data = batchFilterList?.length !== 0 ? batchFilterList : batchList;
 
-      if (selectedMetalColor || selectedMetalType || selectedStatus) {
-        const filteredData = data.filter((item) => {
-          const matchesMetalColor = selectedMetalColor ? item?.MetalColor?.toLowerCase() === selectedMetalColor?.toLowerCase() : true;
-          const matchesMetalType = selectedMetalType ? item?.MetalType?.toLowerCase() === selectedMetalType?.toLowerCase() : true;
-          const matchesStatus = selectedStatus ? item?.status?.toLowerCase() === selectedStatus?.toLowerCase() : true;
+      const start = startDate ? new Date(startDate) : null;
+      const end = endDate ? new Date(endDate) : null;
 
-          return matchesMetalColor && matchesMetalType && matchesStatus;
-        });
-        setBatchFilterList(filteredData);
-      } else {
-        setBatchFilterList(batchList);
-      }
+      const filteredData = data?.filter((item) => {
+        const itemDate = new Date(item?.CastingIssDate);
+
+        const withinDateRange = (!start || itemDate >= start) && (!end || itemDate <= end);
+
+        const matchesMetalColor = selectedMetalColor ? item?.MetalColor.toLowerCase() === selectedMetalColor?.toLowerCase() : true;
+        const matchesMetalType = selectedMetalType ? item?.MetalType.toLowerCase() === selectedMetalType?.toLowerCase() : true;
+        const matchesStatus = selectedStatus ? item?.status.toLowerCase() === selectedStatus?.toLowerCase() : true;
+
+        return withinDateRange && matchesMetalColor && matchesMetalType && matchesStatus;
+      });
+
+      setBatchFilterList(filteredData);
     }
   }, [selectedMetalType, selectedMetalColor, selectedStatus, startDate, endDate, batchList]);
 
-  console.log('bathjjh', batchFilterList)
 
   const columns = [
     { field: "id", headerName: "Sr#", width: 80 },
@@ -143,7 +145,7 @@ const BatchListingGrid = () => {
       width: 100,
       renderCell: (params) => {
         const { value } = params;
-        return value && value.startsWith('data:image') ? (
+        return value && value?.startsWith('data:image') ? (
           <img src={value} alt="Image" style={{ width: '100%', height: 'auto' }} />
         ) : (
           "-"
@@ -151,7 +153,6 @@ const BatchListingGrid = () => {
       }
     },
   ];
-
 
   const GridHeadDate = useCallback(() => (
     <>
@@ -183,7 +184,7 @@ const BatchListingGrid = () => {
       </div>
       <div style={{ marginLeft: '12px' }}>
         <select
-          style={{ width: '150px', height: '30px', padding: '4px', backgroundColor: '#fff', border: '1px solid #1dksk', borderRadius: '6px' }}
+          style={{ width: '150px', height: '30px', padding: '4px', backgroundColor: '#fff', border: '1px solid #e2e2e2', borderRadius: '6px' }}
           onChange={(e) => setSelectedMetalType(e.target.value)}
           value={selectedMetalType}
         >
@@ -200,7 +201,7 @@ const BatchListingGrid = () => {
       </div>
       <div style={{ marginLeft: '12px' }}>
         <select
-          style={{ width: '150px', height: '30px', padding: '4px', backgroundColor: '#fff', border: '1px solid #1dksk', borderRadius: '6px' }}
+          style={{ width: '150px', height: '30px', padding: '4px', backgroundColor: '#fff', border: '1px solid #e2e2e2', borderRadius: '6px' }}
           onChange={(e) => setSelectedMetalColor(e.target.value)}
           value={selectedMetalColor}
         >
@@ -208,10 +209,7 @@ const BatchListingGrid = () => {
           <option value="Shine Gold">Shine Gold</option>
           <option value="White Gold">White Gold</option>
           <option value="Yellow">Yellow</option>
-          <option value="Y">Y</option>
-          <option value="golden">golden</option>
-          <option value="ROSE">ROSE</option>
-          <option value="RoseGold">RoseGold</option>
+          <option value="Rose Gold">Rose Gold</option>
         </select>
       </div>
 
@@ -220,23 +218,20 @@ const BatchListingGrid = () => {
       </div>
       <div style={{ marginLeft: '12px' }}>
         <select
-          style={{ width: '150px', height: '30px', padding: '4px', backgroundColor: '#fff', border: '1px solid #1dksk', borderRadius: '6px' }}
+          style={{ width: '150px', height: '30px', padding: '4px', backgroundColor: '#fff', border: '1px solid #e2e2e2', borderRadius: '6px' }}
           onChange={(e) => setSelectedStatus(e.target.value)}
           value={selectedStatus}
         >
           <option value="">All Status</option>
-          <option value="Casting issue">Casting issue</option>
-          <option value="Casting completed">Casting completed</option>
-          <option value="Investment issue">Investment issue</option>
-          <option value="Investment return">Investment return</option>
-          <option value="Burnout issue">Burnout issue</option>
-          <option value="Burnout return">Burnout return</option>
-          <option value="Alloying">Alloying</option>
+          <option value="Casting-Issue">Casting Issue</option>
+          <option value="Investment Issue">Investment Issue</option>
+          <option value="Investment Return">Investment Return</option>
+          <option value="Burnout Issue">Burnout Issue</option>
+          <option value="Burnout Return">Burnout Return</option>
         </select>
       </div>
     </>
-  ), [selectedMetalType, selectedMetalColor, selectedStatus]);
-
+  ), [selectedMetalColor, selectedMetalType, selectedStatus]);
 
   return (
     <>
@@ -314,13 +309,17 @@ const BatchListingGrid = () => {
         >
           <div style={{ width: "100%" }} className="DataGridTable">
             <DataGrid
-              rows={batchFilterList?.length == 0 ? batchList : batchFilterList}
+              rows={batchFilterList}
               columns={columns?.map((column) => ({
                 ...column,
                 headerClassName: "customHeaderCell",
+                disableColumnMenu: true,
               }))}
-              pageSize={5}
-              rowsPerPageOptions={[5, 10, 20]}
+              initialState={{
+                ...batchFilterList.initialState,
+                pagination: { paginationModel: { pageSize: 20 } },
+              }}
+              pageSizeOptions={[20, 30, 50, 100]}
               checkboxSelection={false}
               className="mui_DataGridCl"
             />

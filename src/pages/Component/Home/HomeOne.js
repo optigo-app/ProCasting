@@ -145,11 +145,13 @@ export default function HomeOne() {
                         };
                     });
                     const commaSeparatedValues = transformedData?.map(item => item?.ScanBatch)?.join(', ');
+                    console.log('commaSeparatedValues: ', commaSeparatedValues);
 
                     const filteredCombinations = BatchDataJson?.combinations?.filter(
-                        combo => !commaSeparatedValues?.includes(combo)
+                        combo => !commaSeparatedValues?.includes(combo?.toUpperCase())
                     );
-                    
+                    console.log('filteredCombinations: ', filteredCombinations);
+
                     setScannedValue1(filteredCombinations[0])
                     // let showSuggestion = [];
                     // if (suggestionValue) {
@@ -333,7 +335,7 @@ export default function HomeOne() {
                     {/* <div>
                         <input type='text'
                             value={scannedValue1}
-                            autoFocus
+                            autoFocus    
                             onChange={(e) => setScannedValue1(e.target.value)}
                             onKeyDown={handleCloseContiue1}
                             className='scaneTreeInputBox1' />
@@ -347,6 +349,7 @@ export default function HomeOne() {
                             onChange={(e) => setScannedValue1(e.target.value)}
                             onKeyDown={handleCloseContiue1}
                             className='scaneTreeInputBox1'
+                            disabled
                         />
                         {scannedValueError1 && <p style={{ color: 'red', fontSize: '18px', margin: '5px' }}>FIRST SCAN TREE</p>}
                         {/* {treeList?.length > 0 && (

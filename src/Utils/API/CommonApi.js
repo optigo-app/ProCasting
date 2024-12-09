@@ -6,11 +6,12 @@ const APIURL=`https://api.optigoapps.com/test/store.aspx`;
 export const CommonAPI = async (body) => {
 
     let Token = JSON.parse(sessionStorage.getItem("token"))
+    let init = JSON.parse(sessionStorage.getItem("initmfg"))
     try{
         const header = {
             // Authorization: `Bearer 9065471700535651`,
             Authorization: `Bearer ${Token}`,
-            Yearcode: "",
+            Yearcode: init?.YearCode ?? "",
             Version: "V4",
             sp: "2",
         };

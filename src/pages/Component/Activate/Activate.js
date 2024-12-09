@@ -67,7 +67,7 @@ const Activate = () => {
   
         const data = await response.json();
         console.log("initmfgRes", data);
-  
+                                                                                
         if (data) {
           sessionStorage.setItem("token",JSON.stringify(decodedString))
           localStorage.setItem("initmfg",JSON.stringify(data?.Data?.rd[0]))
@@ -155,7 +155,7 @@ const Activate = () => {
         volume={100}
       />
       <div className="main_container">
-        <img src={optigoLogo} style={{ width: "300px" }} alt="Logo.." />
+        <img src={optigoLogo} style={{ width: "150px" }} alt="Logo.." />
         <h1 style={{ fontFamily: "sans-serif",padding:0,margin:0,marginTop:"12px"}}>Pro Casting</h1>
         {scannedResults?.length > 0 && <h4 style={{ fontFamily: "sans-serif"}}>{`DeviceToken:${scannedResults}`}</h4>}
         <div className="scaneBoxMain">

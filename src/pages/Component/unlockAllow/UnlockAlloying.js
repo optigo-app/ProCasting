@@ -273,11 +273,7 @@ export default function UnlockAlloying() {
 
   }
 
-  console.log("convertToMilliseconds", enteredValuesPopup?.length);
-
-
   const handleAddData = () => {
-    debugger;
     if (openPoupuNumber === 1) {
       let CompeletedFlag;
       if (enteredValuesPopup?.length > 0) {
@@ -465,18 +461,25 @@ export default function UnlockAlloying() {
 
 
   const [toastShown, setToastShown] = useState(false);
+  const toastShownRef = useRef(false);
+  
   const playAudio = () => {
-    setPlayStatus(Sound.status.PLAYING);
+    setPlayStatus(Sound?.status?.PLAYING);
 
     setTimeout(() => {
-      setPlayStatus(Sound.status.STOPPED);
+      setPlayStatus(Sound?.status?.STOPPED);
     }, 30000);
   };
 
-  let TimeNotify = () => toast.error(`Time is Over!`);
+  const TimeNotify = useCallback(() => {
+    if (!toastShownRef.current) {
+      toast.error("Your Time is over");
+      toastShownRef.current = true; 
+    }
+    playAudio();
+  }, []);
 
   const Completionist = useCallback(() => {
-
     TimeNotify();
 
     const d = new Date();
@@ -494,9 +497,12 @@ export default function UnlockAlloying() {
         ? `0${d.getSeconds()}`
         : d.getSeconds();
 
-    return <div style={{ textTransform: 'uppercase' }}><span style={{ fontWeight: 'bold' }}>{hour}:{min}:{sec}</span></div>;
-
-  }, []);
+    return (
+      <div style={{ textTransform: 'uppercase' }}>
+        <span style={{ fontWeight: 'bold' }}>{hour}:{min}:{sec}</span>
+      </div>
+    );
+  }, [TimeNotify]);
 
   return (
     <div>
@@ -703,7 +709,7 @@ export default function UnlockAlloying() {
               className="unlovcDestilInput"
             />
           </div>
-          <button className="burnOutIssueBtn" onClick={handleClickOpen}>
+          <button className="saveBtn" onClick={handleClickOpen}>
             Unlock and Issue
           </button>
         </div>

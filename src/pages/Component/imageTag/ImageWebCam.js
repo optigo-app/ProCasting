@@ -34,7 +34,7 @@ const ImageWebCam = () => {
       const videoDevices = deviceList.filter(device => device.kind === 'videoinput');
       setDevices(videoDevices);
 
-      const backCamera = videoDevices.find(device => device.label.toLowerCase().includes('back')) || videoDevices[0];
+      const backCamera = videoDevices.find(device => device?.label?.toLowerCase()?.includes('back')) || videoDevices[0];
       if (backCamera) {
         setActiveDeviceId(backCamera.deviceId);
       }
@@ -47,8 +47,10 @@ const ImageWebCam = () => {
   const handleTakePhoto = async () => {
     if (camera.current) {
       const photo = await camera.current.takePhoto();
-      setImage(photo);
-      setImageList([photo, ...imageList]);
+      // setImage(photo);
+      // setImageList([photo, ...imageList]);
+      setImage((prevList) => [photo, ...prevList]);
+      setImageList((prevList) => [photo, ...prevList]);
       setImageFlag(false);
     }
   };

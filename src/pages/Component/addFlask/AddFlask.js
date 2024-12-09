@@ -453,7 +453,7 @@ export default function AddFlask() {
               marginTop: "30px",
             }}
           >
-            <button className="addSaveNewBtn" onClick={saveData}>
+            <button className="saveBtn" onClick={saveData}>
               Save & New
             </button>
             {/* onClick={() => navigation('/investmentFirst')} */}

@@ -30,6 +30,21 @@ import InfoDialogModal from '../Info/InfoDialogModal';
 import PrintQRCodeDialog from '../printQr/PrintQRCodeDialog';
 import RemarksModal from './RemarkModal';
 import DeleteTreeModal from '../../../Utils/DeleteTreeModal';
+import 'swiper/css';
+import 'swiper/css/pagination';
+import 'swiper/css/navigation';
+import { Swiper, SwiperSlide } from "swiper/react";
+import {
+    Pagination,
+    FreeMode,
+    Thumbs,
+    Scrollbar,
+    Keyboard,
+    Mousewheel
+} from "swiper/modules";
+import ConfirmationDialog from '../../../Utils/ConfirmationDialog';
+import ImageUploader from '../imageTag/ImageUploader';
+import { uploadPhotos } from '../../../Utils/API/UploadPhotoApi';
 
 export default function CreateTreeOneV2() {
     const [inputValue, setInputValue] = useState(undefined);
@@ -41,6 +56,7 @@ export default function CreateTreeOneV2() {
     const [todayDate, setTodayDate] = useState('');
     const navigation = useNavigate();
     const CurrentImageValue = useRecoilValue(CurrentImageState);
+    console.log('CurrentImageValue: ', CurrentImageValue);
     const setCurrentImageValue = useSetRecoilState(CurrentImageState)
     const [inputWightValue, setInputWeightValue] = useState();
     const [open, setOpen] = useState(false);
@@ -73,7 +89,29 @@ export default function CreateTreeOneV2() {
     const [openMenu, setOpenMenu] = useState(false);
     const [showPrintDialog, setShowPrDialog] = useState(false);
 
-    console.log("savedTree", savedTree)
+    const [longPressIndex, setLongPressIndex] = useState(null);
+    const [timer, setTimer] = useState(null);
+
+    const handleTouchStart = (index) => {
+        const pressTimer = setTimeout(() => {
+            setLongPressIndex(index);
+        }, 800);
+        setTimer(pressTimer);
+    };
+
+    const handleTouchEnd = () => {
+        clearTimeout(timer);
+    };
+
+    const handleDelete = () => {
+        setCurrentImageValue(CurrentImageValue.filter((_, index) => index !== longPressIndex));
+        setLongPressIndex(null);
+    };
+
+    const handleContextMenu = (event) => {
+        event.preventDefault();
+    };
+
     const [dialogOpen, setDialogOpen] = useState(false);
 
     const handleCloseDialog = () => {
@@ -81,6 +119,9 @@ export default function CreateTreeOneV2() {
         setShowPrDialog(false);
     };
 
+    const handleCloseSaveDialog = () => {
+        setSaveOpen(false);
+    };
 
     useEffect(() => {
         if (!rightJobs?.length) {
@@ -167,7 +208,7 @@ export default function CreateTreeOneV2() {
     }, [location])
 
     useEffect(() => {
-        setCurrentImageValue('')
+        setCurrentImageValue([])
     }, [location?.key])
 
     useEffect(() => {
@@ -216,11 +257,9 @@ export default function CreateTreeOneV2() {
         GETCASTJOBLIST();
     }, [])
 
-
     const AddToJobTree = async () => {
 
         if (inputWightValue) {
-            // debugger;
             let empData = JSON.parse(localStorage.getItem("getemp"))
             let deviceT = JSON.parse(localStorage.getItem("initmfg"))?.deviceToken
             console.log("validateTypeColor?.procastingstatusid", validateTypeColor)
@@ -258,14 +297,13 @@ export default function CreateTreeOneV2() {
                     localStorage.setItem("SavedTree", JSON.stringify([res?.Data.rd[0]]))
                     setAddTreeResp(res?.Data.rd[0])
                     toast.success("Tree Added Successfully!!")
+                    handlePhotoUpload();
                 } else {
                     toast.error(res?.Data.rd[0]?.stat_msg)
                 }
             }).catch((err) => console.log("AddJobToTree Err::", err))
         }
     }
-
-    console.log('rightjobs', rightJobs)
 
     const handleDeleteJobFromTree = async (jobno) => {
 
@@ -349,43 +387,57 @@ export default function CreateTreeOneV2() {
     }
 
     const handlePhotoUpload = async () => {
-
         if (CurrentImageValue) {
-
-            let empData = JSON.parse(localStorage.getItem("getemp"))
-            let deviceT = JSON.parse(localStorage.getItem("initmfg"))?.deviceToken
-            let SavedTree = JSON.parse(localStorage.getItem("SavedTree"))
-
-            let bodyparam = {
-                "castuniqueno": `${SavedTree[0]?.CastUniqueno}`,
-                "treePhoto": CurrentImageValue,
-                "empid": `${empData?.empid}`,
-                "empuserid": `${empData?.empuserid}`,
-                "empcode": `${empData?.empcode}`,
-                "deviceToken": `${deviceT}`
+            try {
+                console.log('CurrentImageValue: ', CurrentImageValue);
+                let treeBatch = location?.state?.CastBatch;
+                const response = await uploadPhotos(CurrentImageValue, treeBatch);
+                console.log("Photos uploaded successfully:", response);
+            } catch (error) {
+                console.error("Error uploading photos:", error);
             }
-
-            let ecodedbodyparam = btoa(JSON.stringify(bodyparam))
-
-            let body = {
-                "con": `{\"id\":\"\",\"mode\":\"SAVETREEPHOTO\",\"appuserid\":\"${empData?.empuserid}\"}`,
-                "p": ecodedbodyparam,
-                "f": "formname (album)"
-            }
-
-            await CommonAPI(body).then((res) => {
-                if (res?.Data.rd[0].stat == 1) {
-                    toast?.success("Image Successfully uploaded!!")
-                } else {
-                    toast?.error("something Went Wrong!! Please Try Again!!")
-                }
-            }).catch((err) => {
-                toast.error(err)
-            })
-        } else {
-            toast.warn("Image Not Uploaded!!")
         }
     }
+
+    // const handlePhotoUpload = async () => {
+    //     if (CurrentImageValue) {
+
+    //         let empData = JSON.parse(localStorage.getItem("getemp"));
+    //         let deviceT = JSON.parse(localStorage.getItem("initmfg"))?.deviceToken;
+
+    //         let SavedTree = JSON.parse(localStorage.getItem("SavedTree"));
+
+    //         let bodyparam = {
+    //             "castuniqueno": `${SavedTree[0]?.CastUniqueno ?? ''}`,
+    //             "treePhoto": CurrentImageValue[0],
+    //             "empid": `${empData?.empid}`,
+    //             "empuserid": `${empData?.empuserid}`,
+    //             "empcode": `${empData?.empcode}`,
+    //             "deviceToken": `${deviceT}`
+    //         };
+    //         // alert(`bodyparam: ${JSON.stringify(bodyparam)}`);
+
+    //         let ecodedbodyparam = btoa(JSON.stringify(bodyparam));
+
+    //         let body = {
+    //             "con": `{\"id\":\"\",\"mode\":\"SAVETREEPHOTO\",\"appuserid\":\"${empData?.empuserid}\"}`,
+    //             "p": ecodedbodyparam,
+    //             "f": "formname (album)"
+    //         };
+
+    //         await CommonAPI(body).then((res) => {
+    //             if (res?.Data.rd[0].stat == 1) {
+    //                 toast.success("Image Successfully uploaded!!");
+    //             } else {
+    //                 toast.error("Something went wrong! Please try again.");
+    //             }
+    //         }).catch((err) => {
+    //             toast.error(err);
+    //         });
+    //     } else {
+    //         toast.warn("Image Not Uploaded!");
+    //     }
+    // }
 
     const handleUpdateWeightApi = async () => {
 
@@ -429,10 +481,9 @@ export default function CreateTreeOneV2() {
         if (jobIds && jobIds.length > 0) {
             AddToJobTree();
         } else {
-
             toast.success("Your tree data is saved successfully.");
         }
-        handlePhotoUpload();
+        // handlePhotoUpload();
         setFailJobs([])
         setSaveOpen(false)
         setShowRemarkBtn(true);
@@ -445,7 +496,7 @@ export default function CreateTreeOneV2() {
     }, [])
 
 
-    console.log("failjobs", failJobs);
+    console.log("editdasd", editTree);
 
     useEffect(() => {
         setEditTreeImg(JSON.parse(localStorage.getItem('EditTreePage')))
@@ -520,31 +571,37 @@ export default function CreateTreeOneV2() {
 
 
     const handleGoButtonClick = () => {
-        debugger;
+        debugger
         if (inputValue === '' || inputValue === undefined) {
             setInputError(true)
         } else {
             setInputError(false)
 
             let filterJob;
-            let validateTypeAndColor = JSON.parse(localStorage.getItem("validate_Type_color"))
-            debugger;
             if (rightJobs?.length === 0) {
-                filterJob = jobList?.filter((ele) => (ele?.job?.includes("(") ? ele?.job?.split(" ")[0] : (ele?.job?.includes("_") ? ele?.job?.split("_")[0] : ele?.job)) == inputValue)[0]
+                filterJob = jobList?.filter((ele) => {
+                    const job = ele?.job;
+                    const jobPart = job?.includes("(")
+                        ? job
+                        : job?.includes("_")
+                            ? job?.split("_")[0]
+                            : job;
+                    return jobPart === inputValue;
+                })[0];
             } else {
                 filterJob = jobList?.filter((ele) => {
-                    const isJobMatch = (ele?.job?.includes("(")
-                        ? ele?.job?.split(" ")[0]
-                        : (ele?.job?.includes("_")
-                            ? ele?.job?.split("_")[0]
-                            : ele?.job)) === inputValue;
-
+                    const job = ele?.job;
+                    const jobPart = job?.includes("(")
+                        ? job
+                        : job?.includes("_")
+                            ? job?.split("_")[0]
+                            : job;
+                    const isJobMatch = jobPart === inputValue;
                     const isMetalTypeMatch = ele?.metaltype === validateTypeColor?.metaltype;
-                    const isMetalColorMatch = ele?.metalcolor === validateTypeColor?.metalcolor;
+                    // const isMetalColorMatch = ele?.metalcolor === validateTypeColor?.metalcolor;
                     const isLocationNameMatch = ele?.Locationname === validateTypeColor?.Locationname;
                     const isProcastingStatusMatch = [1, 2].includes(ele?.procastingstatusid);
-
-                    return isJobMatch && isMetalTypeMatch && isMetalColorMatch && isLocationNameMatch && isProcastingStatusMatch;
+                    return isJobMatch && isMetalTypeMatch && isLocationNameMatch && isProcastingStatusMatch;
                 })[0];
             }
 
@@ -565,7 +622,7 @@ export default function CreateTreeOneV2() {
                         setEnteredValues([...enteredValues, inputValue])
                         setRightJobs((prev) => [
                             ...prev,
-                            { id: filterJob?.id, jobId: filterJob?.id, job: filterJob?.job, procastingstatusid: filterJob?.procastingstatusid }
+                            { id: filterJob?.id, jobId: filterJob?.id, job: filterJob?.job, procastingstatusid: filterJob?.procastingstatusid, metalColor: filterJob?.metalcolor, metaltype: filterJob?.metaltype, Locationname: filterJob?.Locationname }
                         ]);
                         // setEditJobs((prev)=>[...prev,{id:filterJob?.id,job:filterJob?.job}])
                     }
@@ -585,25 +642,61 @@ export default function CreateTreeOneV2() {
         } else {
             setInputError(false)
 
-            let filterJob;
-            let validateTypeAndColor = JSON.parse(localStorage.getItem("validate_Type_color"))
+            // let filterJob;
+            // let validateTypeAndColor = JSON.parse(localStorage.getItem("validate_Type_color"))
 
+            // if (rightJobs?.length === 0) {
+            //     filterJob = jobList?.filter((ele) => {
+            //         const job = ele?.job;
+            //         const jobPart = job?.includes("(")
+            //             ? job
+            //             : job?.includes("_")
+            //                 ? job?.split("_")[0]
+            //                 : job;
+            //         return jobPart === inputValue;
+            //     })[0];
+            // } else {
+            //     filterJob = jobList?.filter((ele) => {
+            //         const job = ele?.job;
+            //         const jobPart = job?.includes("(")
+            //             ? job
+            //             : job?.includes("_")
+            //                 ? job?.split("_")[0]
+            //                 : job;
+            //         const isJobMatch = jobPart === inputValue;
+            //         const isMetalTypeMatch = ele?.metaltype === validateTypeColor?.metaltype;
+            //         const isMetalColorMatch = ele?.metalcolor === validateTypeColor?.metalcolor;
+            //         const isLocationNameMatch = ele?.Locationname === validateTypeColor?.Locationname;
+            //         const isProcastingStatusMatch = [1, 2].includes(ele?.procastingstatusid);
+            //         return isJobMatch && isMetalTypeMatch && isMetalColorMatch && isLocationNameMatch && isProcastingStatusMatch;
+            //     })[0];
+            // }
+
+            let filterJob;
             if (rightJobs?.length === 0) {
-                filterJob = jobList?.filter((ele) => (ele?.job?.includes("(") ? ele?.job?.split(" ")[0] : (ele?.job?.includes("_") ? ele?.job?.split("_")[0] : ele?.job)) == inputValueHidden)[0]
+                filterJob = jobList?.filter((ele) => {
+                    const job = ele?.job;
+                    const jobPart = job?.includes("(")
+                        ? job
+                        : job?.includes("_")
+                            ? job?.split("_")[0]
+                            : job;
+                    return jobPart === inputValueHidden;
+                })[0];
             } else {
                 filterJob = jobList?.filter((ele) => {
-                    const isJobMatch = (ele?.job?.includes("(")
-                        ? ele?.job?.split(" ")[0]
-                        : (ele?.job?.includes("_")
-                            ? ele?.job?.split("_")[0]
-                            : ele?.job)) === inputValue;
-
+                    const job = ele?.job;
+                    const jobPart = job?.includes("(")
+                        ? job
+                        : job?.includes("_")
+                            ? job?.split("_")[0]
+                            : job;
+                    const isJobMatch = jobPart === inputValueHidden;
                     const isMetalTypeMatch = ele?.metaltype === validateTypeColor?.metaltype;
-                    const isMetalColorMatch = ele?.metalcolor === validateTypeColor?.metalcolor;
+                    // const isMetalColorMatch = ele?.metalcolor === validateTypeColor?.metalcolor;
                     const isLocationNameMatch = ele?.Locationname === validateTypeColor?.Locationname;
                     const isProcastingStatusMatch = [1, 2].includes(ele?.procastingstatusid);
-
-                    return isJobMatch && isMetalTypeMatch && isMetalColorMatch && isLocationNameMatch && isProcastingStatusMatch;
+                    return isJobMatch && isMetalTypeMatch && isLocationNameMatch && isProcastingStatusMatch;
                 })[0];
             }
 
@@ -623,7 +716,10 @@ export default function CreateTreeOneV2() {
                         toast.error("Alredy Job Added Into Tree", { position: 'top-left' })
                     } else {
                         setEnteredValues([...enteredValues, inputValueHidden])
-                        setRightJobs((prev) => [...prev, { id: filterJob?.id, jobId: filterJob?.id, job: filterJob?.job }])
+                        setRightJobs((prev) => [
+                            ...prev,
+                            { id: filterJob?.id, jobId: filterJob?.id, job: filterJob?.job, procastingstatusid: filterJob?.procastingstatusid, metalColor: filterJob?.metalcolor, metaltype: filterJob?.metaltype, Locationname: filterJob?.Locationname }
+                        ]);
                         // setEditJobs((prev)=>[...prev,{id:filterJob?.id,job:filterJob?.job}])
                     }
                 } else {
@@ -716,6 +812,8 @@ export default function CreateTreeOneV2() {
     const handleRemarkMClose = () => setOpenRemarkModal(false);
 
 
+
+
     return (
         <>
             <Dialog
@@ -731,15 +829,31 @@ export default function CreateTreeOneV2() {
                     <Button style={{ backgroundColor: 'black', color: 'white', textTransform: 'capitalize' }} onClick={() => setSaveOpen(false)}>close</Button>
                 </DialogActions>
             </Dialog>
+
+            {/* <ConfirmationDialog
+                open={saveOpen}
+                onClose={handleCloseSaveDialog}
+                onConfirm={handleAddJobTree}
+                title="Confirm"
+                content=" Are you want to Save ?"
+            /> */}
             <Dialog
                 open={saveWtOpen}
                 onClose={() => setSaveWtOpen(false)}
-                maxWidth
+                maxWidth="sm"
+                PaperProps={{
+                    sx: {
+                        boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
+                        paddingBottom: '10px',
+                        minWidth: '300px',
+                        // padding:'10px 20px 10px 20px'
+                    },
+                }}
             >
-                <DialogTitle sx={{ textAlign: 'center' }}>
+                <DialogTitle sx={{ textAlign: 'center', background: '#ffde59', color: '#000' }}>
                     Enter Tree Weight
                 </DialogTitle>
-                <DialogActions sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'row' }}>
+                <DialogActions sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }}>
                     <input
                         type='number'
                         autoFocus
@@ -763,7 +877,19 @@ export default function CreateTreeOneV2() {
                         }}
                     />
                     <Button
-                        style={{ backgroundColor: 'black', color: 'white', textTransform: 'capitalize' }}
+                        sx={{
+                            marginLeft: '0 !important',
+                            height: '40px',
+                            margin: '10px 0px 0px 0px',
+                            width: '210px',
+                            backgroundColor: 'black',
+                            color: 'white',
+                            textTransform: 'capitalize',
+                            '&:hover': {
+                                backgroundColor: '#333',
+                            },
+                        }}
+
                         onClick={() => {
                             setSaveWtOpen(false)
                             setShowBtnFlag(true)
@@ -778,6 +904,7 @@ export default function CreateTreeOneV2() {
                         }>Save</Button>
                 </DialogActions>
             </Dialog>
+
             <Dialog
                 open={open}
                 onClose={handleClose}
@@ -923,7 +1050,7 @@ export default function CreateTreeOneV2() {
                                         type='text'
                                         disabled
                                         value={finalWeight}
-                                        style={{ marginTop: '15px', border: 'none', textAlign: 'center' }}
+                                        style={{ width: '150px', marginTop: '15px', border: 'none', textAlign: 'center' }}
                                         // onChange={handleInputWeightChange} 
                                         className='infoTextInputWight'
                                     />
@@ -934,11 +1061,11 @@ export default function CreateTreeOneV2() {
                             {finalWeight && (
                                 <>
                                     {AddTreeResp?.stat === 1 && showRemarkBtn ? (
-                                        <button className="saveEndNewBtn" onClick={handleSaveNew}>
+                                        <button className="saveBtn" onClick={handleSaveNew}>
                                             Save & New
                                         </button>
                                     ) : (
-                                        <button className="saveEndNewBtn" onClick={handleSave}>
+                                        <button className="saveBtn" onClick={handleSave}>
                                             Save
                                         </button>
                                     )}
@@ -957,7 +1084,12 @@ export default function CreateTreeOneV2() {
                             <div className='CreateDataMain'>
                                 {(jobStatus === "jobR" ? rightJobs : failJobs)?.map((value, index) => (
                                     <div className='allScandataMain' >
-                                        {value?.job?.includes("(") ? <img src={multimatel} alt={"multimatel"} style={{ width: '40px' }} /> : null}
+                                        <div style={{ width: '40px' }}>
+                                            {value?.job?.includes("(") ?
+                                                <img src={multimatel} alt={"multimatel"} style={{ width: '40px' }} />
+                                                : null}
+                                        </div>
+                                        {/* {value?.job?.includes("(") ? <img src={multimatel} alt={"multimatel"} style={{ width: '40px' }} /> : null} */}
                                         <p className='allScanData' style={{ border: jobStatus === "jobF" && '2px solid #FF0000', backgroundColor: jobStatus === "jobF" && '#ff8787' }} key={index}>{value?.job?.includes("(") ? value?.job?.split(" ")[0] : value?.job?.includes("_") ? value?.job?.split("_")[0] : value?.job}</p>
                                         <RemoveCircleRoundedIcon style={{ color: '#FF0000', cursor: 'pointer', fontSize: '30px' }} onClick={() => handleRemoveItem(index)} />
                                     </div>
@@ -970,13 +1102,118 @@ export default function CreateTreeOneV2() {
                         </div>
                     </div>
                     <div className='uplodedImageMain'>
-                        <img src={CurrentImageValue ? CurrentImageValue : editTreeImg === true ? EditTreeImg : castingTree} className={CurrentImageValue ? 'uplodedImage' : editTreeImg === true ? 'uploadDefaultImg' : 'uplodedImageProfile'} />
-                        <div style={{ marginTop: '5px', display: 'flex', justifyContent: 'space-around' }}>
-                            {(rightJobs?.length + failJobs?.length >= 1) && (
-                                <button className='uploadImageBtnV2' onClick={() => setCamFlag(true)}>
-                                    {editTreeImg ? 'Edit Tree' : 'Upload Tree'}
-                                </button>
+                        <div style={{ padding: '10px' }}>
+                            {CurrentImageValue?.length !== 0 ? (
+                                <Swiper
+                                    initialSlide={0}
+                                    slidesPerView={1}
+                                    spaceBetween={0}
+                                    navigation={false}
+                                    pagination={true}
+                                    loop={false}
+                                    modules={[Keyboard, FreeMode, Pagination, Thumbs, Scrollbar]}
+                                    keyboard={{ enabled: true }}
+                                    mousewheel={true}
+                                >
+                                    {CurrentImageValue?.map((img, index) => (
+                                        <SwiperSlide key={index}>
+                                            <div
+                                                onTouchStart={() => handleTouchStart(index)}
+                                                onTouchEnd={handleTouchEnd}
+                                                onContextMenu={handleContextMenu}
+                                                style={{
+                                                    position: 'relative',
+                                                    width: '400px',
+                                                    height: '300px',
+                                                    overflow: 'hidden',
+                                                    // boxShadow: "rgba(100, 100, 111, 0.2) 0px 7px 29px 0px",
+                                                    borderRadius: '8px',
+                                                    margin: 'auto',
+                                                }}
+                                            >
+                                                <img
+                                                    src={img?.url}
+                                                    alt={`image-${index}`}
+                                                    style={{
+                                                        width: '100%',
+                                                        height: '100%',
+                                                        objectFit: 'cover',
+                                                    }}
+                                                />
+                                                {longPressIndex === index && (
+                                                    <div
+                                                        style={{
+                                                            position: 'absolute',
+                                                            top: '10px',
+                                                            right: '10px',
+                                                            backgroundColor: 'rgba(0, 0, 0, 0.6)',
+                                                            color: 'white',
+                                                            padding: '5px',
+                                                            cursor: 'pointer',
+                                                            borderRadius: '4px',
+                                                        }}
+                                                        onClick={handleDelete}
+                                                    >
+                                                        Delete
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </SwiperSlide>
+                                    ))}
+                                </Swiper>
+                            ) : (
+                                <div
+                                    style={{
+                                        width: '400px',
+                                        height: '300px',
+                                        // border: '1px solid #ccc',
+                                        borderRadius: '8px',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        // backgroundColor: '#f0f0f0',
+                                        margin: 'auto',
+                                    }}
+                                >
+                                    <img
+                                        src={castingTree}
+                                        alt="Default Placeholder"
+                                        style={{
+                                            maxWidth: '100%',
+                                            maxHeight: '100%',
+                                            objectFit: 'contain',
+                                        }}
+                                        className="uploadedImageProfile"
+                                    />
+                                </div>
                             )}
+                        </div>
+
+                        {/* <img src={CurrentImageValue ? CurrentImageValue : editTreeImg === true ? EditTreeImg : castingTree} className={CurrentImageValue ? 'uplodedImage' : editTreeImg === true ? 'uploadDefaultImg' : 'uplodedImageProfile'} /> */}
+                        <div style={{ marginTop: '5px', display: 'flex', justifyContent: 'space-around' }}>
+                            {/* {CurrentImageValue?.length < 4 &&
+                                <>
+                                    {(rightJobs?.length + failJobs?.length >= 1) && (
+                                        <button className='uploadImageBtnV2' onClick={() => setCamFlag(true)}>
+                                            {editTreeImg ? 'Retake Photo' : 'Take Photo'}
+                                        </button>
+                                    )}
+                                </>
+                            } */}
+
+                            {(rightJobs?.length != 0) && (
+                                // <button
+                                //     disabled={CurrentImageValue && CurrentImageValue.length >= 10}
+                                //     className='uploadImageBtnV2'
+                                //     onClick={() => setCamFlag(true)}
+                                // >
+                                //     {editTreeImg ? 'Edit Tree' : 'Upload Tree'}
+                                // </button>
+
+                                <ImageUploader treeBatch={location?.state?.CastBatch} lableName={editTreeImg ? 'Edit Tree' : 'Upload Tree'} ApiCall={saveOpen} />
+
+                            )}
+
                             {showRemarkBtn &&
                                 <button className="homeNoteTitleV2" onClick={handleClickOpen}>
                                     Remark
@@ -985,35 +1222,37 @@ export default function CreateTreeOneV2() {
                         </div>
                     </div>
                 </div>
-                <Tooltip
-                    title={
-                        <div style={{ color: 'white', borderRadius: '4px' }}>
-                            {rightJobs?.map((item) => (
-                                <span
-                                    key={item?.job}
-                                    style={{
-                                        display: 'block',
-                                        border: '1px solid white',
-                                        padding: '4px',
-                                        marginBottom: '5px',
-                                        borderRadius: '2px',
-                                    }}
-                                >
-                                    {item?.job}
-                                </span>
-                            ))}
-                        </div>
-                    }
-                    arrow
-                    placement="right"
-                    sx={{
-                        backgroundColor: '#333',
-                    }}
-                >
+                {rightJobs?.length != 0 &&
+                    // <Tooltip
+                    //     title={
+                    //         <div style={{ color: 'white', borderRadius: '4px' }}>
+                    //             {rightJobs?.map((item) => (
+                    //                 <span
+                    //                     key={item?.job}
+                    //                     style={{
+                    //                         display: 'block',
+                    //                         border: '1px solid white',
+                    //                         padding: '4px',
+                    //                         marginBottom: '5px',
+                    //                         borderRadius: '2px',
+                    //                     }}
+                    //                 >
+                    //                     {item?.job}
+                    //                 </span>
+                    //             ))}
+                    //         </div>
+                    //     }
+                    //     arrow
+                    //     placement="right"
+                    //     sx={{
+                    //         backgroundColor: '#333',
+                    //     }}
+                    // >
                     <button className="showInfoBtn" onClick={handleMoreInfoShow}>
                         <IoInformationCircleSharp style={{ color: 'white', height: '25px', width: '25px', marginLeft: '-7px' }} />
                     </button>
-                </Tooltip>
+                    // </Tooltip>
+                }
                 {/* <button
                     className="printQRBtn"
                     onClick={() => { if (Object.keys(AddTreeResp)?.length > 0 || editTree?.length > 0) { navigation("/printQr", { state: { castuniqueno: editTree?.length > 0 ? editTree[0]?.CastUniqueno : AddTreeResp?.CastUniqueno } }) } else { toast.error("First Save The Tree Jobs") } }}
@@ -1023,6 +1262,7 @@ export default function CreateTreeOneV2() {
                 <button
                     className="printQRBtn"
                     onClick={handlePrintDialogShow}
+                    disabled={AddTreeResp?.stat === 1 && showRemarkBtn ? false : true}
                 >
                     <IoPrint style={{ color: 'white', height: '25px', width: '25px', marginLeft: '-7px' }} />
                 </button>
