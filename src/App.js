@@ -18,6 +18,9 @@ import CreateTreeOneV2 from './pages/Component/createTree/CreateTreeOneV2';
 import Activate from './pages/Component/Activate/Activate';
 import InfoPage from './pages/Component/Info/InfoPage';
 import InputSuggestion from "./Utils/inputSuggestion"
+import { useEffect, useState } from 'react';
+import ImageUploader from './pages/Component/imageTag/ImageUploadDemo';
+import ImageUploadInput from './pages/Component/imageTag/ImageUploadInput';
 
 function App() {
 
@@ -33,6 +36,55 @@ function App() {
     width:'fit-content !important',
     padding: '0px 6px !important'
   };
+
+
+  const [loadTime, setLoadTime] = useState(null);
+
+  useEffect(() => {
+    const observer = new PerformanceObserver((entryList) => {
+      const entries = entryList.getEntriesByType('navigation');
+      if (entries.length > 0) {
+        const entry = entries[0];
+        const calculatedLoadTime = entry.loadEventEnd - entry.startTime;
+
+        if (calculatedLoadTime > 0) {
+          setLoadTime(calculatedLoadTime);
+        }
+      }
+    });
+
+    observer.observe({ type: 'navigation', buffered: true });
+
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
+
+  console.log('loadtimeld', loadTime)
+
+  // useEffect(() => {
+  //   // Wait for the page to load and use PerformanceNavigationTiming for accurate timing
+  //   window.addEventListener('load', () => {
+  //     const entries = performance.getEntriesByType('navigation');
+  //     if (entries.length > 0) {
+  //       const entry = entries[0];
+  //       const loadTime = entry.loadEventEnd - entry.startTime;
+  //       console.log('loadTime: ', loadTime);
+  
+  //       if (loadTime >= 0) {
+  //         alert(`Page load time: ${loadTime} milliseconds`);
+  //       } else {
+  //         alert("Error: Could not calculate load time");
+  //       }
+  //     }
+  //   });
+  
+  //   // Cleanup event listener
+  //   return () => {
+  //     window.removeEventListener('load', () => {});
+  //   };
+  // }, []);
+
   return (
     <>
       <ToastContainer
@@ -60,6 +112,7 @@ function App() {
           <Route path='/printQr' element={<PrintQr />} />
           <Route path='/info' element={<InfoPage />} />
           <Route path='/input' element={<InputSuggestion />} />
+          <Route path='/im' element={<ImageUploadInput />} />
         </Routes>
       </BrowserRouter>
     </>

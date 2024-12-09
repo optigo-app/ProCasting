@@ -70,3 +70,41 @@
 .Toastify__toast-body {
   padding: 0px 6px;
 }
+
+
+.saveBtn {
+  border: none;
+  width: 160px;
+  padding: 12px 8px;
+  cursor: pointer;
+  background: black;
+  color: #fff;
+  border-radius: 6px;
+  text-align: center;
+  font-size: 16px;
+  font-weight: 600;
+  margin-top: 15px;
+  /* padding: 8px; */
+}
+
+.saveBtn:hover{
+  background-color: black;
+}
+
+
+.swiper-pagination-bullet {
+  background-color: #fff !important;
+}
+
+.swiper-pagination-bullet-active {
+  background-color: rgb(0, 255, 255) !important;
+}
+
+.swiper-pagination-bullet {
+  width: 12px !important;
+  height: 12px !important;
+}
+
+.swiper-pagination {
+  margin-top: 10px !important;
+}

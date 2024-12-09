@@ -646,7 +646,7 @@ export default function BurnOut() {
                                         }
                                     /> */}
                                 </div>
-                                <button className="burnOutIssueBtn" onClick={handleIssueJob}>
+                                <button className="saveBtn" onClick={handleIssueJob}>
                                     BurnOut Issue
                                 </button>
                             </div>

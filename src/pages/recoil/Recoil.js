@@ -2,7 +2,7 @@ import { atom } from "recoil";
 
 export const CurrentImageState = atom({
     key:'CuurentImageState',
-    default:''
+    default:[]
 })
 
 export const CurrentCamFlag = atom({
