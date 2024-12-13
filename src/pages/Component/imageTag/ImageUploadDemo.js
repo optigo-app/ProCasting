@@ -26,7 +26,6 @@ const ImageUploaderWithCameraAndMediaSelection = () => {
     return /Mobi|Android|iPhone|iPad|Tablet/i.test(navigator.userAgent);
   };
 
-alert(JSON.stringify(images))
 
   return (
     <div style={{ padding: "20px" }}>

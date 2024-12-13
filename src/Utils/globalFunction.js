@@ -62,3 +62,24 @@ export function convertToMilliseconds(mode) {
 
     return `${H}:${M}:${S} Hours`
   }
+
+
+
+  // export function formatCustomDate() {
+  //   let date = '12-03-2023'
+  //   if (!date) return "";
+  //   const options = { day: '2-digit', month: 'short', year: 'numeric' };
+  //   const formattedDate = new Date(date).toLocaleDateString('en-US', options);
+  //   console.log('formattedDate: ', formattedDate);
+  //   return formattedDate.replace(/0$/, '');
+  // }
+
+  export function formatCustomDate(inputDate) {
+    const date = new Date(inputDate);
+    const day = date.getDate().toString().padStart(2, '0');
+    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const month = monthNames[date.getMonth()];
+    const year = date.getFullYear();
+    const formattedDate = `${day} ${month} ${year}`;
+    return formattedDate;
+  }

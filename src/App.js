@@ -28,62 +28,36 @@ function App() {
     borderRadius: '30px',
     backgroundColor: '#333',
     color: '#fff',
-    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)', 
+    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
     textShadow: '1px 1px 2px rgba(0, 0, 0, 0.5)',
     minHeight: '50px',
     fontSize: '14px',
     minWidth: '0px',
-    width:'fit-content !important',
+    width: 'fit-content !important',
     padding: '0px 6px !important'
   };
 
-
-  const [loadTime, setLoadTime] = useState(null);
+  // useEffect(() => {
+  //   const initmfg = localStorage.getItem("initmfg");
+  //   if (!initmfg && window.location.pathname !== "/") {
+  //     window.location.href = "/";
+  //   } else {
+  //     console.log("initmfg", initmfg);
+  //   }
+  // }, []);
 
   useEffect(() => {
-    const observer = new PerformanceObserver((entryList) => {
-      const entries = entryList.getEntriesByType('navigation');
-      if (entries.length > 0) {
-        const entry = entries[0];
-        const calculatedLoadTime = entry.loadEventEnd - entry.startTime;
-
-        if (calculatedLoadTime > 0) {
-          setLoadTime(calculatedLoadTime);
-        }
+    let Token = JSON.parse(sessionStorage.getItem("token"));
+    const initmfg = localStorage.getItem("initmfg");
+    if (!Token && initmfg) {
+      const initmfgData = JSON.parse(initmfg);
+      if (initmfgData?.token) {
+        sessionStorage.setItem("token", JSON.stringify(initmfgData.token));
       }
-    });
-
-    observer.observe({ type: 'navigation', buffered: true });
-
-    return () => {
-      observer.disconnect();
-    };
+    } else {
+      console.log("initmfg", initmfg);
+    }
   }, []);
-
-  console.log('loadtimeld', loadTime)
-
-  // useEffect(() => {
-  //   // Wait for the page to load and use PerformanceNavigationTiming for accurate timing
-  //   window.addEventListener('load', () => {
-  //     const entries = performance.getEntriesByType('navigation');
-  //     if (entries.length > 0) {
-  //       const entry = entries[0];
-  //       const loadTime = entry.loadEventEnd - entry.startTime;
-  //       console.log('loadTime: ', loadTime);
-  
-  //       if (loadTime >= 0) {
-  //         alert(`Page load time: ${loadTime} milliseconds`);
-  //       } else {
-  //         alert("Error: Could not calculate load time");
-  //       }
-  //     }
-  //   });
-  
-  //   // Cleanup event listener
-  //   return () => {
-  //     window.removeEventListener('load', () => {});
-  //   };
-  // }, []);
 
   return (
     <>
@@ -93,7 +67,7 @@ function App() {
         position="bottom-center"
         // autoClose={false}
         closeButton={false}
-        style={{ marginBottom: '40px' }}
+        style={{ marginBottom: '80px' }}
       />
       {/* <BrowserRouter basename='/procasting'> */}
       <BrowserRouter>

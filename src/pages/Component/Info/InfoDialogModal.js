@@ -228,7 +228,17 @@ function InfoDialogModal({ open, onClose, rightJobs }) {
     ];
 
     return (
-        <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
+        <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth
+            PaperProps={{
+                sx: {
+                    boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
+                    paddingBottom: '10px',
+                    minWidth: '300px',
+                    borderRadius: '10px'
+                    // padding:'10px 20px 10px 20px'
+                },
+            }}
+        >
             <DialogTitle>
                 All Job Listings
                 <IconButton

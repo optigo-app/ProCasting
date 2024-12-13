@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import './HomeOne.css'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import Logo from '../../assets/oraillogo.png'
 import Note from '../../assets/note.jpg'
 import Button from '@mui/material/Button';
@@ -41,7 +41,8 @@ const fullScreenStyle = {
 
 
 export default function HomeOne() {
-
+    const location = useLocation();
+    const navigate = useNavigate();
     const [initMfg, setInitMfg] = useState();
     const [empInfo, setEmpInfo] = useState();
     const [treeList, setTreeList] = useState([]);
@@ -63,6 +64,18 @@ export default function HomeOne() {
             scanRef.current.focus()
         }
     }, [])
+
+    useEffect(() => {
+        const queryParams = new URLSearchParams(location.search);
+        const openModal = queryParams.get('openModal') === 'true';
+
+        if (!openModal) {
+            setOpenTree(false);
+        } else {
+            setOpenTree(true);
+        }
+    }, [location, navigate]);
+
 
     useEffect(() => {
         setInvestImage('')
@@ -243,8 +256,10 @@ export default function HomeOne() {
     const handleClickOpenTree = () => {
         setOpenTree(true);
     };
+
     const handleCloseTree = () => {
         setOpenTree(false);
+        navigate('/homeone', { replace: true });
     };
 
     // console.log("navigator",navigator)
@@ -326,7 +341,7 @@ export default function HomeOne() {
                     {"Add Tree"}
                     {/* {editLocalVal === false && <button onClick={() => printQR('/printQr')}>PRINT QR</button>} */}
                 </p>
-                <p style={{ marginInline: '20px', width: '400px', fontSize: '18px', color: 'black', marginTop: '0px', marginBottom: '0px' }}>Enter this tree then get the value it's set the auto then click the continue button end create tree</p>
+                <p style={{ marginInline: '20px', width: '400px', fontSize: '18px', color: 'black', marginTop: '0px', marginBottom: '0px' }}>Click 'Continue' to complete the tree setup.</p>
                 <div className='homePopupMainBox1'>
                     {/* <DialogContentText id="alert-dialog-description" style={{ paddingTop: '30px' }}>
                         <img src={scaneCodeImage} className='createImageQrCode' />

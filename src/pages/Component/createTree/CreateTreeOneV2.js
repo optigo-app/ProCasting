@@ -1,9 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
 import './CreateTree.css'
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Alert, Dialog, Grid, Menu, MenuItem, Snackbar, TextField, Tooltip, Typography } from '@mui/material';
+import { Alert, Dialog, Grid, IconButton, Menu, MenuItem, Snackbar, TextField, Tooltip, Typography } from '@mui/material';
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
-import { CurrentCamFlag, CurrentImageState } from '../../recoil/Recoil';
+import { CurrentCamFlag, CurrentImageApi, CurrentImageState } from '../../recoil/Recoil';
 import ImageWebCam from '../imageTag/ImageWebCam';
 import Button from '@mui/material/Button';
 import DialogActions from '@mui/material/DialogActions';
@@ -24,7 +24,8 @@ import { IoInformationCircleSharp } from "react-icons/io5";
 import { CommonAPI } from '../../../Utils/API/CommonApi'
 import { toast } from 'react-toastify';
 import JoinRightIcon from '@mui/icons-material/JoinRight';
-import multimatel from '../../assets/multimatel.png'
+import multimatelB from '../../assets/multimatelB.png';
+import multimatelC from '../../assets/multimatelC.png'
 import ProfileMenu from '../../../Utils/ProfileMenu';
 import InfoDialogModal from '../Info/InfoDialogModal';
 import PrintQRCodeDialog from '../printQr/PrintQRCodeDialog';
@@ -42,11 +43,12 @@ import {
     Keyboard,
     Mousewheel
 } from "swiper/modules";
-import ConfirmationDialog from '../../../Utils/ConfirmationDialog';
 import ImageUploader from '../imageTag/ImageUploader';
-import { uploadPhotos } from '../../../Utils/API/UploadPhotoApi';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import BackButton from '../../../Utils/BackButton';
 
 export default function CreateTreeOneV2() {
+    const navigation = useNavigate();
     const [inputValue, setInputValue] = useState(undefined);
     const [inputValueHidden, setInputValueHidden] = useState('');
     const [enteredValues, setEnteredValues] = useState([]);
@@ -54,10 +56,10 @@ export default function CreateTreeOneV2() {
     const [camFlag, setCamFlag] = useRecoilState(CurrentCamFlag)
     const [isImageVisible, setIsImageVisible] = useState(true);
     const [todayDate, setTodayDate] = useState('');
-    const navigation = useNavigate();
     const CurrentImageValue = useRecoilValue(CurrentImageState);
-    console.log('CurrentImageValue: ', CurrentImageValue);
+    const imageApiUrl = useRecoilValue(CurrentImageApi);
     const setCurrentImageValue = useSetRecoilState(CurrentImageState)
+    const [editImage, setEditImage] = useState();
     const [inputWightValue, setInputWeightValue] = useState();
     const [open, setOpen] = useState(false);
     const [openDelete, setOpenDelete] = useState(false);
@@ -88,6 +90,7 @@ export default function CreateTreeOneV2() {
     const [showRemarkBtn, setShowRemarkBtn] = useState(false);
     const [openMenu, setOpenMenu] = useState(false);
     const [showPrintDialog, setShowPrDialog] = useState(false);
+    const [disableQrBtn, setDisableQrBtn] = useState(false);
 
     const [longPressIndex, setLongPressIndex] = useState(null);
     const [timer, setTimer] = useState(null);
@@ -150,8 +153,8 @@ export default function CreateTreeOneV2() {
             const getExistedTree = async () => {
 
                 let castuniqueno = location?.state?.CastBatch
-                let empData = JSON.parse(localStorage.getItem("getemp"))
-                let deviceT = JSON.parse(localStorage.getItem("initmfg"))?.deviceToken
+                let empData = JSON?.parse(localStorage.getItem("getemp"))
+                let deviceT = JSON?.parse(localStorage.getItem("initmfg"))?.deviceToken
 
                 let bodyparam = {
                     "castuniqueno": `${castuniqueno}`,
@@ -161,7 +164,7 @@ export default function CreateTreeOneV2() {
                     "deviceToken": `${deviceT}`
                 }
 
-                let ecodedbodyparam = btoa(JSON.stringify(bodyparam))
+                let ecodedbodyparam = btoa(JSON?.stringify(bodyparam))
 
                 let body = {
                     "con": `{\"id\":\"\",\"mode\":\"GETTREEQR\",\"appuserid\":\"${empData?.empuserid}\"}`,
@@ -172,15 +175,23 @@ export default function CreateTreeOneV2() {
                 await CommonAPI(body).then((res) => {
                     if (res?.Data.rd[0].stat == 1) {
                         let treeData = res?.Data.rd[0]
+                        let imageData = res?.Data.rd1[0]
+                        let procastingstatus = res?.Data.rd2[0]
                         setEditTree([treeData])
+                        setDisableQrBtn(res?.Data.rd[0]?.CastUniqueno)
                         let TreeJobList;
                         if (treeData?.joblist?.length > 0) {
-                            TreeJobList = treeData.joblist.split(",").map((ele, i) => ({
-                                id: i + 1,
-                                job: ele,
-                                procastingstatusid: treeData.procastingstatusid
-                            }));
-                            console.log('TreeJobList: ', TreeJobList);
+                            TreeJobList = treeData.joblist.split(",").map((ele, i) => {
+                                const matchedJob = res?.Data?.rd2?.find(item => item?.serialjobno === ele);
+                              
+                                return {
+                                  id: i + 1,
+                                  job: ele,
+                                  procastingstatusid: matchedJob ? matchedJob?.job_procastingstatusid : treeData?.procastingstatusid
+                                };
+                              });
+
+                            localStorage.setItem("SavedTree", JSON.stringify(treeData))
                             setEnteredValues((prev) => [...prev, ...TreeJobList])
                             setRightJobs((prev) => [...prev, ...TreeJobList])
                             // setEditJobs(TreeJobList)
@@ -189,6 +200,12 @@ export default function CreateTreeOneV2() {
                             setInputWeightValue(treeData?.TreeWeight)
                             setShowBtnFlag(true)
                             setValidateTypeColor({ metaltype: `${treeData?.metaltype} ${treeData?.metalpurity}`, metalcolor: `${treeData?.MetalColor}`, procastingstatusid: `${treeData?.procastingstatusid}`, Locationname: `${treeData?.Locationname}` })
+                            const photoArray = imageData?.treePhoto?.split(',')?.map(url => ({ url }));
+                            console.log('imageData: ', imageData);
+                            console.log('photoArray: ', photoArray);
+                            // setTreePhotos(photoArray);
+                            setCurrentImageValue(photoArray)
+                            setEditImage(photoArray)
                         }
                     }
                 }).catch((err) => {
@@ -212,7 +229,7 @@ export default function CreateTreeOneV2() {
     }, [location?.key])
 
     useEffect(() => {
-        let SavedLocalTree = JSON.parse(localStorage.getItem("SavedTree"))
+        let SavedLocalTree = JSON?.parse(localStorage.getItem("SavedTree"))
 
         let SavedCastUniqueTree = {};
 
@@ -229,11 +246,11 @@ export default function CreateTreeOneV2() {
 
         const GETCASTJOBLIST = async () => {
 
-            let deviceT = JSON.parse(localStorage.getItem("initmfg"))?.deviceToken
+            let deviceT = JSON?.parse(localStorage.getItem("initmfg"))?.deviceToken
 
             let bodyparam = { "deviceToken": `${deviceT}` }
 
-            let ecodedbodyparam = btoa(JSON.stringify(bodyparam))
+            let ecodedbodyparam = btoa(JSON?.stringify(bodyparam))
 
             let body = {
                 "con": `{\"id\":\"\",\"mode\":\"GETCASTJOBLIST\",\"appuserid\":\"\"}`,
@@ -258,10 +275,10 @@ export default function CreateTreeOneV2() {
     }, [])
 
     const AddToJobTree = async () => {
-
+        debugger
         if (inputWightValue) {
-            let empData = JSON.parse(localStorage.getItem("getemp"))
-            let deviceT = JSON.parse(localStorage.getItem("initmfg"))?.deviceToken
+            let empData = JSON?.parse(localStorage.getItem("getemp"))
+            let deviceT = JSON?.parse(localStorage.getItem("initmfg"))?.deviceToken
             console.log("validateTypeColor?.procastingstatusid", validateTypeColor)
 
             let bodyparam = {
@@ -280,8 +297,19 @@ export default function CreateTreeOneV2() {
                 "CastBatchNo": `${editTree?.length > 0 ? editTree[0]?.CastBatchNo : Object?.keys(AddTreeResp)?.length > 0 ? AddTreeResp?.CastBatchNo : location?.state?.CastBatch}`,
                 "batchDate": `${todayDate?.split("-")[1]}/${todayDate?.split("-")[2]}/${todayDate?.split("-")[0]}`,
                 "deviceToken": `${deviceT}`,
-                "procastingstatusid": `${validateTypeColor?.procastingstatusid ?? ''}`
+                "procastingstatusid": `${validateTypeColor?.procastingstatusid ?? ''}`,
+                'jobwithstatus': `${rightJobs
+                    ?.map(item =>
+                        item?.jobId && item?.procastingstatusid
+                            ? `${item?.jobId}#${item?.procastingstatusid}`
+                            : null
+                    )
+                    ?.filter(entry => entry !== null && entry !== '')
+                    ?.join(",")}`,
             }
+
+
+            console.log('bodyparam', JSON.stringify(bodyparam));
 
             let ecodedbodyparam = btoa(JSON.stringify(bodyparam))
 
@@ -296,6 +324,7 @@ export default function CreateTreeOneV2() {
                     console.log("res", res?.Data.rd[0])
                     localStorage.setItem("SavedTree", JSON.stringify([res?.Data.rd[0]]))
                     setAddTreeResp(res?.Data.rd[0])
+                    setDisableQrBtn(res?.Data.rd[0]?.CastUniqueno)
                     toast.success("Tree Added Successfully!!")
                     handlePhotoUpload();
                 } else {
@@ -353,9 +382,9 @@ export default function CreateTreeOneV2() {
             setOpen(false);
             setShowEnteredValue(true);
 
-            let empData = JSON.parse(localStorage.getItem("getemp"))
-            let SavedTree = JSON.parse(localStorage.getItem("SavedTree"))
-            let deviceT = JSON.parse(localStorage.getItem("initmfg"))?.deviceToken
+            let empData = JSON?.parse(localStorage.getItem("getemp"))
+            let SavedTree = JSON?.parse(localStorage.getItem("SavedTree"))
+            let deviceT = JSON?.parse(localStorage.getItem("initmfg"))?.deviceToken
 
             let bodyparam = {
                 "castuniqueno": `${AddTreeResp?.CastUniqueno}`,
@@ -363,7 +392,7 @@ export default function CreateTreeOneV2() {
                 "deviceToken": `${deviceT}`
             }
 
-            let ecodedbodyparam = btoa(JSON.stringify(bodyparam))
+            let ecodedbodyparam = btoa(JSON?.stringify(bodyparam))
 
             let body = {
                 "con": `{\"id\":\"\",\"mode\":\"SAVETREEREMARK\",\"appuserid\":\"${empData?.empuserid}\"}`,
@@ -387,57 +416,54 @@ export default function CreateTreeOneV2() {
     }
 
     const handlePhotoUpload = async () => {
-        if (CurrentImageValue) {
-            try {
-                console.log('CurrentImageValue: ', CurrentImageValue);
-                let treeBatch = location?.state?.CastBatch;
-                const response = await uploadPhotos(CurrentImageValue, treeBatch);
-                console.log("Photos uploaded successfully:", response);
-            } catch (error) {
-                console.error("Error uploading photos:", error);
+        if (imageApiUrl) {
+            let empData = JSON?.parse(localStorage.getItem("getemp"));
+            let deviceT = JSON?.parse(localStorage.getItem("initmfg"))?.deviceToken;
+
+            let SavedTree = JSON?.parse(localStorage.getItem("SavedTree"));
+
+            let updatedImageApiUrl = [];
+
+            if (editImage) {
+                updatedImageApiUrl = [
+                    ...imageApiUrl,
+                    ...editImage.filter(image => image.url).map(image => image.url),
+                ];
+            } else {
+                updatedImageApiUrl = [...imageApiUrl];
             }
+
+            let bodyparam = {
+                "castuniqueno": SavedTree?.[0]?.CastUniqueno || SavedTree?.CastUniqueno || '',
+                "treePhoto": updatedImageApiUrl?.join(','),
+                "empid": `${empData?.empid}`,
+                "empuserid": `${empData?.empuserid}`,
+                "empcode": `${empData?.empcode}`,
+                "deviceToken": `${deviceT}`
+            }
+
+            // alert(JSON.stringify(bodyparam));
+            let ecodedbodyparam = btoa(JSON.stringify(bodyparam));
+
+            let body = {
+                "con": `{\"id\":\"\",\"mode\":\"SAVETREEPHOTO\",\"appuserid\":\"${empData?.empuserid}\"}`,
+                "p": ecodedbodyparam,
+                "f": "formname (album)"
+            };
+
+            await CommonAPI(body).then((res) => {
+                if (res?.Data.rd[0].stat == 1) {
+                    toast.success("Image Successfully uploaded!!");
+                } else {
+                    toast.error("Something went wrong! Please try again.");
+                }
+            }).catch((err) => {
+                toast.error(err);
+            });
+        } else {
+            toast.warn("Image Not Uploaded!");
         }
     }
-
-    // const handlePhotoUpload = async () => {
-    //     if (CurrentImageValue) {
-
-    //         let empData = JSON.parse(localStorage.getItem("getemp"));
-    //         let deviceT = JSON.parse(localStorage.getItem("initmfg"))?.deviceToken;
-
-    //         let SavedTree = JSON.parse(localStorage.getItem("SavedTree"));
-
-    //         let bodyparam = {
-    //             "castuniqueno": `${SavedTree[0]?.CastUniqueno ?? ''}`,
-    //             "treePhoto": CurrentImageValue[0],
-    //             "empid": `${empData?.empid}`,
-    //             "empuserid": `${empData?.empuserid}`,
-    //             "empcode": `${empData?.empcode}`,
-    //             "deviceToken": `${deviceT}`
-    //         };
-    //         // alert(`bodyparam: ${JSON.stringify(bodyparam)}`);
-
-    //         let ecodedbodyparam = btoa(JSON.stringify(bodyparam));
-
-    //         let body = {
-    //             "con": `{\"id\":\"\",\"mode\":\"SAVETREEPHOTO\",\"appuserid\":\"${empData?.empuserid}\"}`,
-    //             "p": ecodedbodyparam,
-    //             "f": "formname (album)"
-    //         };
-
-    //         await CommonAPI(body).then((res) => {
-    //             if (res?.Data.rd[0].stat == 1) {
-    //                 toast.success("Image Successfully uploaded!!");
-    //             } else {
-    //                 toast.error("Something went wrong! Please try again.");
-    //             }
-    //         }).catch((err) => {
-    //             toast.error(err);
-    //         });
-    //     } else {
-    //         toast.warn("Image Not Uploaded!");
-    //     }
-    // }
 
     const handleUpdateWeightApi = async () => {
 
@@ -482,8 +508,8 @@ export default function CreateTreeOneV2() {
             AddToJobTree();
         } else {
             toast.success("Your tree data is saved successfully.");
+            handlePhotoUpload();
         }
-        // handlePhotoUpload();
         setFailJobs([])
         setSaveOpen(false)
         setShowRemarkBtn(true);
@@ -499,7 +525,7 @@ export default function CreateTreeOneV2() {
     console.log("editdasd", editTree);
 
     useEffect(() => {
-        setEditTreeImg(JSON.parse(localStorage.getItem('EditTreePage')))
+        setEditTreeImg(JSON?.parse(localStorage.getItem('EditTreePage')))
     }, [])
 
     const handleScan = (data) => { };
@@ -782,8 +808,9 @@ export default function CreateTreeOneV2() {
 
     const handleSaveNew = () => {
         sessionStorage.removeItem('remark');
-        window.location.href = '/homeone';
-    }
+        navigation('/homeone?openModal=true');
+    };
+
 
     const handleSave = () => {
         setSaveOpen(true)
@@ -846,6 +873,7 @@ export default function CreateTreeOneV2() {
                         boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
                         paddingBottom: '10px',
                         minWidth: '300px',
+                        borderRadius: '10px'
                         // padding:'10px 20px 10px 20px'
                     },
                 }}
@@ -940,6 +968,7 @@ export default function CreateTreeOneV2() {
             <div>
                 <div className="TopBtnDivMainOneV2">
                     <div style={{ display: 'flex', alignItems: 'center' }}>
+                        <BackButton />
                         <CgProfile style={{ height: '30px', width: '30px', marginLeft: '15px' }} onClick={handleClick} />
 
 
@@ -1060,7 +1089,8 @@ export default function CreateTreeOneV2() {
                             </>}
                             {finalWeight && (
                                 <>
-                                    {AddTreeResp?.stat === 1 && showRemarkBtn ? (
+                                {console.log('finalWeight',AddTreeResp)}
+                                    {showRemarkBtn ? (
                                         <button className="saveBtn" onClick={handleSaveNew}>
                                             Save & New
                                         </button>
@@ -1084,10 +1114,13 @@ export default function CreateTreeOneV2() {
                             <div className='CreateDataMain'>
                                 {(jobStatus === "jobR" ? rightJobs : failJobs)?.map((value, index) => (
                                     <div className='allScandataMain' >
-                                        <div style={{ width: '40px' }}>
-                                            {value?.job?.includes("(") ?
-                                                <img src={multimatel} alt={"multimatel"} style={{ width: '40px' }} />
-                                                : null}
+                                        {console.log('jakjsja', value)}
+                                        <div style={{ width: '50px' }}>
+                                            {value?.job?.includes("(B") ? (
+                                                <img src={multimatelB} alt={"multimatelB"} style={{ height: '26px'  }} />
+                                            ) : value?.job?.includes("(C") ? (
+                                                <img src={multimatelC} alt={"multimatelC"} style={{ height: '26px'}} />
+                                            ) : null}
                                         </div>
                                         {/* {value?.job?.includes("(") ? <img src={multimatel} alt={"multimatel"} style={{ width: '40px' }} /> : null} */}
                                         <p className='allScanData' style={{ border: jobStatus === "jobF" && '2px solid #FF0000', backgroundColor: jobStatus === "jobF" && '#ff8787' }} key={index}>{value?.job?.includes("(") ? value?.job?.split(" ")[0] : value?.job?.includes("_") ? value?.job?.split("_")[0] : value?.job}</p>
@@ -1137,7 +1170,7 @@ export default function CreateTreeOneV2() {
                                                     style={{
                                                         width: '100%',
                                                         height: '100%',
-                                                        objectFit: 'cover',
+                                                        objectFit: 'contain',
                                                     }}
                                                 />
                                                 {longPressIndex === index && (
@@ -1210,10 +1243,14 @@ export default function CreateTreeOneV2() {
                                 //     {editTreeImg ? 'Edit Tree' : 'Upload Tree'}
                                 // </button>
 
-                                <ImageUploader treeBatch={location?.state?.CastBatch} lableName={editTreeImg ? 'Edit Tree' : 'Upload Tree'} ApiCall={saveOpen} />
+                                <ImageUploader
+                                    treeBatch={location?.state?.CastBatch}
+                                    lableName={editTreeImg ? 'Edit Tree' : 'Upload Tree'}
+                                    mode="savetreephoto"
+                                    uploadName="castingtree"
+                                />
 
                             )}
-
                             {showRemarkBtn &&
                                 <button className="homeNoteTitleV2" onClick={handleClickOpen}>
                                     Remark
@@ -1251,7 +1288,7 @@ export default function CreateTreeOneV2() {
                     <button className="showInfoBtn" onClick={handleMoreInfoShow}>
                         <IoInformationCircleSharp style={{ color: 'white', height: '25px', width: '25px', marginLeft: '-7px' }} />
                     </button>
-                    // </Tooltip>
+                    // </Tooltip>git checkout -b shivam
                 }
                 {/* <button
                     className="printQRBtn"
@@ -1262,7 +1299,7 @@ export default function CreateTreeOneV2() {
                 <button
                     className="printQRBtn"
                     onClick={handlePrintDialogShow}
-                    disabled={AddTreeResp?.stat === 1 && showRemarkBtn ? false : true}
+                    disabled={disableQrBtn ? false : true}
                 >
                     <IoPrint style={{ color: 'white', height: '25px', width: '25px', marginLeft: '-7px' }} />
                 </button>

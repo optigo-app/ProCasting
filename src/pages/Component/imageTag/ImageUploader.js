@@ -1,34 +1,104 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useSetRecoilState } from "recoil";
-import { CurrentImageState } from "../../recoil/Recoil";
+import { CurrentImageApi, CurrentImageState } from "../../recoil/Recoil";
 import browserImageCompression from "browser-image-compression";
 import { saveAs } from "file-saver";
 import { uploadPhotos } from "../../../Utils/API/UploadPhotoApi";
+import { toast } from "react-toastify";
 
-const ImageUploader = ({ treeBatch, lableName, }) => {
+const ImageUploader = ({ treeBatch, lableName, mode, uploadName }) => {
     const setImage = useSetRecoilState(CurrentImageState);
+    const setImageApiRes = useSetRecoilState(CurrentImageApi);
 
-    const handleImageUpload = (e) => {
+    const [isCameraAvailable, setIsCameraAvailable] = useState(false);
+    const [isMobileDevice, setIsMobileDevice] = useState(false);
+
+    useEffect(() => {
+        // Check if device is mobile/tablet
+        const checkDeviceType = () => {
+            const userAgent = navigator.userAgent.toLowerCase();
+            setIsMobileDevice(
+                /iphone|ipod|ipad|android/.test(userAgent) // Simplified check for mobile/tablet devices
+            );
+        };
+
+        // Check if the device has a camera
+        const checkCameraAvailability = async () => {
+            const devices = await navigator.mediaDevices.enumerateDevices();
+            const hasCamera = devices.some(device => device.kind === 'videoinput');
+            setIsCameraAvailable(hasCamera);
+        };
+
+        checkDeviceType();
+        checkCameraAvailability();
+    }, []);
+
+    const handleImageUpload = async (e) => {
         const files = Array.from(e.target.files);
 
-        const uploadedFiles = files.map((file) => ({
-            id: Date.now() + Math.random(),
-            url: URL.createObjectURL(file),
-            file: file,
-        }));
+        const uploadedFiles = files.map(async (file) => {
+            const img = new Image();
+            img.src = URL.createObjectURL(file);
 
-        setImage((prevImages) => [...prevImages, ...uploadedFiles]);
+            return new Promise((resolve) => {
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    const maxWidth = 800;
+                    const maxHeight = 600;
+
+                    const ratio = Math.min(maxWidth / img.width, maxHeight / img.height);
+                    canvas.width = img.width * ratio;
+                    canvas.height = img.height * ratio;
+
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+                    canvas.toBlob((blob) => {
+                        // alert(`Original size: ${(file.size / 1024).toFixed(2)} KB`);
+                        // alert(`Compressed size: ${(blob.size / 1024).toFixed(2)} KB`);
+
+                        resolve({
+                            id: Date.now() + Math.random(),
+                            url: URL.createObjectURL(blob),
+                            file: new File([blob], file.name, { type: file.type })
+                        });
+                    }, file.type, 0.7);
+                };
+            });
+        });
+
+        try {
+            const compressedFiles = await Promise.all(uploadedFiles);
+            console.log('compressedFiles: ', compressedFiles);
+            setImage((prevImages) => [...prevImages, ...compressedFiles]);
+
+            const response = await uploadPhotos(compressedFiles, treeBatch, mode, uploadName);
+            if (response) {
+                const imageUrl = response?.data?.data?.[0]?.castingtree || response?.data?.data?.[0]?.investmentreturn;
+                console.log('Image URL:', imageUrl);
+                if (imageUrl) {
+                    setImageApiRes(prevImages => [...prevImages, imageUrl]);
+                }
+            }
+        } catch (error) {
+            console.error('Error uploading photos:', error);
+        }
     };
 
+    const handleButtonClick = () => {
+        if (!isCameraAvailable) {
+            toast.error("This device does not have a camera!");
+        }
+    };
 
     return (
         <div>
             <input
                 type="file"
                 id="fileInput"
-                multiple
                 onChange={handleImageUpload}
                 style={{ display: "none" }}
+                // disabled={!isMobileDevice || !isCameraAvailable}
             />
 
             <label
@@ -39,11 +109,12 @@ const ImageUploader = ({ treeBatch, lableName, }) => {
                     padding: "10px 20px",
                     backgroundColor: "#dbdbdb",
                     borderRadius: "20px",
-                    cursor: "pointer",
+                    cursor: isMobileDevice && isCameraAvailable ? "pointer" : "not-allowed",
                     textAlign: "center",
                     fontWeight: "bold",
                     transition: "background-color 0.3s ease",
                 }}
+                // onClick={handleButtonClick}
             >
                 {lableName}
             </label>

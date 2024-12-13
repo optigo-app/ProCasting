@@ -1,7 +1,7 @@
 import { CommonAPI } from "./CommonApi";
 
 
-export const fetchFlaskList = async () => {
+export const FlaskTreeValidation = async () => {
     let empData = JSON.parse(localStorage.getItem("getemp"))
     let deviceT = JSON.parse(localStorage.getItem("initmfg"))?.deviceToken
 

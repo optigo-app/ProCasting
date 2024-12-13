@@ -45,7 +45,7 @@ function PrintQRCodeDialog({ open, onClose, castuniqueno }) {
       <DialogTitle>
         QR Scan for Tree Details
         <IconButton
-          aria-label="close"                                                
+          aria-label="close"
           onClick={handleClose}
           sx={{ position: 'absolute', right: 8, top: 8 }}
           className="no-print"
