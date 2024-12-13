@@ -1,7 +1,7 @@
 import { CommonAPI } from "./CommonApi";
 
 
-export const fetchFlaskList = async () => {
+export const fetchMaster = async () => {
     let empData = JSON.parse(localStorage.getItem("getemp"))
     let deviceT = JSON.parse(localStorage.getItem("initmfg"))?.deviceToken
 
@@ -10,13 +10,13 @@ export const fetchFlaskList = async () => {
 
         let ecodedbodyparam = btoa(JSON.stringify(bodyparam))
         let body = {
-            "con": `{\"id\":\"\",\"mode\":\"GETFLASKLIST\",\"appuserid\":\"${empData?.empuserid}\"}`,
+            "con": `{\"id\":\"\",\"mode\":\"MASTERS\",\"appuserid\":\"${empData?.empuserid}\"}`,
             "p": `${ecodedbodyparam}`,
-            "f": "formname (album)"
+            "f": "formname (MASTERS)"
         }
 
         const response = await CommonAPI(body);
-        sessionStorage.setItem("flasklist", JSON.stringify(response?.Data.rd));
+        sessionStorage.setItem("gridMaster", JSON.stringify(response));
         return response;    
     } catch (error) {
         console.error("Error fetching cart details:", error);

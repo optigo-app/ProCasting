@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { CommonAPI } from '../../../Utils/API/CommonApi';
 import { toast } from 'react-toastify';
 import CardSkeleton from './BatchListingSkelton';
+import BackButton from '../../../Utils/BackButton';
 
 
 export default function BatchListing() {
@@ -68,6 +69,7 @@ export default function BatchListing() {
         <div className='batchMain'>
             <div className="TopBtnDivMainOneV2">
                 <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <BackButton />
                     <p className='headerV2Title' >PROCASTING-DASHBOARD</p>
                 </div>
                 <div
@@ -75,7 +77,7 @@ export default function BatchListing() {
                     onClick={() => navigation("/homeone")}
                 >
                     <img src={topLogo} style={{ width: "75px" }} />
-                    <p 
+                    <p
                         style={{
                             fontSize: "25px",
                             opacity: "0.6",
@@ -122,7 +124,7 @@ export default function BatchListing() {
                                         <p style={{
                                             fontSize: '55px',
                                             color: '#ff5757',
-                                            fontWeight: 700, 
+                                            fontWeight: 700,
                                             margin: '0px'
                                         }}>{item?.ScanBatch}</p>
                                         <p style={{ fontSize: '30px', fontWeight: 600, width: '100px', color: '#cb6ce6' }}>({item?.flaskbarcode})</p>

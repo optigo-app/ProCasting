@@ -10,6 +10,7 @@ import { CommonAPI } from '../../../Utils/API/CommonApi'
 import { toast } from "react-toastify";
 import { CgProfile } from "react-icons/cg";
 import ProfileMenu from "../../../Utils/ProfileMenu";
+import BackButton from "../../../Utils/BackButton";
 
 export default function AddFlask() {
   const [inputValue, setInputValue] = useState("");
@@ -19,6 +20,7 @@ export default function AddFlask() {
   const [scanInp, setScanInp] = useState("");
   const [isImageVisible, setIsImageVisible] = useState(true);
   const [FlaskList, setFlaskList] = useState();
+  const [flaskTreeVal, setFlaskTreeVal] = useState([]);
   const [flaskVal, setFlaskVal] = useState();
   const [treeVal, setTreeVal] = useState();
   const invProRef = useRef(null);
@@ -54,7 +56,8 @@ export default function AddFlask() {
     await CommonAPI(body)
       .then((res) => {
         if (res) {
-          setFlaskList(res?.Data.rd);
+          setFlaskList(res?.Data?.rd);
+          setFlaskTreeVal(res?.Data?.rd1);
           sessionStorage.setItem("flasklist", JSON.stringify(res?.Data.rd));
         }
       })
@@ -170,6 +173,7 @@ export default function AddFlask() {
   };
 
   const handleGoButtonClick = async () => {
+    debugger;
     if (flaskVal == undefined || treeVal == undefined) {
       if (inputValue === "" || inputValue === undefined) {
         setInputError(true);
@@ -180,15 +184,28 @@ export default function AddFlask() {
             (ele) => ele?.flaskbarcode == inputValue
           );
           if (Flask?.length > 0) {
-            // setEnteredValues([...enteredValues, Flask])
-            setFlaskVal(Flask[0]);
+            let FlaskVal = flaskTreeVal?.filter(
+              (ele) => ele?.flaskid == Flask[0]?.flaskid
+            );
+            if (FlaskVal?.length > 0) {
+              return toast.error("Flask Already Binded With Tree!");
+            } else {
+              setFlaskVal(Flask[0]);
+            }
           } else {
             toast.error("Please Enter Valid FlaskID!!");
           }
           setInputValue("");
         } else {
-          await GetTreeDataApi(inputValue);
-          setInputValue("");
+          let TreeVal = flaskTreeVal?.filter(
+            (ele) => ele?.castuniqueno == inputValue
+          );
+          if (TreeVal?.length > 0) {
+            return toast.error("Tree Already Binded With Flask!");
+          } else {
+            await GetTreeDataApi(inputValue);
+            setInputValue("");
+          }
         }
       }
     } else {
@@ -208,15 +225,28 @@ export default function AddFlask() {
             (ele) => ele?.flaskbarcode == scanInp
           );
           if (Flask?.length > 0) {
-            // setEnteredValues([...enteredValues, Flask])
-            setFlaskVal(Flask[0]);
+            let FlaskVal = flaskTreeVal?.filter(
+              (ele) => ele?.flaskid == Flask[0]?.flaskid
+            );
+            if (FlaskVal?.length > 0) {
+              return toast.error("Flask Already Binded With Tree!");
+            } else {
+              setFlaskVal(Flask[0]);
+            }
           } else {
             toast.error("Please Enter Valid FlaskID!!");
           }
           setScanInp("");
         } else {
-          await GetTreeDataApi(scanInp);
-          setScanInp("");
+          let TreeVal = flaskTreeVal?.filter(
+            (ele) => ele?.castuniqueno == scanInp
+          );
+          if (TreeVal?.length > 0) {
+            return toast.error("Tree Already Binded With Flask!");
+          } else {
+            await GetTreeDataApi(scanInp);
+            setInputValue("");
+          }
         }
       }
     } else {
@@ -259,6 +289,7 @@ export default function AddFlask() {
       <BarcodeScanner onScan={handleScan} onError={handleError} />
       <div className="TopBtnDivMainOneV2">
         <div className="profileFIcon">
+          <BackButton />
           <CgProfile style={{ height: '30px', width: '30px', marginLeft: '15px' }} onClick={handleClick} />
           <p className="headerV2Title">PROCASTING-TREE BIND WITH FLASK</p>
           {openMenu &&

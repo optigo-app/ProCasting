@@ -1,4 +1,4 @@
-.printqr_main_container{
+.printqr_main_container {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -8,21 +8,22 @@
     height: 300px;
 }
 
-.printqr_tbody{
+.printqr_tbody {
     display: flex;
     justify-content: center;
     align-items: center;
     flex-direction: column;
 }
 
-.printqr_qrcode{
+.printqr_qrcode {
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
 @media print {
-/* 
+
+    /* 
     .body * {
         visibility: hidden!important;
     }
@@ -36,8 +37,15 @@
         left: 0!important;
         top: 0!important;
     } */
+    .css-1t4vnk2-MuiDialogContent-root {
+        border: none !important;
+    }
+
+    .css-bdhsul-MuiTypography-root-MuiDialogTitle-root {
+        display: none !important;
+    }
 
     .no-print {
-      display: none !important;
+        display: none !important;
     }
-  }
+}

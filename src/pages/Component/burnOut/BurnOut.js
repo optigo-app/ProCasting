@@ -19,6 +19,7 @@ import { CommonAPI } from '../../../Utils/API/CommonApi';
 import { CgProfile } from 'react-icons/cg';
 import ProfileMenu from '../../../Utils/ProfileMenu';
 import { fetchFlaskList } from '../../../Utils/API/GetFlaskList';
+import BackButton from '../../../Utils/BackButton';
 
 
 export default function BurnOut() {
@@ -367,7 +368,8 @@ export default function BurnOut() {
                     if (validateFlask?.length != 0) {
                         if (FlaskImg?.length == 0) {
                             let initmfg = JSON?.parse(localStorage.getItem("initmfg"))
-                            let ImgPath = `${initmfg?.UploadLogicalPath}${initmfg?.ukey}/procasting/`
+                            // let ImgPath = `${initmfg?.LibPath}${initmfg?.ukey}/procasting/`
+                             let ImgPath = `${initmfg?.LibPath}/procasting/`
                             // console.log("ImgPath",ImgPath);
                             setFlaskImg(ImgPath)
                         }
@@ -414,7 +416,7 @@ export default function BurnOut() {
                     if (validateFlask?.length != 0) {
                         if (FlaskImg?.length == 0) {
                             let initmfg = JSON?.parse(localStorage.getItem("initmfg"))
-                            let ImgPath = `${initmfg?.UploadLogicalPath}${initmfg?.ukey}/procasting/`
+                            let ImgPath = `${initmfg?.LibPath}/procasting/`
                             // console.log("ImgPath",ImgPath);
                             setFlaskImg(ImgPath)
                         }
@@ -503,6 +505,7 @@ export default function BurnOut() {
                 </Dialog>
                 <div className="TopBtnDivMainOneV2">
                     <div style={{ display: 'flex', alignItems: 'center' }}>
+                        <BackButton />
                         <CgProfile style={{ height: '30px', width: '30px', marginLeft: '15px' }} onClick={handleClick} />
                         <p className='headerV2Title' style={{ textTransform: 'capitalize' }} >BURNOUT PROCESS</p>
                         {openMenu &&
@@ -711,15 +714,17 @@ export default function BurnOut() {
                     <div className="investSideFixedImg" style={{ visibility: !FlaskImg && 'hidden' }} >
                         {/* {(greenImg || blueImg || orangeImg)
                     && */}
-                        <img
-                            src={
-                                `${FlaskImg}${TreeVal?.statuscolor}`
-                            }
-                            alt={''}
-                            //   style={{paddingRight:'10px'}}
-                            className="DrawerImg"
-                        // style={{display:FlaskImg && 'none'}}
-                        />
+                        {TreeVal?.statuscolor &&
+                            <img
+                                src={
+                                    `${FlaskImg}${TreeVal?.statuscolor}`
+                                }
+                                alt={''}
+                                //   style={{paddingRight:'10px'}}
+                                className="DrawerImg"
+                            // style={{display:FlaskImg && 'none'}}
+                            />
+                        }
                         {/* } */}
                     </div>
                 </div>
@@ -736,7 +741,8 @@ export default function BurnOut() {
                     }}
                 >
                     {
-                        "furnace Program number > #D (Diamond)  |   #W (WAX) |   #R1 Resin1    |    #R2 Resin2"
+                        // "furnace Program number > #D (Diamond)  |   #W (WAX) |   #R1 Resin1    |    #R2 Resin2"
+                        "furnace Program number > #R (Regular)  |   #D (WAX) |   #RPT (Plastic)"
                     }
                 </div>
                 {/* </>

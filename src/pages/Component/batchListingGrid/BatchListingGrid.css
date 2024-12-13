@@ -1,72 +1,92 @@
 .customHeaderCell {
-    background-color: #ffde59; 
+    background-color: #ffde59;
     color: black;
     font-weight: bold;
     padding: 8px;
-  }
+}
 
-.grid-btn{
-    border:1px solid #00000061;  
-    border-radius:5px;
-    padding:5px 12px;
-    cursor:pointer;
+.grid-btn {
+    border: 1px solid #00000061;
+    border-radius: 5px;
+    padding: 5px 12px;
+    cursor: pointer;
     background-color: #00000033;
-    width:auto;
+    width: auto;
     font-weight: 600;
 }
-.grid_head{
-    display:flex;
+
+.grid_head {
+    display: flex;
 }
 
-.DataGridTable{
+.DataGridTable {
     position: absolute;
     bottom: 0;
-    top:58px;
+    top: 58px;
 }
 
-.menu{
+.menu {
     display: none;
 }
 
-.grid_head_container{
-    background-color:#f1f1f1;
+.grid_head_container {
+    background-color: #f1f1f1;
     padding: 12px;
 }
 
-select{
+select {
     background: rgb(249, 249, 249);
 }
 
-.menu_responsive{
+.menu_responsive {
     display: flex;
     justify-content: space-between;
-    gap:12px;
+    gap: 12px;
     align-items: center;
 }
 
+.MuiDataGrid-cell:focus {
+    outline: none !important;
+    border: none !important;
+}
+
+.MuiDataGrid-root:focus {
+    outline: none !important;
+}
+
+.button-print {
+    outline: none !important;
+    border: none !important;
+}
+
+.button-print:focus {
+    outline: none !important;
+    border: none !important;
+}
+
 @media screen and (max-width:1624px) {
-    .date{
+    .date {
         display: none;
     }
-    
-    .select_metaltype{
-        display: none;
-    } 
 
-    .menu{
+    .select_metaltype {
+        display: none;
+    }
+
+    .menu {
         display: flex;
     }
 
-    .menu_responsive{
-        display:flex;
-        gap:5px;
-        flex-direction:row;
+    .menu_responsive {
+        display: flex;
+        gap: 5px;
+        flex-direction: row;
     }
 
-    .grid_head_container{
+    .grid_head_container {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        gap:5px
+        gap: 5px
     }
 }

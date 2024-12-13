@@ -19,6 +19,7 @@ import { convertToMilliseconds } from "../../../Utils/globalFunction";
 import { CgProfile } from "react-icons/cg";
 import ProfileMenu from "../../../Utils/ProfileMenu";
 import DeleteTreeModal from "../../../Utils/DeleteTreeModal";
+import BackButton from "../../../Utils/BackButton";
 
 
 
@@ -462,7 +463,7 @@ export default function UnlockAlloying() {
 
   const [toastShown, setToastShown] = useState(false);
   const toastShownRef = useRef(false);
-  
+
   const playAudio = () => {
     setPlayStatus(Sound?.status?.PLAYING);
 
@@ -474,7 +475,7 @@ export default function UnlockAlloying() {
   const TimeNotify = useCallback(() => {
     if (!toastShownRef.current) {
       toast.error("Your Time is over");
-      toastShownRef.current = true; 
+      toastShownRef.current = true;
     }
     playAudio();
   }, []);
@@ -604,9 +605,10 @@ export default function UnlockAlloying() {
       </Dialog>
       <div className="TopBtnDivMainOneV2">
         <div style={{ display: 'flex', alignItems: 'center' }}>
+          <BackButton />
           <CgProfile style={{ height: '30px', width: '30px', marginLeft: '15px' }} onClick={handleClick} />
           <p className="headerV2Title">
-            ALLOYING UNLOCK PROCESS
+            CASTING UNLOCK PROCESS
           </p>
           {openMenu &&
             <ProfileMenu open={openMenu} anchorEl={anchorEl} handleClose={handleMenuClose} />
@@ -705,7 +707,7 @@ export default function UnlockAlloying() {
             <p className="investDestilInputTitle">DEPARTMENT:</p>
             <input
               type="text"
-              value={enteredValues.length === 0 ? "" : "ALLOYING"}
+              value={enteredValues.length === 0 ? "" : "CASTING"}
               className="unlovcDestilInput"
             />
           </div>

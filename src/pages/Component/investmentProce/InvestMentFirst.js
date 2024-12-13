@@ -22,10 +22,10 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import uploadcloud from "../../assets/uploadCloud.png";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
-import { CurrentCamFlag, CurrentImageState } from "../../recoil/Recoil";
+import { CurrentCamFlag, CurrentImageApi, CurrentImageState } from "../../recoil/Recoil";
 import ImageWebCam from "../imageTag/ImageWebCam";
 import topLogo from "../../assets/oraillogo.png";
-import { useLocation, useNavigate } from "react-router-dom";
+import { json, useLocation, useNavigate } from "react-router-dom";
 import notiSound from "../../sound/Timeout.mpeg";
 import Sound from "react-sound";
 import { CommonAPI } from "../../../Utils/API/CommonApi";
@@ -50,6 +50,7 @@ import {
   Mousewheel,
 } from "swiper/modules";
 import ImageUploader from "../imageTag/ImageUploader";
+import BackButton from "../../../Utils/BackButton";
 
 export default function InvestMentFirst() {
   const [inputValue, setInputValue] = useState("");
@@ -63,6 +64,8 @@ export default function InvestMentFirst() {
   const [orangeImg, setOrangImg] = useState(false);
   const [defaultImg, setDefaultImg] = useState(false);
   const CurrentImageValue = useRecoilValue(CurrentImageState);
+  const imageApiUrl = useRecoilValue(CurrentImageApi);
+  console.log('imageApiUrl: ', imageApiUrl);
   const setCurrentImageValue = useSetRecoilState(CurrentImageState);
   const [weight, setWeight] = useState(false);
   const [TDS, setTDS] = useState(undefined);
@@ -357,12 +360,18 @@ export default function InvestMentFirst() {
       // Retrieve location state
       let data = location?.state;
 
+      // alert('image url', JSON.stringify(imageApiUrl?.join(',')))
+
       // Prepare body parameters
       let bodyparam = {
         investmentid: FlaskinvestId ?? data?.investmentid,
         investmentstartdate: InvestApiTime?.startTime ?? data?.investmentDate,
         investmentenddate: InvestApiTime?.endTime ?? new Date(),
-        investmentphoto: CurrentImageValue ?? CurrentImageValue[0],
+        // investmentphoto:
+        //   fileBase64 !== ""
+        //     ? fileBase64[0]
+        //     : CurrentImageValue[0] ?? CurrentImageValue[0],
+        investmentphoto: imageApiUrl?.join(','),
         empid: `${empData?.empid}`,
         empuserid: `${empData?.empuserid}`,
         empcode: `${empData?.empcode}`,
@@ -446,6 +455,7 @@ export default function InvestMentFirst() {
 
   useEffect(() => {
     if (enteredValues) {
+      console.log('enteredValues: ', enteredValues);
       setWeightInp(enteredValues[enteredValues?.length - 1]?.requirepowder);
       setWaterWeight(enteredValues[enteredValues?.length - 1]?.requirewater);
     }
@@ -504,6 +514,7 @@ export default function InvestMentFirst() {
   };
 
   const handleGoButtonClick = async () => {
+    debugger;
     if (inputValue === "" || inputValue === undefined) {
       setInputError(true);
     } else {
@@ -534,7 +545,7 @@ export default function InvestMentFirst() {
             setEnteredValues([...enteredValues, investmentVal]);
             // if (FlaskImg?.length != 0) {
             let initmfg = JSON.parse(localStorage.getItem("initmfg"));
-            let ImgPath = `${initmfg?.UploadLogicalPath}${initmfg?.ukey}/procasting/`;
+            let ImgPath = `${initmfg?.LibPath}/procasting/`;
             setFlaskImg(ImgPath);
             // }
           } else {
@@ -582,7 +593,8 @@ export default function InvestMentFirst() {
             setEnteredValues([...enteredValues, investmentVal]);
             if (FlaskImg?.length == 0) {
               let initmfg = JSON.parse(localStorage.getItem("initmfg"));
-              let ImgPath = `${initmfg?.UploadLogicalPath}${initmfg?.ukey}/procasting/`;
+              // let ImgPath = `${initmfg?.LibPath}${initmfg?.ukey}/procasting/`;
+              let ImgPath = `${initmfg?.LibPath}/procasting/`;
               setFlaskImg(ImgPath);
             }
           } else {
@@ -830,7 +842,7 @@ export default function InvestMentFirst() {
         setPhValue(data?.phvalue);
 
         let initmfg = JSON.parse(localStorage.getItem("initmfg"));
-        let ImgPath = `${initmfg?.UploadLogicalPath}${initmfg?.ukey}/procasting/`;
+        let ImgPath = `${initmfg?.LibPath}/procasting/`;
         setFlaskImg(ImgPath);
 
         let castuniqueno = data["Batch#"]?.match(/\d+/)[0];
@@ -981,35 +993,19 @@ export default function InvestMentFirst() {
         open={isImgShow}
         onClose={() => setIsImgShow(false)}
         maxWidth="md"
-        PaperProps={{
-          style: {
-            width: "800px",
-            height: "600px",
-            maxWidth: "800px",
-            maxHeight: "600px",
-            overflow: "hidden",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-          },
-        }}
       >
         {CurrentImageValue?.length > 0 ? (
           <Swiper
             initialSlide={0}
             slidesPerView={1}
             spaceBetween={0}
-            navigation={true}
+            // navigation={true}
             pagination={{ clickable: true }}
             loop={false}
             modules={[Pagination, Keyboard, FreeMode, Thumbs, Scrollbar]}
             keyboard={{ enabled: true }}
             mousewheel={true}
-            style={{
-              width: "100%",
-              height: "100%",
-              boxSizing: "border-box",
-            }}
+            style={{ width: "100%", height: "100%" }}
           >
             {CurrentImageValue?.map((img, index) => (
               <SwiperSlide key={index}>
@@ -1029,7 +1025,7 @@ export default function InvestMentFirst() {
                     style={{
                       width: "100%",
                       height: "100%",
-                      objectFit: "contain", // Maintain aspect ratio
+                      objectFit: "contain",
                     }}
                   />
                   {longPressIndex === index && (
@@ -1057,10 +1053,10 @@ export default function InvestMentFirst() {
         )}
       </Dialog>
 
-
       <div>
         <div className="TopBtnDivMainOneV2">
           <div style={{ display: "flex", alignItems: "center" }}>
+            <BackButton />
             <CgProfile
               style={{ height: "30px", width: "30px", marginLeft: "15px" }}
               onClick={handleClick}
@@ -1353,7 +1349,7 @@ export default function InvestMentFirst() {
                 {errorMessage && (
                   <div className="errorMessage">All fields are required!</div>
                 )}
-                {!new URLSearchParams(window.location.search).has('flask') && (
+                {!new URLSearchParams(window.location.search).has('flask') && !showTimmer && (
                   <div
                     style={{
                       display: "flex",
@@ -1501,7 +1497,7 @@ export default function InvestMentFirst() {
                       </tr>
                       <tr>
                         <th className="investTableRow">
-                          {value?.jobcount} Jobs{" "}
+                          {value?.jobcount + ' ' + (value?.jobcount > 1 ? 'Jobs' : "Job")} {" "}
                         </th>
                       </tr>
                       <tr>
@@ -1554,7 +1550,12 @@ export default function InvestMentFirst() {
                   >
                     Upload Image
                   </button> */}
-                  <ImageUploader treeBatch={enteredValues[0]?.CastBatchNo} lableName={'Upload Image'} />
+                  <ImageUploader
+                    treeBatch={enteredValues[0]?.CastBatchNo}
+                    lableName={'Upload Image'}
+                    mode="investmentreturnphoto"
+                    uploadName="investmentreturn"
+                  />
                   {CurrentImageValue.length !== 0 && (
                     <div
                       style={{

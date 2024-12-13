@@ -5,6 +5,11 @@ export const CurrentImageState = atom({
     default:[]
 })
 
+export const CurrentImageApi = atom({
+    key:'CurrentImageApi',
+    default:[]
+})
+
 export const CurrentCamFlag = atom({
     key:'camflag',
     default:false

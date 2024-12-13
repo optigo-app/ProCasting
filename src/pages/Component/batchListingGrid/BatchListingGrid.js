@@ -3,13 +3,26 @@ import "./BatchListingGrid.css";
 import { DataGrid } from "@mui/x-data-grid";
 import SearchIcon from '@mui/icons-material/Search';
 import MenuRoundedIcon from '@mui/icons-material/MenuRounded';
-import { Divider, Drawer } from "@mui/material";
+import { Button, Divider, Drawer } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import topLogo from '../../assets/oraillogo.png';
 import { CommonAPI } from '../../../Utils/API/CommonApi'
 import { toast } from "react-toastify";
+import ImageModal from "./ImageModal";
+import { formatCustomDate } from "../../../Utils/globalFunction";
+import BackButton from "../../../Utils/BackButton";
+import { fetchMaster } from "../../../Utils/API/MasterGridApi";
+import PrintQRCodeDialog from "../printQr/PrintQRCodeDialog";
+
+
+const images = [
+  { url: "https://www.google.com/imgres?q=tree%20photo%20casting&imgurl=https%3A%2F%2Fwww.shutterstock.com%2Fimage-photo%2Fsilver-casting-tree-on-white-260nw-353474156.jpg&imgrefurl=https%3A%2F%2Fwww.shutterstock.com%2Fimage-photo%2Fsilver-casting-tree-on-white-background-353474156&docid=HqdmBjKXmMfT8M&tbnid=-4P4wYNDl-wW7M&vet=12ahUKEwiIq7_lvJ-KAxVNslYBHT5-KMYQM3oECF4QAA..i&w=224&h=280&hcb=2&ved=2ahUKEwiIq7_lvJ-KAxVNslYBHT5-KMYQM3oECF4QAA" },
+  { url: "https://cdnfs.optigoapps.com/content-global3/test71IBOKTQHSCLEN367X9/PROCASTING/castingtree/BI20241211013042985_castingtree.jpg" },
+  { url: "https://via.placeholder.com/800x600/00FF00/FFFFFF?Text=Image3" },
+];
 
 const BatchListingGrid = () => {
+  const navigate = useNavigate();
   const [menuFlag, setMenuFlag] = useState(false);
   const [batchList, setBatchList] = useState([]);
   const [batchFilterList, setBatchFilterList] = useState([]);
@@ -17,12 +30,65 @@ const BatchListingGrid = () => {
   const [selectedMetalColor, setSelectedMetalColor] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('');
   const [loading, setLoading] = useState(false);
+  const [openImgDrawer, setOpenImgDrawer] = useState(false);
+  const [showPrintDialog, setShowPrDialog] = useState(false);
+  const [selectedRowData, setSelectedRowData] = useState(null);
+  // const today = new Date()?.toISOString()?.split("T")[0];
+  // const [startDate, setStartDate] = useState(today);
+  // const [endDate, setEndDate] = useState(today);
 
-  const today = new Date()?.toISOString()?.split("T")[0];
-  const [startDate, setStartDate] = useState(today);
-  const [endDate, setEndDate] = useState(today);
+  const [metalColors, setMetalColors] = useState([]);
+  const [metalTypes, setMetalTypes] = useState([]);
+  const [castingStatuses, setCastingStatuses] = useState([]);
+  const [startDate, setStartDate] = useState();
+  const [endDate, setEndDate] = useState();
 
-  const navigate = useNavigate();
+  const handlePrintDialogShow = (rowData) => {
+    setSelectedRowData(rowData);
+    setShowPrDialog(true);
+  }
+
+  const handleClosePrintDialog = () => {
+    setShowPrDialog(false);
+  }
+
+  const handleViewClick = (rowData) => {
+    setSelectedRowData(rowData);
+    setOpenImgDrawer(true);
+  };
+  const handleClose = () => setOpenImgDrawer(false);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        let masterApiRes;
+        const masteData = sessionStorage.getItem("gridMaster");
+        const data = masteData ? JSON.parse(masteData) : null;
+        if (data) {
+          masterApiRes = data;
+        } else {
+          masterApiRes = await fetchMaster();
+          if (masterApiRes) {
+            sessionStorage.setItem("gridMaster", JSON.stringify(masterApiRes));
+          }
+        }
+
+        if (masterApiRes?.Data) {
+          const { rd, rd1, rd2 } = masterApiRes.Data;
+          setMetalColors(rd || []);
+          setMetalTypes(rd1 || []);
+          setCastingStatuses(rd2 || []);
+        }
+      } catch (error) {
+        console.error('Error fetching master data:', error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+
+
 
   useEffect(() => {
     const fetchBatchData = async () => {
@@ -100,9 +166,17 @@ const BatchListingGrid = () => {
   }, [selectedMetalType, selectedMetalColor, selectedStatus, startDate, endDate, batchList]);
 
 
+
+
+
   const columns = [
     { field: "id", headerName: "Sr#", width: 80 },
-    { field: "CastingIssDate", headerName: "Date", width: 130 },
+    {
+      field: "CastingIssDate",
+      headerName: "Date",
+      width: 130,
+      valueFormatter: (params) => formatCustomDate(params.value),
+    },
     { field: "Batch#", headerName: "Batch#", width: 130 },
     { field: "Barcode", headerName: "Employee", width: 130 },
     { field: "TreeWt", headerName: "Tree Wt", width: 100 },
@@ -138,20 +212,59 @@ const BatchListingGrid = () => {
     { field: "metalwtpure", headerName: "Metal Wt(pure)", width: 130 },
     { field: "alloywt", headerName: "Alloy Wt(pure)", width: 130 },
     { field: "flaskbarcode", headerName: "Flask", width: 100 },
-    { field: "LabelPrint", headerName: "Label Print", width: 100 },
+    // { field: "LabelPrint", headerName: "Label Print", width: 100 },
     {
-      field: "Image",
-      headerName: "View",
+      field: "LabelPrint",
+      headerName: "Label Print",
       width: 100,
       renderCell: (params) => {
-        const { value } = params;
-        return value && value?.startsWith('data:image') ? (
-          <img src={value} alt="Image" style={{ width: '100%', height: 'auto' }} />
+        const { value, row } = params;
+        return value ? (
+          <button onClick={() => handlePrintDialogShow(row)}
+            className="button-print"
+            style={{
+              color: 'blue',
+              textDecoration: 'underline',
+              textTransform: 'capitalize',
+              padding: '0px',
+              backgroundColor: 'transparent',
+              border: 'none',
+              cursor: 'pointer'
+            }}
+          >
+            Print
+          </button>
         ) : (
           "-"
         );
       }
     },
+    {
+      field: "Image",
+      headerName: "View",
+      width: 100,
+      renderCell: (params) => {
+        const { value, row } = params;
+        return value && (value.startsWith("http://") || value.startsWith("https://")) ? (
+          <button onClick={() => handleViewClick(row)}
+            className="button-print"
+            style={{
+              color: 'blue',
+              textDecoration: 'underline',
+              textTransform: 'capitalize',
+              padding: '0px',
+              backgroundColor: 'transparent',
+              border: 'none',
+              cursor: 'pointer'
+            }}
+          >
+            View
+          </button>
+        ) : (
+          "-"
+        );
+      }
+    }
   ];
 
   const GridHeadDate = useCallback(() => (
@@ -189,10 +302,11 @@ const BatchListingGrid = () => {
           value={selectedMetalType}
         >
           <option value="">All Type</option>
-          <option value="GOLD 10K">GOLD 10K</option>
-          <option value="GOLD 14K">GOLD 14K</option>
-          <option value="GOLD 18K">GOLD 18K</option>
-          <option value="GOLD 22K">GOLD 22K</option>
+          {metalTypes && metalTypes?.map(({ id, metaltype }) => (
+            <option key={id} value={metaltype}>
+              {metaltype}
+            </option>
+          ))}
         </select>
       </div>
 
@@ -206,10 +320,11 @@ const BatchListingGrid = () => {
           value={selectedMetalColor}
         >
           <option value="">All Colors</option>
-          <option value="Shine Gold">Shine Gold</option>
-          <option value="White Gold">White Gold</option>
-          <option value="Yellow">Yellow</option>
-          <option value="Rose Gold">Rose Gold</option>
+          {metalColors && metalColors?.map(({ id, metalcolorname }) => (
+            <option key={id} value={metalcolorname}>
+              {metalcolorname}
+            </option>
+          ))}
         </select>
       </div>
 
@@ -223,15 +338,15 @@ const BatchListingGrid = () => {
           value={selectedStatus}
         >
           <option value="">All Status</option>
-          <option value="Casting-Issue">Casting Issue</option>
-          <option value="Investment Issue">Investment Issue</option>
-          <option value="Investment Return">Investment Return</option>
-          <option value="Burnout Issue">Burnout Issue</option>
-          <option value="Burnout Return">Burnout Return</option>
+          {castingStatuses && castingStatuses?.map(({ id, procasting_process_statusname }) => (
+            <option key={id} value={procasting_process_statusname}>
+              {procasting_process_statusname}
+            </option>
+          ))}
         </select>
       </div>
     </>
-  ), [selectedMetalColor, selectedMetalType, selectedStatus]);
+  ), [selectedMetalColor, selectedMetalType, selectedStatus, metalColors, metalTypes, castingStatuses]);
 
   return (
     <>
@@ -245,6 +360,7 @@ const BatchListingGrid = () => {
 
         <div className="menu_responsive">
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <BackButton fontSize="30px" padding='2px' />
             <div className="grid_head date">{GridHeadDate()}</div>
             <div className="grid_head select_metaltype">{GridHeadSelect()}</div>
             <div className="grid_head_search">
@@ -326,6 +442,12 @@ const BatchListingGrid = () => {
           </div>
         </div>
       )}
+      <PrintQRCodeDialog
+        open={showPrintDialog}
+        onClose={handleClosePrintDialog}
+        rightJobs={selectedRowData}
+        castuniqueno={selectedRowData?.['Batch#']?.match(/\((\d+)\)/)?.[1]}
+      />
       <Drawer anchor="left" open={menuFlag} onClose={() => setMenuFlag(false)}>
         <div style={{ paddingLeft: '30px' }}>
           <h1>
@@ -338,6 +460,7 @@ const BatchListingGrid = () => {
           <div style={{ display: 'flex', gap: '12px', flexDirection: 'column' }}>{GridHeadSelect()}</div>
         </div>
       </Drawer>
+      <ImageModal open={openImgDrawer} onClose={handleClose} images={selectedRowData} />
     </>
   );
 };

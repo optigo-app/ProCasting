@@ -92,7 +92,7 @@ const Activate = () => {
   };
 
   const handleScanning = () =>{
-    INITMFGAPI("9726350724901930")
+    INITMFGAPI("8456510807569990")
   }
 
   useEffect(()=>{
