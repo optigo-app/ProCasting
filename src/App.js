@@ -21,6 +21,8 @@ import InputSuggestion from "./Utils/inputSuggestion"
 import { useEffect, useState } from 'react';
 import ImageUploader from './pages/Component/imageTag/ImageUploadDemo';
 import ImageUploadInput from './pages/Component/imageTag/ImageUploadInput';
+import MyDataGridComponent from './pages/Component/batchListingGrid/Demogrid';
+import { fetchMaster } from './Utils/API/MasterGridApi';
 
 function App() {
 
@@ -37,15 +39,6 @@ function App() {
     padding: '0px 6px !important'
   };
 
-  // useEffect(() => {
-  //   const initmfg = localStorage.getItem("initmfg");
-  //   if (!initmfg && window.location.pathname !== "/") {
-  //     window.location.href = "/";
-  //   } else {
-  //     console.log("initmfg", initmfg);
-  //   }
-  // }, []);
-
   useEffect(() => {
     let Token = JSON.parse(sessionStorage.getItem("token"));
     const initmfg = localStorage.getItem("initmfg");
@@ -55,7 +48,7 @@ function App() {
         sessionStorage.setItem("token", JSON.stringify(initmfgData.token));
       }
     } else {
-      console.log("initmfg", initmfg);
+      fetchMaster()
     }
   }, []);
 
@@ -86,7 +79,7 @@ function App() {
           <Route path='/printQr' element={<PrintQr />} />
           <Route path='/info' element={<InfoPage />} />
           <Route path='/input' element={<InputSuggestion />} />
-          <Route path='/im' element={<ImageUploadInput />} />
+          <Route path='/im' element={<MyDataGridComponent />} />
         </Routes>
       </BrowserRouter>
     </>

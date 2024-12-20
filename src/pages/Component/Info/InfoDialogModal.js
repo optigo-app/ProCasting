@@ -239,79 +239,83 @@ function InfoDialogModal({ open, onClose, rightJobs }) {
                 },
             }}
         >
-            <DialogTitle>
-                All Job Listings
-                <IconButton
-                    aria-label="close"
-                    onClick={onClose}
-                    style={{ position: 'absolute', right: 8, top: 8 }}
-                >
-                    <CloseIcon />
-                </IconButton>
-                <Box display="flex" justifyContent="flex-end">
-                    <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
-                        <InputLabel>Metal Color</InputLabel>
-                        <Select
-                            value={selectedMetalColor}
-                            onChange={handleMetalColorChange}
-                            label="Metal Color"
-                            size="small"
+            {rightJobs?.length !== 0 &&
+                <>
+                    <DialogTitle>
+                        All Job Listings
+                        <IconButton
+                            aria-label="close"
+                            onClick={onClose}
+                            style={{ position: 'absolute', right: 8, top: 8 }}
                         >
-                            <MenuItem value="all">All</MenuItem>
-                            {metalColors.map((color, index) => (
-                                <MenuItem key={index} value={color}>
-                                    {color}
-                                </MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl>
-                    <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
-                        <InputLabel>Status</InputLabel>
-                        <Select
-                            value={selectedStatus}
-                            onChange={handleStatusChange}
-                            label="Status"
-                            size="small"
-                        >
-                            <MenuItem value="all">All</MenuItem>
-                            <MenuItem value="1">Wax</MenuItem>
-                            <MenuItem value="2">Regular</MenuItem>
-                        </Select>
-                    </FormControl>
-                </Box>
-            </DialogTitle>
-            <DialogContent sx={{ padding: '26px 24px' }}>
-                <div style={{ width: '100%' }}>
-                    <DataGrid
-                        rows={currentJobs || []}
-                        columns={columns?.map((column) => ({
-                            ...column,
-                            headerClassName: 'customInfoHeaderCells',
-                            disableColumnMenu: true,
-                        }))}
-                        pageSize={itemsPerPage}
-                        rowsPerPageOptions={[itemsPerPage]}
-                        hideFooter
-                        disableColumnMenu
-                        getRowId={(row) => row?.job}
-                        sx={{
-                            '& .MuiDataGrid-virtualScroller': {
-                                minHeight: '50px',
-                            },
-                        }}
-                    />
-                </div>
-                <Box display="flex" justifyContent="center" mt={2}>
-                    <Pagination
-                        count={totalPages}
-                        page={currentPage}
-                        onChange={handlePageChange}
-                        variant="outlined"
-                        shape="rounded"
-                        color="primary"
-                    />
-                </Box>
-            </DialogContent>
+                            <CloseIcon />
+                        </IconButton>
+                        <Box display="flex" justifyContent="flex-end">
+                            <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
+                                <InputLabel>Metal Color</InputLabel>
+                                <Select
+                                    value={selectedMetalColor}
+                                    onChange={handleMetalColorChange}
+                                    label="Metal Color"
+                                    size="small"
+                                >
+                                    <MenuItem value="all">All</MenuItem>
+                                    {metalColors.map((color, index) => (
+                                        <MenuItem key={index} value={color}>
+                                            {color}
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
+                            <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
+                                <InputLabel>Status</InputLabel>
+                                <Select
+                                    value={selectedStatus}
+                                    onChange={handleStatusChange}
+                                    label="Status"
+                                    size="small"
+                                >
+                                    <MenuItem value="all">All</MenuItem>
+                                    <MenuItem value="1">Wax</MenuItem>
+                                    <MenuItem value="2">Regular</MenuItem>
+                                </Select>
+                            </FormControl>
+                        </Box>
+                    </DialogTitle>
+                    <DialogContent sx={{ padding: '26px 24px' }}>
+                        <div style={{ width: '100%' }}>
+                            <DataGrid
+                                rows={currentJobs || []}
+                                columns={columns?.map((column) => ({
+                                    ...column,
+                                    headerClassName: 'customInfoHeaderCells',
+                                    disableColumnMenu: true,
+                                }))}
+                                pageSize={itemsPerPage}
+                                rowsPerPageOptions={[itemsPerPage]}
+                                hideFooter
+                                disableColumnMenu
+                                getRowId={(row) => row?.job}
+                                sx={{
+                                    '& .MuiDataGrid-virtualScroller': {
+                                        minHeight: '50px',
+                                    },
+                                }}
+                            />
+                        </div>
+                        <Box display="flex" justifyContent="center" mt={2}>
+                            <Pagination
+                                count={totalPages}
+                                page={currentPage}
+                                onChange={handlePageChange}
+                                variant="outlined"
+                                shape="rounded"
+                                color="primary"
+                            />
+                        </Box>
+                    </DialogContent>
+                </>
+            }
         </Dialog>
     );
 }

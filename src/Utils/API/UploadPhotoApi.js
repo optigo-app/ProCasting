@@ -38,7 +38,7 @@ export const uploadPhotos = async (compressedFiles, treeBatch, mode, uploadName)
         };
 
         const response = await axios.post(
-            "http://api.optigoapps.com/test/photoupload.aspx",
+            "https://api.optigoapps.com/test/photoupload.aspx",
             formData,
             {
                 headers: header,
@@ -55,6 +55,6 @@ export const uploadPhotos = async (compressedFiles, treeBatch, mode, uploadName)
             console.error('Error uploading image:', error.message);
         }
 
-        throw error; // Re-throw the error to be handled upstream if needed
+        throw error;
     }
 };

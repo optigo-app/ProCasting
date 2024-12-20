@@ -11,6 +11,7 @@ import { toast } from "react-toastify";
 import { CgProfile } from "react-icons/cg";
 import ProfileMenu from "../../../Utils/ProfileMenu";
 import BackButton from "../../../Utils/BackButton";
+import GlobalHeader from "../../../Utils/HeaderLogoSection";
 
 export default function AddFlask() {
   const [inputValue, setInputValue] = useState("");
@@ -29,7 +30,7 @@ export default function AddFlask() {
   const [anchorEl, setAnchorEl] = useState(null);
 
 
-  const handleClick = (event) => {
+  const handleProfileClick = (event) => {
     setAnchorEl(event.currentTarget);
     setOpenMenu(true);
   };
@@ -133,6 +134,7 @@ export default function AddFlask() {
             "bindedFlask",
             JSON.stringify([...BindedFlask, flaskVal?.flaskid])
           );
+          GetFlaskListApi();
         } else {
           sessionStorage.setItem(
             "bindedFlask",
@@ -149,7 +151,6 @@ export default function AddFlask() {
 
   useEffect(() => {
     GetFlaskListApi();
-    // GetTreeDataApi();
   }, []);
 
   useEffect(() => {
@@ -173,7 +174,6 @@ export default function AddFlask() {
   };
 
   const handleGoButtonClick = async () => {
-    debugger;
     if (flaskVal == undefined || treeVal == undefined) {
       if (inputValue === "" || inputValue === undefined) {
         setInputError(true);
@@ -290,13 +290,13 @@ export default function AddFlask() {
       <div className="TopBtnDivMainOneV2">
         <div className="profileFIcon">
           <BackButton />
-          <CgProfile style={{ height: '30px', width: '30px', marginLeft: '15px' }} onClick={handleClick} />
+          {/* <CgProfile style={{ height: '30px', width: '30px', marginLeft: '15px' }} onClick={handleClick} /> */}
           <p className="headerV2Title">PROCASTING-TREE BIND WITH FLASK</p>
           {openMenu &&
             <ProfileMenu open={openMenu} anchorEl={anchorEl} handleClose={handleMenuClose} />
           }
         </div>
-        <div
+        {/* <div
           style={{ display: "flex", alignItems: "center", cursor: "pointer" }}
           onClick={() => naviagtion("/homeone")}
         >
@@ -311,7 +311,8 @@ export default function AddFlask() {
           >
             <span style={{ color: "#00FFFF", opacity: "1" }}>Pro</span>Casting
           </p>
-        </div>
+        </div> */}
+        <GlobalHeader topLogo={topLogo} handleClick={handleProfileClick} />
       </div>
       {/* <p className="mainTitle">PROCASTING-TREE BIND WITH FLASK</p> */}
       <div className="addFLaskMain">
@@ -362,6 +363,7 @@ export default function AddFlask() {
                 setIsImageVisible(true);
                 invProRef.current?.focus();
               }}
+              inputMode="none"
               value={scanInp}
               onChange={(e) => handelScanInp(e.target.value)}
               onKeyDown={handleKeyDownHIdden}

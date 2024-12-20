@@ -64,9 +64,19 @@ select {
     border: none !important;
 }
 
+.fileIconBtn {
+    display: none;
+}
+
 @media screen and (max-width:1624px) {
-    .date {
+
+    .date,
+    .HomeBtnPc {
         display: none;
+    }
+
+    .fileIconBtn {
+        display: block;
     }
 
     .select_metaltype {
@@ -75,6 +85,8 @@ select {
 
     .menu {
         display: flex;
+        justify-content: start;
+        align-items: center;
     }
 
     .menu_responsive {
@@ -88,5 +100,21 @@ select {
         align-items: center;
         justify-content: space-between;
         gap: 5px
+    }
+}
+
+@media screen and (max-width:1000px) {
+    .refressBtn {
+        display: none;
+    }
+}
+
+@media screen and (max-width:810px) {
+    .refressBtn {
+        display: none;
+    }
+
+    .grid_searchInput {
+        width: 220px !important;
     }
 }

@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import './CreateTree.css'
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Alert, Dialog, Grid, IconButton, Menu, MenuItem, Snackbar, TextField, Tooltip, Typography } from '@mui/material';
+import { Dialog, Typography } from '@mui/material';
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 import { CurrentCamFlag, CurrentImageApi, CurrentImageState } from '../../recoil/Recoil';
 import ImageWebCam from '../imageTag/ImageWebCam';
@@ -16,14 +16,10 @@ import idle from '../../assets/idle.gif'
 import topLogo from '../../assets/oraillogo.png'
 import BarcodeScanner from 'react-barcode-reader';
 import castingTree from '../../assets/castingtree.jpg'
-import EditTreeImg from '../../assets/tree.jpg'
-import { IoMenu } from "react-icons/io5";
-import { CgProfile } from "react-icons/cg";
 import { IoPrint } from "react-icons/io5";
 import { IoInformationCircleSharp } from "react-icons/io5";
 import { CommonAPI } from '../../../Utils/API/CommonApi'
 import { toast } from 'react-toastify';
-import JoinRightIcon from '@mui/icons-material/JoinRight';
 import multimatelB from '../../assets/multimatelB.png';
 import multimatelC from '../../assets/multimatelC.png'
 import ProfileMenu from '../../../Utils/ProfileMenu';
@@ -41,14 +37,14 @@ import {
     Thumbs,
     Scrollbar,
     Keyboard,
-    Mousewheel
 } from "swiper/modules";
 import ImageUploader from '../imageTag/ImageUploader';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import BackButton from '../../../Utils/BackButton';
+import GlobalHeader from '../../../Utils/HeaderLogoSection';
 
 export default function CreateTreeOneV2() {
     const navigation = useNavigate();
+    const location = useLocation()
     const [inputValue, setInputValue] = useState(undefined);
     const [inputValueHidden, setInputValueHidden] = useState('');
     const [enteredValues, setEnteredValues] = useState([]);
@@ -57,15 +53,18 @@ export default function CreateTreeOneV2() {
     const [isImageVisible, setIsImageVisible] = useState(true);
     const [todayDate, setTodayDate] = useState('');
     const CurrentImageValue = useRecoilValue(CurrentImageState);
+    console.log('CurrentImageValue: ', CurrentImageValue);
     const imageApiUrl = useRecoilValue(CurrentImageApi);
-    const setCurrentImageValue = useSetRecoilState(CurrentImageState)
+    console.log('imageApiUrl: ', imageApiUrl);
+    const setCurrentImageValue = useSetRecoilState(CurrentImageState);
+    const setImageApiUrl = useSetRecoilState(CurrentImageApi)
     const [editImage, setEditImage] = useState();
     const [inputWightValue, setInputWeightValue] = useState();
     const [open, setOpen] = useState(false);
     const [openDelete, setOpenDelete] = useState(false);
     const [treeFlag, setTreeFlag] = useState(false)
     const ScanRef = useRef(null)
-    const [addLsit, setAddLsit] = useState(false);
+    // const [addLsit, setAddLsit] = useState(false);
     const [editTreeImg, setEditTreeImg] = useState(false)
     const [remark, setRemark] = useState("");
     const [showEnteredValue, setShowEnteredValue] = useState(false);
@@ -79,13 +78,12 @@ export default function CreateTreeOneV2() {
     const [failJobs, setFailJobs] = useState([]);
     const [jobStatus, setJobStatus] = useState('jobR');
     const [validateTypeColor, setValidateTypeColor] = useState();
-    const [openSnackbar, setOpenSnackbar] = useState(false);
     const [AddTreeResp, setAddTreeResp] = useState({});
-    const [savedTree, setSavedTree] = useState();
-    const [buffer, setBuffer] = useState('');
+    // const [savedTree, setSavedTree] = useState();
+    // const [buffer, setBuffer] = useState('');
     const [editTree, setEditTree] = useState([])
     const [finalWeight, setFinalWeight] = useState();
-    const [editJobs, setEditJobs] = useState([])
+    // const [editJobs, setEditJobs] = useState([])
     const [finalTreeRemark, setFinalTreeRemark] = useState('');
     const [showRemarkBtn, setShowRemarkBtn] = useState(false);
     const [openMenu, setOpenMenu] = useState(false);
@@ -106,10 +104,15 @@ export default function CreateTreeOneV2() {
         clearTimeout(timer);
     };
 
-    const handleDelete = () => {
-        setCurrentImageValue(CurrentImageValue.filter((_, index) => index !== longPressIndex));
+    const handleDeleteImage = (indexToDelete) => {
+        debugger
+        console.log('index to delete: ', indexToDelete);
+        setCurrentImageValue(CurrentImageValue.filter((_, index) => index !== indexToDelete));
+        setImageApiUrl(imageApiUrl?.filter((_, index) => index !== indexToDelete));
+        setEditImage(editImage?.filter((_, index) => index !== indexToDelete));
         setLongPressIndex(null);
     };
+
 
     const handleContextMenu = (event) => {
         event.preventDefault();
@@ -132,7 +135,7 @@ export default function CreateTreeOneV2() {
         }
     }, [rightJobs, failJobs])
 
-    const handleClick = (event) => {
+    const handleProfileClick = (event) => {
         setAnchorEl(event.currentTarget);
         setOpenMenu(true);
     };
@@ -141,11 +144,6 @@ export default function CreateTreeOneV2() {
         setOpenMenu(false);
         setAnchorEl(null);
     };
-
-
-    const location = useLocation()
-
-    console.log("location", location);
 
     useEffect(() => {
 
@@ -183,13 +181,15 @@ export default function CreateTreeOneV2() {
                         if (treeData?.joblist?.length > 0) {
                             TreeJobList = treeData.joblist.split(",").map((ele, i) => {
                                 const matchedJob = res?.Data?.rd2?.find(item => item?.serialjobno === ele);
-                              
+
                                 return {
-                                  id: i + 1,
-                                  job: ele,
-                                  procastingstatusid: matchedJob ? matchedJob?.job_procastingstatusid : treeData?.procastingstatusid
+                                    id: i + 1,
+                                    job: ele,
+                                    procastingstatusid: matchedJob ? matchedJob?.job_procastingstatusid : treeData?.procastingstatusid,
+                                    metalColor: matchedJob ? matchedJob?.MetalColor : treeData?.MetalColor,
+                                    metaltype: `${treeData?.metaltype} ${treeData?.metalpurity}`
                                 };
-                              });
+                            });
 
                             localStorage.setItem("SavedTree", JSON.stringify(treeData))
                             setEnteredValues((prev) => [...prev, ...TreeJobList])
@@ -201,8 +201,6 @@ export default function CreateTreeOneV2() {
                             setShowBtnFlag(true)
                             setValidateTypeColor({ metaltype: `${treeData?.metaltype} ${treeData?.metalpurity}`, metalcolor: `${treeData?.MetalColor}`, procastingstatusid: `${treeData?.procastingstatusid}`, Locationname: `${treeData?.Locationname}` })
                             const photoArray = imageData?.treePhoto?.split(',')?.map(url => ({ url }));
-                            console.log('imageData: ', imageData);
-                            console.log('photoArray: ', photoArray);
                             // setTreePhotos(photoArray);
                             setCurrentImageValue(photoArray)
                             setEditImage(photoArray)
@@ -217,8 +215,6 @@ export default function CreateTreeOneV2() {
         }
 
     }, [location])
-
-    console.log("resTreeQr", editJobs?.length > 0 ? (editJobs.map(item => item.id).join(",")) : (rightJobs.map(item => item.id).join(",")));
 
     useEffect(() => {
         localStorage.removeItem("SavedTree")
@@ -238,48 +234,45 @@ export default function CreateTreeOneV2() {
             setAddTreeResp(SavedLocalTree)
         }
 
-        console.log("SavedCastUniqueTree", SavedCastUniqueTree);
     }, [location])
 
 
-    useEffect(() => {
+    const GETCASTJOBLIST = async () => {
 
-        const GETCASTJOBLIST = async () => {
+        let deviceT = JSON?.parse(localStorage.getItem("initmfg"))?.deviceToken
 
-            let deviceT = JSON?.parse(localStorage.getItem("initmfg"))?.deviceToken
+        let bodyparam = { "deviceToken": `${deviceT}` }
 
-            let bodyparam = { "deviceToken": `${deviceT}` }
+        let ecodedbodyparam = btoa(JSON?.stringify(bodyparam))
 
-            let ecodedbodyparam = btoa(JSON?.stringify(bodyparam))
-
-            let body = {
-                "con": `{\"id\":\"\",\"mode\":\"GETCASTJOBLIST\",\"appuserid\":\"\"}`,
-                "p": `${ecodedbodyparam}`,
-                "f": "formname (album)"
-            }
-
-            await CommonAPI(body).then((res) => {
-                if (res) {
-
-                    let job = res?.Data?.rd
-                    setJobList(job)
-                    // setEnteredValues(job)
-                    // if(mode === "GETCASTJOBLIST"){
-                    //     localStorage.setItem("getcastjoblist",JSON.stringify(res?.Data?.rd))
-                    // }
-                }
-            }).catch((err) => console.log("GET_EMP_PROCASTINGSTAUS_CASTJOBLIST", err))
-
+        let body = {
+            "con": `{\"id\":\"\",\"mode\":\"GETCASTJOBLIST\",\"appuserid\":\"\"}`,
+            "p": `${ecodedbodyparam}`,
+            "f": "formname (album)"
         }
+
+        await CommonAPI(body).then((res) => {
+            if (res) {
+
+                let job = res?.Data?.rd
+                setJobList(job)
+                // setEnteredValues(job)
+                // if(mode === "GETCASTJOBLIST"){
+                //     localStorage.setItem("getcastjoblist",JSON.stringify(res?.Data?.rd))
+                // }
+            }
+        }).catch((err) => console.log("GET_EMP_PROCASTINGSTAUS_CASTJOBLIST", err))
+
+    }
+
+    useEffect(() => {
         GETCASTJOBLIST();
     }, [])
 
     const AddToJobTree = async () => {
-        debugger
         if (inputWightValue) {
             let empData = JSON?.parse(localStorage.getItem("getemp"))
             let deviceT = JSON?.parse(localStorage.getItem("initmfg"))?.deviceToken
-            console.log("validateTypeColor?.procastingstatusid", validateTypeColor)
 
             let bodyparam = {
                 "castingjoblist": `${rightJobs?.map(item => item?.jobId)?.filter(jobId => jobId !== undefined && jobId !== null && jobId !== '').join(",")}`,
@@ -309,7 +302,6 @@ export default function CreateTreeOneV2() {
             }
 
 
-            console.log('bodyparam', JSON.stringify(bodyparam));
 
             let ecodedbodyparam = btoa(JSON.stringify(bodyparam))
 
@@ -321,7 +313,6 @@ export default function CreateTreeOneV2() {
 
             await CommonAPI(body).then((res) => {
                 if (res?.Data.rd[0].stat == 1) {
-                    console.log("res", res?.Data.rd[0])
                     localStorage.setItem("SavedTree", JSON.stringify([res?.Data.rd[0]]))
                     setAddTreeResp(res?.Data.rd[0])
                     setDisableQrBtn(res?.Data.rd[0]?.CastUniqueno)
@@ -364,7 +355,7 @@ export default function CreateTreeOneV2() {
         await CommonAPI(body).then((res) => {
             if (res?.Data.rd[0].stat == 1) {
                 RemoveFromArr = true
-                console.log("resinapi", res)
+                GETCASTJOBLIST()
             } else {
                 toast.error(res?.Data.rd[0]?.stat_msg)
             }
@@ -417,21 +408,25 @@ export default function CreateTreeOneV2() {
 
     const handlePhotoUpload = async () => {
         if (imageApiUrl) {
+            debugger
             let empData = JSON?.parse(localStorage.getItem("getemp"));
             let deviceT = JSON?.parse(localStorage.getItem("initmfg"))?.deviceToken;
-
             let SavedTree = JSON?.parse(localStorage.getItem("SavedTree"));
-
             let updatedImageApiUrl = [];
 
-            if (editImage) {
-                updatedImageApiUrl = [
-                    ...imageApiUrl,
-                    ...editImage.filter(image => image.url).map(image => image.url),
-                ];
-            } else {
-                updatedImageApiUrl = [...imageApiUrl];
+            if (editImage && Array.isArray(editImage)) {
+                if (Array.isArray(imageApiUrl)) {
+                    updatedImageApiUrl = imageApiUrl.map(image => image?.castingtree).filter(Boolean);
+                }
+                const newImages = editImage.filter(image => image && image.url).map(image => image.url);
+                updatedImageApiUrl = [...updatedImageApiUrl, ...newImages];
+            } else if (Array.isArray(imageApiUrl)) {
+                updatedImageApiUrl = imageApiUrl.map(image => image?.castingtree).filter(Boolean);
             }
+
+            console.log('updatedImageApiUrl: ', updatedImageApiUrl);
+
+
 
             let bodyparam = {
                 "castuniqueno": SavedTree?.[0]?.CastUniqueno || SavedTree?.CastUniqueno || '',
@@ -521,9 +516,6 @@ export default function CreateTreeOneV2() {
         setIsImageVisible(true)
     }, [])
 
-
-    console.log("editdasd", editTree);
-
     useEffect(() => {
         setEditTreeImg(JSON?.parse(localStorage.getItem('EditTreePage')))
     }, [])
@@ -549,8 +541,6 @@ export default function CreateTreeOneV2() {
     console.log("AddTreeResp?.length", AddTreeResp);
 
     const handleConfirmation = () => {
-
-        console.log("deleteoption", selectedIndex, editJobs, rightJobs[selectedIndex]);
 
         // console.log("indexToRemove",(jobStatus=== "jobR" ? rightJobs : failJobs ).filter((_, index) => index !== selectedIndex));
 
@@ -593,11 +583,7 @@ export default function CreateTreeOneV2() {
         setInputValueHidden(event.target.value);
     };
 
-    console.log('JobList', jobList)
-
-
     const handleGoButtonClick = () => {
-        debugger
         if (inputValue === '' || inputValue === undefined) {
             setInputError(true)
         } else {
@@ -633,14 +619,18 @@ export default function CreateTreeOneV2() {
 
             if (rightJobs?.length === 0) {
                 // localStorage?.setItem("validate_Type_color",JSON.stringify({metaltype:filterJob?.metaltype,metalcolor:filterJob?.metalcolor}))
-                setValidateTypeColor({ metaltype: filterJob?.metaltype, metalcolor: filterJob?.metalcolor, procastingstatusid: filterJob?.procastingstatusid, Locationname: filterJob?.Locationname })
+                setValidateTypeColor({
+                    metaltype: filterJob?.metaltype,
+                    metalcolor: filterJob?.metalcolor,
+                    procastingstatusid: filterJob?.procastingstatusid,
+                    Locationname: filterJob?.Locationname
+                })
             }
 
 
             if (isImageVisible) {
                 if (filterJob) {
                     let duplicateJobs = rightJobs.find((ele) => ele?.job == filterJob?.job)
-                    console.log("duplicateJobs", duplicateJobs)
                     if (duplicateJobs) {
                         toast.error("Alredy Job Added Into Tree", { position: 'top-left' })
                     } else {
@@ -737,7 +727,6 @@ export default function CreateTreeOneV2() {
 
                 if (filterJob) {
                     let duplicateJobs = rightJobs.find((ele) => ele?.job == filterJob?.job)
-                    console.log("duplicateJobs", duplicateJobs)
                     if (duplicateJobs) {
                         toast.error("Alredy Job Added Into Tree", { position: 'top-left' })
                     } else {
@@ -778,11 +767,6 @@ export default function CreateTreeOneV2() {
 
     const handleMoreInfoShow = () => {
         setDialogOpen(true)
-        // if (addLsit === false) {
-        //     setAddLsit(true);
-        //     let newData = ['1/1111', '2/2222', '3/3333', '4/4444']
-        //     setEnteredValues([...enteredValues, ...newData]);
-        // }
     }
 
     const handlePrintDialogShow = () => {
@@ -794,15 +778,15 @@ export default function CreateTreeOneV2() {
         if (value === '') {
             setTreeFlag(false);
             setInputWeightValue(value);
-        } else if (parseFloat(value) > 0) {
-            setTreeFlag(true);
-            const newValue = value.replace(/\D/g, '');
-
-            if (newValue.length <= 5) {
-                setInputWeightValue(value);
+        } else {
+            const regex = /^(\d+(\.\d{0,3})?)?$/;
+            if (regex.test(value)) {
+                setTreeFlag(true);
+                const newValue = value.replace(/\D/g, '');
+                if (newValue.length <= 100) {
+                    setInputWeightValue(value);
+                }
             }
-        } else if (parseFloat(value) <= 0) {
-            toast.error("Weight must be greater than 0");
         }
     };
 
@@ -811,18 +795,14 @@ export default function CreateTreeOneV2() {
         navigation('/homeone?openModal=true');
     };
 
-
     const handleSave = () => {
         setSaveOpen(true)
     }
 
     const toggleImageVisibility = () => {
-        // let safe = ScanRef.current
-
         if (ScanRef.current && !treeFlag) {
             ScanRef.current.focus();
         }
-
     };
 
     useEffect(() => {
@@ -830,7 +810,6 @@ export default function CreateTreeOneV2() {
             const uniqueArray = [...new Set(rightJobs)];
             setRightJobs(uniqueArray)
         }
-        console.log("duplicateArr", rightJobs);
     }, [enteredValues])
 
 
@@ -838,22 +817,64 @@ export default function CreateTreeOneV2() {
     const handleOpenRemark = () => setOpenRemarkModal(true);
     const handleRemarkMClose = () => setOpenRemarkModal(false);
 
-
-
-
     return (
         <>
             <Dialog
                 open={saveOpen}
                 onClose={() => setSaveOpen(false)}
-                maxWidth
+                maxWidth="sm"
+                PaperProps={{
+                    sx: {
+                        boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
+                        paddingBottom: '10px',
+                        minWidth: '300px',
+                        minHeight: '10px',
+                        borderRadius: '10px'
+                    },
+                }}
             >
                 <DialogTitle sx={{ textAlign: 'center' }}>
                     Are you want to Save ?
                 </DialogTitle>
-                <DialogActions>
-                    <Button style={{ backgroundColor: 'black', color: 'white', textTransform: 'capitalize' }} onClick={handleAddJobTree}>save</Button>
-                    <Button style={{ backgroundColor: 'black', color: 'white', textTransform: 'capitalize' }} onClick={() => setSaveOpen(false)}>close</Button>
+                <DialogActions sx={{ padding: '16px 24px' }}>
+                    <Button
+                        sx={{
+                            backgroundColor: 'black',
+                            color: 'white',
+                            border: '1px solid #000',
+                            textTransform: 'capitalize',
+                            borderRadius: '5px',
+                            padding: '5px 20px 5px 20px',
+                            cursor: 'pointer',
+                            '&:hover': {
+                                backgroundColor: '#fff',
+                                color: '#000'
+                            },
+
+                        }}
+                        onClick={handleAddJobTree}
+                    >
+                        Save
+                    </Button>
+                    <Button
+                        sx={{
+                            backgroundColor: '#fff',
+                            color: '#000',
+                            border: '1px solid #000',
+                            textTransform: 'capitalize',
+                            borderRadius: '5px',
+                            padding: '5px 20px 5px 20px',
+                            cursor: 'pointer',
+                            '&:hover': {
+                                backgroundColor: '#000',
+                                color: '#fff'
+                            },
+                        }}
+                        onClick={() => setSaveOpen(false)}
+                    >
+                        Close
+                    </Button>
+
                 </DialogActions>
             </Dialog>
 
@@ -921,7 +942,7 @@ export default function CreateTreeOneV2() {
                         onClick={() => {
                             setSaveWtOpen(false)
                             setShowBtnFlag(true)
-                            console.log("condition", Object.keys(AddTreeResp)?.length > 0, editTree?.length > 0);
+                            // console.log("condition", Object.keys(AddTreeResp)?.length > 0, editTree?.length > 0);
                             if (Object.keys(AddTreeResp)?.length > 0 || editTree?.length > 0) {
                                 handleUpdateWeightApi()
                             }
@@ -969,10 +990,6 @@ export default function CreateTreeOneV2() {
                 <div className="TopBtnDivMainOneV2">
                     <div style={{ display: 'flex', alignItems: 'center' }}>
                         <BackButton />
-                        <CgProfile style={{ height: '30px', width: '30px', marginLeft: '15px' }} onClick={handleClick} />
-
-
-
                         <p className='headerV2Title' >CREATE NEW BATCH</p>
                         {openMenu &&
                             <ProfileMenu open={openMenu} anchorEl={anchorEl} handleClose={handleMenuClose} />
@@ -981,22 +998,7 @@ export default function CreateTreeOneV2() {
                     <div>
                         {totalValues !== 0 && <p className='FixedGoldColorText'>{validateTypeColor?.metaltype} {validateTypeColor?.metalcolor}</p>}
                     </div>
-                    <div
-                        style={{ display: "flex", alignItems: "center", cursor: 'pointer' }}
-                        onClick={() => navigation("/homeone")}
-                    >
-                        <img src={topLogo} style={{ width: "75px" }} />
-                        <p
-                            style={{
-                                fontSize: "25px",
-                                opacity: "0.6",
-                                margin: "0px 10px",
-                                fontWeight: 500,
-                            }}
-                        >
-                            <span style={{ color: "#00FFFF", opacity: "1" }}>Pro</span>Casting
-                        </p>
-                    </div>
+                    <GlobalHeader topLogo={topLogo} handleClick={handleProfileClick} />
                 </div>
                 <div style={{ display: 'flex', marginTop: '0px', flexWrap: 'wrap' }} className='body_container'>
                     <div className='scaneUploadMain'>
@@ -1009,22 +1011,30 @@ export default function CreateTreeOneV2() {
                                         <img src={idle} />
                                     </div>}
                                 <div>
-                                    {isImageVisible && <p style={{ fontWeight: 'bold', marginLeft: '-30px', marginTop: '-12px' }}> <span style={{ color: 'red' }}>Click</span> On The Image For Scan<span style={{ color: 'red' }}>*</span></p>}
+                                    {isImageVisible && <p
+                                        style={{
+                                            fontWeight: 'bold',
+                                            marginLeft: '-30px',
+                                            marginTop: '-12px'
+                                        }}> <span style={{ color: 'red' }}>Click</span> On The Image For Scan<span style={{ color: 'red' }}>*</span></p>}
 
                                     <input
-                                        type='text'
-                                        id="hiddeninp"
+                                        // type='text'
+                                        // id="hiddeninp"
                                         ref={ScanRef}
-                                        onBlur={() => { setIsImageVisible(true) }}
-                                        onFocus={() => setIsImageVisible(false)}
+                                        onBlur={() => {
+                                            setIsImageVisible(true);
+                                        }}
+                                        onFocus={() => {
+                                            setIsImageVisible(false);
+                                        }}
+                                        inputMode='none'
                                         value={inputValueHidden}
-                                        // onInput={handleInputChangeHidden} 
                                         onChange={handleInputChangeHidden}
                                         onKeyDown={handleKeyDownHidden}
                                         style={{ width: '20px', position: 'absolute', top: '80px', left: '50px', zIndex: -1 }}
                                         disabled={showRemarkBtn && AddTreeResp?.stat === 1}
                                     />
-
                                     <button style={{
                                         position: "absolute",
                                         left: "50px",
@@ -1089,7 +1099,6 @@ export default function CreateTreeOneV2() {
                             </>}
                             {finalWeight && (
                                 <>
-                                {console.log('finalWeight',AddTreeResp)}
                                     {showRemarkBtn ? (
                                         <button className="saveBtn" onClick={handleSaveNew}>
                                             Save & New
@@ -1114,12 +1123,11 @@ export default function CreateTreeOneV2() {
                             <div className='CreateDataMain'>
                                 {(jobStatus === "jobR" ? rightJobs : failJobs)?.map((value, index) => (
                                     <div className='allScandataMain' >
-                                        {console.log('jakjsja', value)}
                                         <div style={{ width: '50px' }}>
                                             {value?.job?.includes("(B") ? (
-                                                <img src={multimatelB} alt={"multimatelB"} style={{ height: '26px'  }} />
+                                                <img src={multimatelB} alt={"multimatelB"} style={{ height: '26px' }} />
                                             ) : value?.job?.includes("(C") ? (
-                                                <img src={multimatelC} alt={"multimatelC"} style={{ height: '26px'}} />
+                                                <img src={multimatelC} alt={"multimatelC"} style={{ height: '26px' }} />
                                             ) : null}
                                         </div>
                                         {/* {value?.job?.includes("(") ? <img src={multimatel} alt={"multimatel"} style={{ width: '40px' }} /> : null} */}
@@ -1185,7 +1193,7 @@ export default function CreateTreeOneV2() {
                                                             cursor: 'pointer',
                                                             borderRadius: '4px',
                                                         }}
-                                                        onClick={handleDelete}
+                                                        onClick={() => handleDeleteImage(index)}
                                                     >
                                                         Delete
                                                     </div>
@@ -1245,10 +1253,11 @@ export default function CreateTreeOneV2() {
 
                                 <ImageUploader
                                     treeBatch={location?.state?.CastBatch}
-                                    lableName={editTreeImg ? 'Edit Tree' : 'Upload Tree'}
+                                    lableName={editTreeImg ? 'Edit Tree' : 'Upload Tree Image'}
                                     mode="savetreephoto"
                                     uploadName="castingtree"
                                 />
+
 
                             )}
                             {showRemarkBtn &&

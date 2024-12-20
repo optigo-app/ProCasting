@@ -26,7 +26,7 @@ import { CurrentCamFlag, CurrentImageApi, CurrentImageState } from "../../recoil
 import ImageWebCam from "../imageTag/ImageWebCam";
 import topLogo from "../../assets/oraillogo.png";
 import { json, useLocation, useNavigate } from "react-router-dom";
-import notiSound from "../../sound/Timeout.mpeg";
+import notiSound from "../../sound/Timeout.wav";
 import Sound from "react-sound";
 import { CommonAPI } from "../../../Utils/API/CommonApi";
 import {
@@ -51,6 +51,8 @@ import {
 } from "swiper/modules";
 import ImageUploader from "../imageTag/ImageUploader";
 import BackButton from "../../../Utils/BackButton";
+import { fetchTreeFlaskBindList } from "../../../Utils/API/TreeFlaskBindListApi";
+import GlobalHeader from "../../../Utils/HeaderLogoSection";
 
 export default function InvestMentFirst() {
   const [inputValue, setInputValue] = useState("");
@@ -65,9 +67,9 @@ export default function InvestMentFirst() {
   const [defaultImg, setDefaultImg] = useState(false);
   const CurrentImageValue = useRecoilValue(CurrentImageState);
   const imageApiUrl = useRecoilValue(CurrentImageApi);
-  console.log('imageApiUrl: ', imageApiUrl);
   const setCurrentImageValue = useSetRecoilState(CurrentImageState);
-  const [weight, setWeight] = useState(false);
+  const setImageApiUrl = useSetRecoilState(CurrentImageApi)
+  // const [weight, setWeight] = useState(false);
   const [TDS, setTDS] = useState(undefined);
   const [phValue, setPhValue] = useState(undefined);
   const [showTimmerBtn, setShowTimmerBtn] = useState(false);
@@ -78,7 +80,7 @@ export default function InvestMentFirst() {
   const [eviIndex, setEviIndex] = useState([]);
   const [weightInp, setWeightInp] = useState("");
   const [saveData, setSaveData] = useState(false);
-  const [goBtnFlag, setGoBtnFlag] = useState(false);
+  // const [goBtnFlag, setGoBtnFlag] = useState(false);
   const [openDelete, setOpenDelete] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(null);
   const [isImgUpload, setIsImgUpload] = useRecoilState(CurrentCamFlag);
@@ -121,10 +123,9 @@ export default function InvestMentFirst() {
     clearTimeout(timer);
   };
 
-  const handleDelete = () => {
-    setCurrentImageValue(
-      CurrentImageValue.filter((_, index) => index !== longPressIndex)
-    );
+  const handleDeleteImage = (indexToDelete) => {
+    setCurrentImageValue(CurrentImageValue.filter((_, index) => index !== indexToDelete));
+    setImageApiUrl(imageApiUrl?.filter((_, index) => index !== indexToDelete));
     setLongPressIndex(null);
   };
 
@@ -132,7 +133,7 @@ export default function InvestMentFirst() {
     event.preventDefault();
   };
 
-  const handleClick = (event) => {
+  const handleProfileClick = (event) => {
     setAnchorEl(event.currentTarget);
     setOpenMenu(true);
   };
@@ -246,31 +247,12 @@ export default function InvestMentFirst() {
     return treeVal;
   };
 
+  // flask bind-list Api call
   const getTreeFalskBindList = async () => {
-    let empData = JSON.parse(localStorage.getItem("getemp"));
-    let deviceT = JSON.parse(localStorage.getItem("initmfg"))?.deviceToken;
-
-    let bodyparam = {
-      deviceToken: `${deviceT}`,
-    };
-
-    let ecodedbodyparam = btoa(JSON.stringify(bodyparam));
-
-    let body = {
-      con: `{\"id\":\"\",\"mode\":\"GETTREEFLASKBINDLIST\",\"appuserid\":\"${empData?.empuserid}\"}`,
-      p: `${ecodedbodyparam}`,
-      f: "formname (album)",
-    };
-
-    await CommonAPI(body)
-      .then((res) => {
-        if (res?.Data.rd?.length) {
-          setTreeFlaskBindList(res?.Data.rd);
-        }
-      })
-      .catch((err) => {
-        console.log("err", err);
-      });
+    const flaskbindlist = await fetchTreeFlaskBindList();
+    if (flaskbindlist?.Data?.rd) {
+      setTreeFlaskBindList(flaskbindlist?.Data?.rd);
+    }
   };
 
   const InvestFlaskBind = async () => {
@@ -447,7 +429,7 @@ export default function InvestMentFirst() {
 
   useEffect(() => {
     getTreeFalskBindList();
-    let flasklist = JSON.parse(sessionStorage.getItem("flasklist"));
+    let flasklist = JSON?.parse(sessionStorage.getItem("flasklist"));
     if (!flasklist) {
       fetchFlaskList();
     }
@@ -455,7 +437,6 @@ export default function InvestMentFirst() {
 
   useEffect(() => {
     if (enteredValues) {
-      console.log('enteredValues: ', enteredValues);
       setWeightInp(enteredValues[enteredValues?.length - 1]?.requirepowder);
       setWaterWeight(enteredValues[enteredValues?.length - 1]?.requirewater);
     }
@@ -513,8 +494,10 @@ export default function InvestMentFirst() {
     setInputValue(event.target.value);
   };
 
+  console.log('enterdvalue', enteredValues)
+
   const handleGoButtonClick = async () => {
-    debugger;
+    debugger
     if (inputValue === "" || inputValue === undefined) {
       setInputError(true);
     } else {
@@ -525,6 +508,19 @@ export default function InvestMentFirst() {
       let FinalFlaskList = flasklist?.filter(
         (ele) => inputValue == ele?.flaskbarcode
       );
+
+      // Check if the scanned flask is already in enteredValues
+      const isAlreadyScanned = enteredValues?.some(
+        (value) => value?.flaskid === FinalFlaskList[0]?.flaskid
+      );
+
+      if (isAlreadyScanned) {
+        toast.error("This flask has already been scanned!");
+        return;
+      }
+
+      console.log('FinalFlaskList: ', FinalFlaskList);
+
 
       let investmentVal;
 
@@ -573,6 +569,16 @@ export default function InvestMentFirst() {
       let FinalFlaskList = flasklist?.filter(
         (ele) => scanInp == ele?.flaskbarcode
       );
+
+      // Check if the scanned flask is already in enteredValues
+      const isAlreadyScanned = enteredValues?.some(
+        (value) => value?.flaskid === FinalFlaskList[0]?.flaskid
+      );
+
+      if (isAlreadyScanned) {
+        toast.error("This flask has already been scanned!");
+        return;
+      }
 
       let investmentVal;
 
@@ -834,6 +840,7 @@ export default function InvestMentFirst() {
   useEffect(() => {
     const fetchData = async () => {
       let data = location?.state;
+      console.log('data: ', data);
       if (data) {
         setWeightInp(data?.powderwt);
         setWaterWeight(data?.waterwt);
@@ -863,7 +870,7 @@ export default function InvestMentFirst() {
             (ele) => ele?.castuniqueno === castuniqueno
           );
           if (bindTreeFlask?.length > 0) {
-            setFlaskBindData(bindTreeFlask[0]?.flaskbinddate);
+            // setFlaskBindData(bindTreeFlask[0]?.flaskbinddate);
           }
         } catch (error) {
           console.error("Error fetching tree data:", error);
@@ -906,17 +913,13 @@ export default function InvestMentFirst() {
 
           setElapsedTime({ hours, minutes, seconds });
           setShowTime(false);
+          setToastShown(true);
         }, 1000);
 
         return () => clearInterval(interval);
       }
     }
   }, [location, TreeFlaskBindList]);
-
-
-  console.log('enteredValues', enteredValues);
-
-  console.log('jhsjhjhasjds', location?.search)
 
   return (
     <div>
@@ -1039,7 +1042,7 @@ export default function InvestMentFirst() {
                         padding: "5px",
                         cursor: "pointer",
                       }}
-                      onClick={handleDelete}
+                      onClick={() => handleDeleteImage(index)}
                     >
                       Delete
                     </div>
@@ -1057,10 +1060,10 @@ export default function InvestMentFirst() {
         <div className="TopBtnDivMainOneV2">
           <div style={{ display: "flex", alignItems: "center" }}>
             <BackButton />
-            <CgProfile
+            {/* <CgProfile
               style={{ height: "30px", width: "30px", marginLeft: "15px" }}
               onClick={handleClick}
-            />
+            /> */}
             <p className="headerV2Title"> INVESTMENT PROCESS</p>
             {openMenu && (
               <ProfileMenu
@@ -1070,7 +1073,7 @@ export default function InvestMentFirst() {
               />
             )}
           </div>
-          <div
+          {/* <div
             style={{ display: "flex", alignItems: "center", cursor: "pointer" }}
             onClick={() => naviagtion("/homeone")}
           >
@@ -1085,7 +1088,8 @@ export default function InvestMentFirst() {
             >
               <span style={{ color: "#00FFFF", opacity: "1" }}>Pro</span>Casting
             </p>
-          </div>
+          </div> */}
+          <GlobalHeader topLogo={topLogo} handleClick={handleProfileClick} />
         </div>
         <div
           style={{
@@ -1149,6 +1153,7 @@ export default function InvestMentFirst() {
                       top: "70px",
                       zIndex: -1,
                     }}
+                    inputMode="none"
                     ref={invProRef}
                     onBlur={() => {
                       setIsImageVisible(false);
@@ -1550,12 +1555,14 @@ export default function InvestMentFirst() {
                   >
                     Upload Image
                   </button> */}
-                  <ImageUploader
-                    treeBatch={enteredValues[0]?.CastBatchNo}
-                    lableName={'Upload Image'}
-                    mode="investmentreturnphoto"
-                    uploadName="investmentreturn"
-                  />
+                  {toastShown &&
+                    <ImageUploader
+                      treeBatch={enteredValues[0]?.CastBatchNo}
+                      lableName={'Upload Image'}
+                      mode="investmentreturnphoto"
+                      uploadName="investmentreturn"
+                    />
+                  }
                   {CurrentImageValue.length !== 0 && (
                     <div
                       style={{

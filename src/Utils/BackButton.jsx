@@ -1,6 +1,6 @@
 import React from 'react';
 import { IconButton } from '@mui/material';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import HomeIcon from '@mui/icons-material/Home';
 import { useNavigate } from 'react-router-dom';
 
 const BackButton = ({ style, fontSize = '30px', fontWeight = 'bold', color = '#000', padding }) => {
@@ -8,10 +8,10 @@ const BackButton = ({ style, fontSize = '30px', fontWeight = 'bold', color = '#0
 
   return (
     <IconButton 
-      onClick={() => navigate(-1)} 
+      onClick={() => navigate('/homeone')} 
       style={{ margin: '0px 10px', ...style, padding:padding }}
     >
-      <ArrowBackIcon sx={{ fontSize, fontWeight, color }} />
+      <HomeIcon sx={{ fontSize, fontWeight, color }} />
     </IconButton>
   );
 };

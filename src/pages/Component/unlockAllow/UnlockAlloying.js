@@ -12,7 +12,7 @@ import Countdown from "react-countdown";
 import { toast } from "react-toastify";
 import topLogo from '../../assets/oraillogo.png'
 import { useNavigate } from "react-router-dom";
-import notiSound from "../../sound/Timeout.mpeg";
+import notiSound from "../../sound/Timeout.wav";
 import Sound from "react-sound";
 import { CommonAPI } from '../../../Utils/API/CommonApi'
 import { convertToMilliseconds } from "../../../Utils/globalFunction";
@@ -20,6 +20,9 @@ import { CgProfile } from "react-icons/cg";
 import ProfileMenu from "../../../Utils/ProfileMenu";
 import DeleteTreeModal from "../../../Utils/DeleteTreeModal";
 import BackButton from "../../../Utils/BackButton";
+import { fetchFlaskList } from "../../../Utils/API/GetFlaskList";
+import { fetchTreeFlaskBindList } from "../../../Utils/API/TreeFlaskBindListApi";
+import GlobalHeader from "../../../Utils/HeaderLogoSection";
 
 
 
@@ -55,12 +58,11 @@ export default function UnlockAlloying() {
 
   const [scanInp, setScanInp] = useState('');
 
-  console.log("timerCompleted", timerCompleted);
   const [openMenu, setOpenMenu] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
 
 
-  const handleClick = (event) => {
+  const handleProfileClick = (event) => {
     setAnchorEl(event.currentTarget);
     setOpenMenu(true);
   };
@@ -71,38 +73,26 @@ export default function UnlockAlloying() {
   };
 
 
+  // flask bind-list Api call
   const getTreeFalskBindList = async () => {
-
-    let empData = JSON.parse(localStorage.getItem("getemp"))
-    let deviceT = JSON.parse(localStorage.getItem("initmfg"))?.deviceToken
-
-    let bodyparam = {
-      "deviceToken": `${deviceT}`
+    const flaskbindlist = await fetchTreeFlaskBindList();
+    if (flaskbindlist?.Data?.rd) {
+      setTreeFlaskBindList(flaskbindlist?.Data?.rd);
     }
+  };
 
-    let ecodedbodyparam = btoa(JSON.stringify(bodyparam))
-
-    let body = {
-      "con": `{\"id\":\"\",\"mode\":\"GETTREEFLASKBINDLIST\",\"appuserid\":\"${empData?.empuserid}\"}`,
-      "p": `${ecodedbodyparam}`,
-      "f": "formname (album)"
-    }
-
-    await CommonAPI(body).then((res) => {
-      if (res?.Data.rd?.length) {
-        setTreeFlaskBindList(res?.Data.rd)
-      }
-    }).catch((err) => {
-      console.log("err", err)
-    })
-
-  }
-
-  console.log("enteredValues", enteredValues);
 
   useEffect(() => {
     getTreeFalskBindList();
   }, [])
+
+  useEffect(() => {
+    getTreeFalskBindList();
+    let flasklist = JSON?.parse(sessionStorage.getItem("flasklist"));
+    if (!flasklist) {
+      fetchFlaskList();
+    }
+  }, []);
 
   const GetTreeDataApi = async (castUniqueno) => {
     let empData = JSON.parse(localStorage.getItem("getemp"))
@@ -130,13 +120,11 @@ export default function UnlockAlloying() {
     if (castUniqueno) {
       await CommonAPI(body).then((res) => {
         if (res?.Data.rd[0].stat == 1) {
-          console.log(res?.Data.rd[0])
           if (castingStatus === null) {
             setCastingStatus(res?.Data.rd[0]?.procastingstatus)
           }
           treeVal = res?.Data.rd[0]
         }
-        console.log("resTreeQr", res);
       }).catch((err) => {
         console.log("err", err)
       })
@@ -296,6 +284,7 @@ export default function UnlockAlloying() {
 
       // setShowTimmer(true);
     }
+
     else if (openPoupuNumber === 3) {
       let timer = <span style={{ fontSize: '25px', color: 'red' }}><Countdown date={Date.now() + convertToMilliseconds("unlock")} renderer={renderer} /></span>
       setThirdTableData((prev) => [
@@ -305,6 +294,7 @@ export default function UnlockAlloying() {
 
       // setShowTimmer(true);
     }
+
     else if (openPoupuNumber === 4) {
       let timer = <span style={{ fontSize: '25px', color: 'red' }}><Countdown date={Date.now() + convertToMilliseconds("unlock")} renderer={renderer} /></span>
       setFourthTableData((prev) => [
@@ -317,9 +307,6 @@ export default function UnlockAlloying() {
     setOpen(false);
     setEnteredValuesPopup([]);
   };
-  console.log('fistTsbl....', firtstTableData);
-
-
 
   const handleClose = () => {
     setOpen(false);
@@ -362,7 +349,6 @@ export default function UnlockAlloying() {
           let TreeData = await GetTreeDataApi(bindTreeFlask?.castuniqueno);
           if (TreeData && Object.keys(TreeData).length > 0) {
             let validateFlask = await ValidateAlloyingUnlock(bindTreeFlask?.castuniqueno, FinalFlaskList?.flaskid)
-            console.log('validateFlask: ', validateFlask);
             if (validateFlask?.stat != 0) {
               investmentVal = { ...TreeData, ...FinalFlaskList, investmentid: bindTreeFlask?.investmentid };
               setEnteredValues([...enteredValues, investmentVal]);
@@ -429,7 +415,6 @@ export default function UnlockAlloying() {
 
   const handleConfirmation = () => {
     setEnteredValuesPopup(enteredValuesPopup.filter((_, index) => index !== selectedIndex));
-    console.log("indexToRemove", firtstTableData);
 
     setOpenDelete(false);
   };
@@ -606,7 +591,7 @@ export default function UnlockAlloying() {
       <div className="TopBtnDivMainOneV2">
         <div style={{ display: 'flex', alignItems: 'center' }}>
           <BackButton />
-          <CgProfile style={{ height: '30px', width: '30px', marginLeft: '15px' }} onClick={handleClick} />
+          {/* <CgProfile style={{ height: '30px', width: '30px', marginLeft: '15px' }} onClick={handleClick} /> */}
           <p className="headerV2Title">
             CASTING UNLOCK PROCESS
           </p>
@@ -614,10 +599,11 @@ export default function UnlockAlloying() {
             <ProfileMenu open={openMenu} anchorEl={anchorEl} handleClose={handleMenuClose} />
           }
         </div>
-        <div style={{ display: 'flex', alignItems: 'center' }} onClick={() => naviagtion('/homeone')}>
+        {/* <div style={{ display: 'flex', alignItems: 'center' }} onClick={() => naviagtion('/homeone')}>
           <img src={topLogo} style={{ width: '75px' }} />
           <p style={{ fontSize: '25px', opacity: '0.6', margin: '0px 10px', fontWeight: 500 }}><span style={{ color: '#00FFFF', opacity: '1' }}>Pro</span>Casting</p>
-        </div>
+        </div> */}
+        <GlobalHeader topLogo={topLogo} handleClick={handleProfileClick} />
       </div>
 
       {/* <button onClick={handelclick}>{realTime ? "pause" : "start"}</button> */}
@@ -656,6 +642,7 @@ export default function UnlockAlloying() {
                 top: "70px",
                 zIndex: -1,
               }}
+              inputMode="none"
               ref={scanRef}
               onBlur={() => {
                 setIsImageVisible(false);
@@ -723,7 +710,15 @@ export default function UnlockAlloying() {
         }}
           style={{ marginInline: '2%', marginTop: '10px', width: '200px', backgroundColor: 'black', color: 'white' }}>
 
-          <Typography sx={{ textTransform: 'capitalize', fontWeight: '600', fontFamily: 'sans-serif', letterSpacing: 0.5, backgroundColor: 'black', color: 'white' }}>Move To Table</Typography>
+          <Typography sx={{
+            textTransform: 'capitalize',
+            fontWeight: '600',
+            fontFamily: 'sans-serif',
+            letterSpacing: 0.5,
+            backgroundColor: 'black',
+            color: 'white'
+          }}
+          >Move To Table</Typography>
         </Button>}
         {showTable &&
           <div style={{ display: 'flex', justifyContent: 'center', marginTop: '10px' }}>
@@ -746,7 +741,6 @@ export default function UnlockAlloying() {
               :
               <div style={{ display: 'flex', flexDirection: 'column' }}>
                 {firtstTableData.map((data, index) => {
-                  console.log("data", data)
                   return (
                     <div className='tableDataMain' onClick={() => handleOpenPopup(1)}>
                       <div style={{ display: 'flex', justifyContent: 'space-around' }}>

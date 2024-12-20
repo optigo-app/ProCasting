@@ -22,11 +22,11 @@ import React, {
   import "react-toastify/dist/ReactToastify.css";
   import uploadcloud from "../../assets/uploadCloud.png";
   import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
-  import { CurrentCamFlag, CurrentImageState } from "../../recoil/Recoil";
+  import { CurrentCamFlag, CurrentImageApi, CurrentImageState } from "../../recoil/Recoil";
   import ImageWebCam from "../imageTag/ImageWebCam";
   import topLogo from "../../assets/oraillogo.png";
-  import { useLocation, useNavigate } from "react-router-dom";
-  import notiSound from "../../sound/Timeout.mpeg";
+  import { json, useLocation, useNavigate } from "react-router-dom";
+  import notiSound from "../../sound/Timeout.wav";
   import Sound from "react-sound";
   import { CommonAPI } from "../../../Utils/API/CommonApi";
   import {
@@ -50,6 +50,9 @@ import React, {
     Mousewheel,
   } from "swiper/modules";
   import ImageUploader from "../imageTag/ImageUploader";
+  import BackButton from "../../../Utils/BackButton";
+  import { fetchTreeFlaskBindList } from "../../../Utils/API/TreeFlaskBindListApi";
+  import GlobalHeader from "../../../Utils/HeaderLogoSection";
   
   export default function InvestMentFirst() {
     const [inputValue, setInputValue] = useState("");
@@ -63,6 +66,7 @@ import React, {
     const [orangeImg, setOrangImg] = useState(false);
     const [defaultImg, setDefaultImg] = useState(false);
     const CurrentImageValue = useRecoilValue(CurrentImageState);
+    const imageApiUrl = useRecoilValue(CurrentImageApi);
     const setCurrentImageValue = useSetRecoilState(CurrentImageState);
     const [weight, setWeight] = useState(false);
     const [TDS, setTDS] = useState(undefined);
@@ -129,7 +133,7 @@ import React, {
       event.preventDefault();
     };
   
-    const handleClick = (event) => {
+    const handleProfileClick = (event) => {
       setAnchorEl(event.currentTarget);
       setOpenMenu(true);
     };
@@ -139,24 +143,24 @@ import React, {
       setAnchorEl(null);
     };
   
-    useEffect(() => {
-      let timerInterval = null;
+    // useEffect(() => {
+    //   let timerInterval = null;
   
-      if (isActive && timeLeft > 0) {
-        timerInterval = setInterval(() => {
-          setTimeLeft((prevTime) => prevTime - 1000);
-        }, 1000);
-      } else if (timeLeft === 0 && isActive) {
-        clearInterval(timerInterval);
-        if (isActive) {
-          // toast.error("Your Time is over");
-          setIsActive(false);
-          TimeNotify();
-        }
-      }
+    //   if (isActive && timeLeft > 0) {
+    //     timerInterval = setInterval(() => {
+    //       setTimeLeft((prevTime) => prevTime - 1000);
+    //     }, 1000);
+    //   } else if (timeLeft === 0 && isActive) {
+    //     clearInterval(timerInterval);
+    //     if (isActive) {
+    //       // toast.error("Your Time is over");
+    //       setIsActive(false);
+    //       TimeNotify();
+    //     }
+    //   }
   
-      return () => clearInterval(timerInterval);
-    }, [isActive, timeLeft]);
+    //   return () => clearInterval(timerInterval);
+    // }, [isActive, timeLeft]);
   
     const startTimer = () => {
       setIsActive(true);
@@ -243,31 +247,12 @@ import React, {
       return treeVal;
     };
   
+    // flask bind-list Api call
     const getTreeFalskBindList = async () => {
-      let empData = JSON.parse(localStorage.getItem("getemp"));
-      let deviceT = JSON.parse(localStorage.getItem("initmfg"))?.deviceToken;
-  
-      let bodyparam = {
-        deviceToken: `${deviceT}`,
-      };
-  
-      let ecodedbodyparam = btoa(JSON.stringify(bodyparam));
-  
-      let body = {
-        con: `{\"id\":\"\",\"mode\":\"GETTREEFLASKBINDLIST\",\"appuserid\":\"${empData?.empuserid}\"}`,
-        p: `${ecodedbodyparam}`,
-        f: "formname (album)",
-      };
-  
-      await CommonAPI(body)
-        .then((res) => {
-          if (res?.Data.rd?.length) {
-            setTreeFlaskBindList(res?.Data.rd);
-          }
-        })
-        .catch((err) => {
-          console.log("err", err);
-        });
+      const flaskbindlist = await fetchTreeFlaskBindList();
+      if (flaskbindlist?.Data?.rd) {
+        setTreeFlaskBindList(flaskbindlist?.Data?.rd);
+      }
     };
   
     const InvestFlaskBind = async () => {
@@ -357,12 +342,18 @@ import React, {
         // Retrieve location state
         let data = location?.state;
   
+        // alert('image url', JSON.stringify(imageApiUrl?.join(',')))
+  
         // Prepare body parameters
         let bodyparam = {
           investmentid: FlaskinvestId ?? data?.investmentid,
           investmentstartdate: InvestApiTime?.startTime ?? data?.investmentDate,
           investmentenddate: InvestApiTime?.endTime ?? new Date(),
-          investmentphoto: CurrentImageValue ?? CurrentImageValue[0],
+          // investmentphoto:
+          //   fileBase64 !== ""
+          //     ? fileBase64[0]
+          //     : CurrentImageValue[0] ?? CurrentImageValue[0],
+          investmentphoto: imageApiUrl?.join(','),
           empid: `${empData?.empid}`,
           empuserid: `${empData?.empuserid}`,
           empcode: `${empData?.empcode}`,
@@ -438,7 +429,7 @@ import React, {
   
     useEffect(() => {
       getTreeFalskBindList();
-      let flasklist = JSON.parse(sessionStorage.getItem("flasklist"));
+      let flasklist = JSON?.parse(sessionStorage.getItem("flasklist"));
       if (!flasklist) {
         fetchFlaskList();
       }
@@ -534,7 +525,7 @@ import React, {
               setEnteredValues([...enteredValues, investmentVal]);
               // if (FlaskImg?.length != 0) {
               let initmfg = JSON.parse(localStorage.getItem("initmfg"));
-              let ImgPath = `${initmfg?.UploadLogicalPath}${initmfg?.ukey}/procasting/`;
+              let ImgPath = `${initmfg?.LibPath}/procasting/`;
               setFlaskImg(ImgPath);
               // }
             } else {
@@ -582,7 +573,8 @@ import React, {
               setEnteredValues([...enteredValues, investmentVal]);
               if (FlaskImg?.length == 0) {
                 let initmfg = JSON.parse(localStorage.getItem("initmfg"));
-                let ImgPath = `${initmfg?.UploadLogicalPath}${initmfg?.ukey}/procasting/`;
+                // let ImgPath = `${initmfg?.LibPath}${initmfg?.ukey}/procasting/`;
+                let ImgPath = `${initmfg?.LibPath}/procasting/`;
                 setFlaskImg(ImgPath);
               }
             } else {
@@ -745,7 +737,8 @@ import React, {
       );
     }, []);
   
-    const renderer = ({ minutes, seconds, completed }) => {
+    const renderer = ({ hours, minutes, seconds, completed }) => {
+      console.log('completed: ', completed);
       if (completed) {
         return <Completionist />;
       } else {
@@ -753,7 +746,7 @@ import React, {
           <span style={{ textAlign: "center" }}>
             Filling + Pouring Timer :{" "}
             <span style={{ fontWeight: "bold" }}>
-              {minutes}:{seconds}
+              {hours}:{minutes}:{seconds}
             </span>
           </span>
         );
@@ -830,7 +823,7 @@ import React, {
           setPhValue(data?.phvalue);
   
           let initmfg = JSON.parse(localStorage.getItem("initmfg"));
-          let ImgPath = `${initmfg?.UploadLogicalPath}${initmfg?.ukey}/procasting/`;
+          let ImgPath = `${initmfg?.LibPath}/procasting/`;
           setFlaskImg(ImgPath);
   
           let castuniqueno = data["Batch#"]?.match(/\d+/)[0];
@@ -862,44 +855,44 @@ import React, {
       fetchData();
     }, [location]);
   
-    useEffect(() => {
-      const data = location?.state;
-      if (data) {
-        setShowTime(true);
-        const castuniqueno = data["Batch#"]?.match(/\d+/)?.[0] ?? "";
-        const parsedCastUniqueno = castuniqueno
-          ? parseInt(castuniqueno, 10)
-          : null;
-        const bindTreeFlask = TreeFlaskBindList?.filter(
-          (ele) => ele?.castuniqueno === parsedCastUniqueno
-        );
-        if (bindTreeFlask?.length > 0) {
-          let date = bindTreeFlask[0]?.flaskbinddate;
-          // let date = '2024-10-14T13:55:25.373';
-          if (!date) return;
+    // useEffect(() => {
+    //   const data = location?.state;
+    //   if (data) {
+    //     setShowTime(true);
+    //     const castuniqueno = data["Batch#"]?.match(/\d+/)?.[0] ?? "";
+    //     const parsedCastUniqueno = castuniqueno
+    //       ? parseInt(castuniqueno, 10)
+    //       : null;
+    //     const bindTreeFlask = TreeFlaskBindList?.filter(
+    //       (ele) => ele?.castuniqueno === parsedCastUniqueno
+    //     );
+    //     if (bindTreeFlask?.length > 0) {
+    //       let date = bindTreeFlask[0]?.flaskbinddate;
+    //       // let date = '2024-10-14T13:55:25.373';
+    //       if (!date) return;
   
-          const startTime = new Date(date);
+    //       const startTime = new Date(date);
   
-          const interval = setInterval(() => {
-            const currentTime = new Date();
-            const elapsedMilliseconds = currentTime - startTime;
+    //       const interval = setInterval(() => {
+    //         const currentTime = new Date();
+    //         const elapsedMilliseconds = currentTime - startTime;
   
-            const hours = Math.floor(elapsedMilliseconds / (1000 * 60 * 60));
-            const minutes = Math.floor(
-              (elapsedMilliseconds % (1000 * 60 * 60)) / (1000 * 60)
-            );
-            const seconds = Math.floor(
-              (elapsedMilliseconds % (1000 * 60)) / 1000
-            );
+    //         const hours = Math.floor(elapsedMilliseconds / (1000 * 60 * 60));
+    //         const minutes = Math.floor(
+    //           (elapsedMilliseconds % (1000 * 60 * 60)) / (1000 * 60)
+    //         );
+    //         const seconds = Math.floor(
+    //           (elapsedMilliseconds % (1000 * 60)) / 1000
+    //         );
   
-            setElapsedTime({ hours, minutes, seconds });
-            setShowTime(false);
-          }, 1000);
+    //         setElapsedTime({ hours, minutes, seconds });
+    //         setShowTime(false);
+    //       }, 1000);
   
-          return () => clearInterval(interval);
-        }
-      }
-    }, [location, TreeFlaskBindList]);
+    //       return () => clearInterval(interval);
+    //     }
+    //   }
+    // }, [location, TreeFlaskBindList]);
   
   
     return (
@@ -977,35 +970,19 @@ import React, {
           open={isImgShow}
           onClose={() => setIsImgShow(false)}
           maxWidth="md"
-          PaperProps={{
-            style: {
-              width: "800px",
-              height: "600px",
-              maxWidth: "800px",
-              maxHeight: "600px",
-              overflow: "hidden",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-            },
-          }}
         >
           {CurrentImageValue?.length > 0 ? (
             <Swiper
               initialSlide={0}
               slidesPerView={1}
               spaceBetween={0}
-              navigation={true}
+              // navigation={true}
               pagination={{ clickable: true }}
               loop={false}
               modules={[Pagination, Keyboard, FreeMode, Thumbs, Scrollbar]}
               keyboard={{ enabled: true }}
               mousewheel={true}
-              style={{
-                width: "100%",
-                height: "100%",
-                boxSizing: "border-box",
-              }}
+              style={{ width: "100%", height: "100%" }}
             >
               {CurrentImageValue?.map((img, index) => (
                 <SwiperSlide key={index}>
@@ -1025,7 +1002,7 @@ import React, {
                       style={{
                         width: "100%",
                         height: "100%",
-                        objectFit: "contain", // Maintain aspect ratio
+                        objectFit: "contain",
                       }}
                     />
                     {longPressIndex === index && (
@@ -1053,14 +1030,14 @@ import React, {
           )}
         </Dialog>
   
-  
         <div>
           <div className="TopBtnDivMainOneV2">
             <div style={{ display: "flex", alignItems: "center" }}>
-              <CgProfile
+              <BackButton />
+              {/* <CgProfile
                 style={{ height: "30px", width: "30px", marginLeft: "15px" }}
                 onClick={handleClick}
-              />
+              /> */}
               <p className="headerV2Title"> INVESTMENT PROCESS</p>
               {openMenu && (
                 <ProfileMenu
@@ -1070,7 +1047,7 @@ import React, {
                 />
               )}
             </div>
-            <div
+            {/* <div
               style={{ display: "flex", alignItems: "center", cursor: "pointer" }}
               onClick={() => naviagtion("/homeone")}
             >
@@ -1085,7 +1062,8 @@ import React, {
               >
                 <span style={{ color: "#00FFFF", opacity: "1" }}>Pro</span>Casting
               </p>
-            </div>
+            </div> */}
+            <GlobalHeader topLogo={topLogo} handleClick={handleProfileClick} />
           </div>
           <div
             style={{
@@ -1349,7 +1327,7 @@ import React, {
                   {errorMessage && (
                     <div className="errorMessage">All fields are required!</div>
                   )}
-                  {!new URLSearchParams(window.location.search).has('flask') && (
+                  {!new URLSearchParams(window.location.search).has('flask') && !showTimmer && (
                     <div
                       style={{
                         display: "flex",
@@ -1400,63 +1378,63 @@ import React, {
                           </button>
                         </div>
                       ) : (
-                        // <Countdown
-                        //   // date={Date.now() + convertToMilliseconds("invest")}
-                        //   date={Date.now() + 3000}
-                        //   renderer={renderer}
-                        //   // onComplete={onComplete}
-                        // />
-                        <div>
-                          {isActive ? (
-                            <h3
-                              style={{
-                                margin: "0px",
-                                padding: "0px",
-                                fontWeight: "500",
-                                fontSize: "22px",
-                              }}
-                            >
-                              Filling + Pouring Timer :{" "}
-                              {Math.floor(timeLeft / 60000)}m{" "}
-                              {Math.floor((timeLeft % 60000) / 1000)}s
-                            </h3>
-                          ) : (
-                            // <h3 style={{ margin: '0px', padding: '0px', fontWeight: '500', fontSize: '22px' }}>
-                            //   {`Gloss of completion time: ${flaskbinddate !== '' ? `${elapsedTime?.hours}h ${elapsedTime?.minutes}m ${elapsedTime?.seconds}s` : new Date().toLocaleTimeString()}`}
-                            // </h3>
-                            <h3
-                              style={{
-                                margin: "0px",
-                                padding: "0px",
-                                fontWeight: "500",
-                                fontSize: "22px",
-                              }}
-                            >
-                              Gloss of completion time:{" "}
-                              {!showTime
-                                ? elapsedTime?.hours > 0 ||
-                                  elapsedTime?.minutes > 0 ||
-                                  elapsedTime?.seconds > 0
-                                  ? `${elapsedTime.hours > 0
-                                    ? `${elapsedTime.hours}h `
-                                    : ""
-                                    }${elapsedTime.minutes > 0
-                                      ? `${elapsedTime.minutes}m `
-                                      : ""
-                                    }${elapsedTime.seconds > 0
-                                      ? `${elapsedTime.seconds}s`
-                                      : ""
-                                    }`.trim()
-                                  : new Date().toLocaleTimeString()
-                                : ""}
-                            </h3>
-                          )}
-                        </div>
+                        <Countdown
+                          date={Date.now() + convertToMilliseconds("invest")}
+                          // date={Date.now() + 3000}
+                          renderer={renderer}
+                        // onComplete={onComplete}
+                        />
+                        // <div>
+                        //   {isActive ? (
+                        //     <h3
+                        //       style={{
+                        //         margin: "0px",
+                        //         padding: "0px",
+                        //         fontWeight: "500",
+                        //         fontSize: "22px",
+                        //       }}
+                        //     >
+                        //       Filling + Pouring Timer :{" "}
+                        //       {Math.floor(timeLeft / 60000)}m{" "}
+                        //       {Math.floor((timeLeft % 60000) / 1000)}s
+                        //     </h3>
+                        //   ) : (
+                        //     // <h3 style={{ margin: '0px', padding: '0px', fontWeight: '500', fontSize: '22px' }}>
+                        //     //   {`Gloss of completion time: ${flaskbinddate !== '' ? `${elapsedTime?.hours}h ${elapsedTime?.minutes}m ${elapsedTime?.seconds}s` : new Date().toLocaleTimeString()}`}
+                        //     // </h3>
+                        //     <h3
+                        //       style={{
+                        //         margin: "0px",
+                        //         padding: "0px",
+                        //         fontWeight: "500",
+                        //         fontSize: "22px",
+                        //       }}
+                        //     >
+                        //       Gloss of completion time:{" "}
+                        //       {!showTime
+                        //         ? elapsedTime?.hours > 0 ||
+                        //           elapsedTime?.minutes > 0 ||
+                        //           elapsedTime?.seconds > 0
+                        //           ? `${elapsedTime.hours > 0
+                        //             ? `${elapsedTime.hours}h `
+                        //             : ""
+                        //             }${elapsedTime.minutes > 0
+                        //               ? `${elapsedTime.minutes}m `
+                        //               : ""
+                        //             }${elapsedTime.seconds > 0
+                        //               ? `${elapsedTime.seconds}s`
+                        //               : ""
+                        //             }`.trim()
+                        //           : new Date().toLocaleTimeString()
+                        //         : ""}
+                        //     </h3>
+                        //   )}
+                        // </div>
                       )}
   
                       {!CurrentImageValue.length ? (
                         <div>
-                          Mixture + Flask Fill Time :{" "}
+                          Gloss Off Time :{" "}
                           <span style={{ fontWeight: "bold" }}>{"4:00:00"}</span>
                         </div>
                       ) : (
@@ -1497,7 +1475,7 @@ import React, {
                         </tr>
                         <tr>
                           <th className="investTableRow">
-                            {value?.jobcount} Jobs{" "}
+                            {value?.jobcount + ' ' + (value?.jobcount > 1 ? 'Jobs' : "Job")} {" "}
                           </th>
                         </tr>
                         <tr>
@@ -1550,7 +1528,12 @@ import React, {
                     >
                       Upload Image
                     </button> */}
-                    <ImageUploader treeBatch={enteredValues[0]?.CastBatchNo} lableName={'Upload Image'} />
+                    <ImageUploader
+                      treeBatch={enteredValues[0]?.CastBatchNo}
+                      lableName={'Upload Image'}
+                      mode="investmentreturnphoto"
+                      uploadName="investmentreturn"
+                    />
                     {CurrentImageValue.length !== 0 && (
                       <div
                         style={{

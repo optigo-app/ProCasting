@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useSetRecoilState } from "recoil";
+import { useRecoilValue, useSetRecoilState } from "recoil";
 import { CurrentImageApi, CurrentImageState } from "../../recoil/Recoil";
 import browserImageCompression from "browser-image-compression";
 import { saveAs } from "file-saver";
@@ -8,21 +8,21 @@ import { toast } from "react-toastify";
 
 const ImageUploader = ({ treeBatch, lableName, mode, uploadName }) => {
     const setImage = useSetRecoilState(CurrentImageState);
+    const image = useRecoilValue(CurrentImageState)
+    console.log('image: ', image);
     const setImageApiRes = useSetRecoilState(CurrentImageApi);
 
     const [isCameraAvailable, setIsCameraAvailable] = useState(false);
     const [isMobileDevice, setIsMobileDevice] = useState(false);
 
     useEffect(() => {
-        // Check if device is mobile/tablet
         const checkDeviceType = () => {
             const userAgent = navigator.userAgent.toLowerCase();
             setIsMobileDevice(
-                /iphone|ipod|ipad|android/.test(userAgent) // Simplified check for mobile/tablet devices
+                /iphone|ipod|ipad|android/.test(userAgent)
             );
         };
 
-        // Check if the device has a camera
         const checkCameraAvailability = async () => {
             const devices = await navigator.mediaDevices.enumerateDevices();
             const hasCamera = devices.some(device => device.kind === 'videoinput');
@@ -69,13 +69,12 @@ const ImageUploader = ({ treeBatch, lableName, mode, uploadName }) => {
 
         try {
             const compressedFiles = await Promise.all(uploadedFiles);
-            console.log('compressedFiles: ', compressedFiles);
             setImage((prevImages) => [...prevImages, ...compressedFiles]);
 
             const response = await uploadPhotos(compressedFiles, treeBatch, mode, uploadName);
             if (response) {
-                const imageUrl = response?.data?.data?.[0]?.castingtree || response?.data?.data?.[0]?.investmentreturn;
-                console.log('Image URL:', imageUrl);
+                const imageUrl = response?.data?.data?.[0] || response?.data?.data?.[0];
+                console.log('imageUrl: ', imageUrl);
                 if (imageUrl) {
                     setImageApiRes(prevImages => [...prevImages, imageUrl]);
                 }
@@ -84,6 +83,7 @@ const ImageUploader = ({ treeBatch, lableName, mode, uploadName }) => {
             console.error('Error uploading photos:', error);
         }
     };
+
 
     const handleButtonClick = () => {
         if (!isCameraAvailable) {
@@ -96,6 +96,7 @@ const ImageUploader = ({ treeBatch, lableName, mode, uploadName }) => {
             <input
                 type="file"
                 id="fileInput"
+                name="fileInput"
                 onChange={handleImageUpload}
                 style={{ display: "none" }}
                 // disabled={!isMobileDevice || !isCameraAvailable}

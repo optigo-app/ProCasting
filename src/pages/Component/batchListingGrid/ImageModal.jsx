@@ -27,7 +27,7 @@ const ImageDialog = ({ open, onClose, images }) => {
             PaperProps={{
                 sx: {
                     width: "800px",
-                    height: "600px",
+                    height: "450px",
                     backgroundColor: "#000",
                     overflow: "hidden",
                     position: "relative",

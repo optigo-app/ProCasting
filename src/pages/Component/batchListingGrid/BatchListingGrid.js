@@ -3,7 +3,7 @@ import "./BatchListingGrid.css";
 import { DataGrid } from "@mui/x-data-grid";
 import SearchIcon from '@mui/icons-material/Search';
 import MenuRoundedIcon from '@mui/icons-material/MenuRounded';
-import { Button, Divider, Drawer } from "@mui/material";
+import { Button, Divider, Drawer, IconButton, TablePagination } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import topLogo from '../../assets/oraillogo.png';
 import { CommonAPI } from '../../../Utils/API/CommonApi'
@@ -13,13 +13,10 @@ import { formatCustomDate } from "../../../Utils/globalFunction";
 import BackButton from "../../../Utils/BackButton";
 import { fetchMaster } from "../../../Utils/API/MasterGridApi";
 import PrintQRCodeDialog from "../printQr/PrintQRCodeDialog";
-
-
-const images = [
-  { url: "https://www.google.com/imgres?q=tree%20photo%20casting&imgurl=https%3A%2F%2Fwww.shutterstock.com%2Fimage-photo%2Fsilver-casting-tree-on-white-260nw-353474156.jpg&imgrefurl=https%3A%2F%2Fwww.shutterstock.com%2Fimage-photo%2Fsilver-casting-tree-on-white-background-353474156&docid=HqdmBjKXmMfT8M&tbnid=-4P4wYNDl-wW7M&vet=12ahUKEwiIq7_lvJ-KAxVNslYBHT5-KMYQM3oECF4QAA..i&w=224&h=280&hcb=2&ved=2ahUKEwiIq7_lvJ-KAxVNslYBHT5-KMYQM3oECF4QAA" },
-  { url: "https://cdnfs.optigoapps.com/content-global3/test71IBOKTQHSCLEN367X9/PROCASTING/castingtree/BI20241211013042985_castingtree.jpg" },
-  { url: "https://via.placeholder.com/800x600/00FF00/FFFFFF?Text=Image3" },
-];
+import RefreshIcon from '@mui/icons-material/Refresh';
+import FilterAltIcon from '@mui/icons-material/FilterAlt';
+import InfoDialogModal from "../Info/InfoDialogModal";
+import { fetchTreeDetails } from "../../../Utils/API/GetTreeQrAPI";
 
 const BatchListingGrid = () => {
   const navigate = useNavigate();
@@ -33,15 +30,33 @@ const BatchListingGrid = () => {
   const [openImgDrawer, setOpenImgDrawer] = useState(false);
   const [showPrintDialog, setShowPrDialog] = useState(false);
   const [selectedRowData, setSelectedRowData] = useState(null);
-  // const today = new Date()?.toISOString()?.split("T")[0];
-  // const [startDate, setStartDate] = useState(today);
-  // const [endDate, setEndDate] = useState(today);
+  const today = new Date().toISOString().split("T")[0];
+  const [startDate, setStartDate] = useState(today); // Default to today's date
+  const [endDate, setEndDate] = useState(today); // Default to today's date
 
   const [metalColors, setMetalColors] = useState([]);
   const [metalTypes, setMetalTypes] = useState([]);
   const [castingStatuses, setCastingStatuses] = useState([]);
-  const [startDate, setStartDate] = useState();
-  const [endDate, setEndDate] = useState();
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(20);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [joblist, setJobList] = useState([]);
+
+  const handleCloseDialog = () => {
+    setDialogOpen(false);
+    setShowPrDialog(false);
+  };
+
+  // Handle page change
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  // Handle rows per page change
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
 
   const handlePrintDialogShow = (rowData) => {
     setSelectedRowData(rowData);
@@ -58,6 +73,47 @@ const BatchListingGrid = () => {
   };
   const handleClose = () => setOpenImgDrawer(false);
 
+  // open joblist info dialog
+  const handleOpenDialog = (row) => {
+    setSelectedRowData(row);
+    getTreeQrData(row);
+  };
+
+  // getTreeQr
+  const getTreeQrData = async () => {
+    try {
+      const batchKey = selectedRowData['Batch#'];
+      const castuniqueno = batchKey?.split(' ')[1]?.replace(/[()]/g, '');
+      console.log('castuniqueno: ', castuniqueno);
+
+      const response = await fetchTreeDetails(castuniqueno);
+
+      if (response?.Data?.rd[0]?.stat !== 0) {
+        console.log("qrdata", response?.Data.rd[0]);
+        setDialogOpen(true);
+        const joblistArray = response?.Data.rd[0]?.joblist?.split(',');
+        const data = joblistArray.map((job) => {
+          const jobId = job?.split('/')[1];
+          const jobDetails = response?.Data.rd2?.find((rd2Item) => rd2Item?.serialjobno === job);
+          return {
+            id: jobId,
+            jobId: jobId,
+            job: job,
+            procastingstatusid: jobDetails?.job_procastingstatusid ?? null,
+            metalColor: jobDetails?.MetalColor ?? "Default",
+            metaltype: `${selectedRowData?.MetalType}${selectedRowData?.MetalPurity ?? ''}`,
+            Locationname: `${response?.Data.rd[0]?.Locationname ?? ''}`,
+          };
+        });
+        setJobList(data);
+        console.log('data: ', data);
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+
+  // grid master
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -87,42 +143,44 @@ const BatchListingGrid = () => {
     fetchData();
   }, []);
 
+  // tree list api
+  const fetchBatchData = async () => {
+    setLoading(true);
+    try {
+      const deviceT = JSON.parse(localStorage.getItem("initmfg"))?.deviceToken;
+      const bodyparam = { deviceToken: deviceT };
+      const encodedBodyParam = btoa(JSON.stringify(bodyparam));
+      const body = {
+        con: `{\"id\":\"\",\"mode\":\"TREELIST\",\"appuserid\":\"\"}`,
+        p: encodedBodyParam,
+        f: "formname (album)"
+      };
 
-
-
-  useEffect(() => {
-    const fetchBatchData = async () => {
-      setLoading(true);
-      try {
-        const deviceT = JSON.parse(localStorage.getItem("initmfg"))?.deviceToken;
-        const bodyparam = { deviceToken: deviceT };
-        const encodedBodyParam = btoa(JSON.stringify(bodyparam));
-        const body = {
-          con: `{\"id\":\"\",\"mode\":\"TREELIST\",\"appuserid\":\"\"}`,
-          p: encodedBodyParam,
-          f: "formname (album)"
-        };
-
-        const res = await CommonAPI(body);
-        if (res) {
-          const ListData = res?.Data?.rd;
-          ListData.forEach((ele, i) => {
-            ele.id = i + 1;
-            ele.CastingIssDate = ele.CastingIssDate.split('T')[0];
-            replaceEmptyStrings(ele);
-          });
-          setBatchList(ListData);
-        }
-      } catch (err) {
-        console.error("GETTREELIST ERROR", err);
-        toast.error("Something went wrong, please try again!");
-      } finally {
-        setLoading(false);
+      const res = await CommonAPI(body);
+      if (res) {
+        const ListData = res?.Data?.rd;
+        ListData.forEach((ele, i) => {
+          ele.id = i + 1;
+          ele.CastingIssDate = ele.CastingIssDate.split('T')[0];
+          replaceEmptyStrings(ele);
+        });
+        setBatchList(ListData);
       }
-    };
-
+    } catch (err) {
+      console.error("GETTREELIST ERROR", err);
+      toast.error("Something went wrong, please try again!");
+    } finally {
+      setLoading(false);
+    }
+  };
+  useEffect(() => {
     fetchBatchData();
   }, []);
+
+  // Handle refresh
+  const handleRefresh = () => {
+    fetchBatchData();
+  };
 
   const replaceEmptyStrings = (obj) => {
     Object.keys(obj).forEach(key => {
@@ -143,30 +201,26 @@ const BatchListingGrid = () => {
   };
 
   useEffect(() => {
-    if (batchList) {
-      let data = batchFilterList?.length !== 0 ? batchFilterList : batchList;
-
+    const filterData = () => {
+      let data = batchList;
       const start = startDate ? new Date(startDate) : null;
       const end = endDate ? new Date(endDate) : null;
-
-      const filteredData = data?.filter((item) => {
+      const filteredData = data.filter((item) => {
         const itemDate = new Date(item?.CastingIssDate);
-
         const withinDateRange = (!start || itemDate >= start) && (!end || itemDate <= end);
-
         const matchesMetalColor = selectedMetalColor ? item?.MetalColor.toLowerCase() === selectedMetalColor?.toLowerCase() : true;
         const matchesMetalType = selectedMetalType ? item?.MetalType.toLowerCase() === selectedMetalType?.toLowerCase() : true;
         const matchesStatus = selectedStatus ? item?.status.toLowerCase() === selectedStatus?.toLowerCase() : true;
-
         return withinDateRange && matchesMetalColor && matchesMetalType && matchesStatus;
       });
 
       setBatchFilterList(filteredData);
+    };
+
+    if (batchList.length > 0) {
+      filterData();
     }
-  }, [selectedMetalType, selectedMetalColor, selectedStatus, startDate, endDate, batchList]);
-
-
-
+  }, [startDate, endDate, selectedMetalColor, selectedMetalType, selectedStatus, batchList]);
 
 
   const columns = [
@@ -183,14 +237,39 @@ const BatchListingGrid = () => {
     { field: "Investment", headerName: "Department batch no#", width: 170 },
     { field: "MetalType", headerName: "Metal Type", width: 130 },
     { field: "MetalColor", headerName: "Metal Color", width: 130 },
-    { field: "serialjobs", headerName: "Serial Jobs", width: 150 },
+    {
+      field: "serialjobs",
+      headerName: "Serial Jobs",
+      width: 100,
+      renderCell: (params) => {
+        const { value, row } = params;
+        return value ? (
+          <button onClick={() => handleOpenDialog(row)}
+            className="button-print"
+            style={{
+              color: 'blue',
+              textDecoration: 'underline',
+              textTransform: 'capitalize',
+              padding: '0px',
+              backgroundColor: 'transparent',
+              border: 'none',
+              cursor: 'pointer'
+            }}
+          >
+            {value}
+          </button>
+        ) : (
+          "-"
+        );
+      }
+    },
     {
       field: "status",
       headerName: "Status",
       width: 150,
       renderCell: (params) => {
         const { value, row } = params;
-        return value === "investment issue" ? (
+        return value?.toLowerCase() === "investment issue" ? (
           <a
             href="#"
             onClick={(e) => {
@@ -208,7 +287,7 @@ const BatchListingGrid = () => {
     },
     { field: "Issuewt", headerName: "Issue", width: 100 },
     { field: "Returnwt", headerName: "Return", width: 100 },
-    { field: "requirepowder", headerName: "Powder Weight", width: 120 },
+    { field: "powderwt", headerName: "Powder Weight", width: 120 },
     { field: "metalwtpure", headerName: "Metal Wt(pure)", width: 130 },
     { field: "alloywt", headerName: "Alloy Wt(pure)", width: 130 },
     { field: "flaskbarcode", headerName: "Flask", width: 100 },
@@ -352,7 +431,9 @@ const BatchListingGrid = () => {
     <>
       <div className="grid_head_container">
         <div className="grid_head menu" >
-          <MenuRoundedIcon onClick={() => setMenuFlag(true)} sx={{ fontSize: '30px' }} />
+          <div className="HomeBtnMo">
+            <BackButton fontSize="30px" />
+          </div>
           <div style={{ display: 'flex', alignItems: 'center' }}>
             <p className='headerV2Title' >BATCH LIST</p>
           </div>
@@ -360,7 +441,18 @@ const BatchListingGrid = () => {
 
         <div className="menu_responsive">
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <BackButton fontSize="30px" padding='2px' />
+            <div className="HomeBtnPc">
+              <BackButton fontSize="30px" />
+            </div>
+            <div className="fileIconBtn">
+              <FilterAltIcon
+                onClick={() => setMenuFlag(true)}
+                sx={{
+                  fontSize: '30px',
+                  cursor: 'pointer',
+                }}
+              />
+            </div>
             <div className="grid_head date">{GridHeadDate()}</div>
             <div className="grid_head select_metaltype">{GridHeadSelect()}</div>
             <div className="grid_head_search">
@@ -374,7 +466,7 @@ const BatchListingGrid = () => {
                 }}
                 className="grid_search"
               >
-                <div style={{ marginTop: "4px", marginLeft: "8px" }}>
+                <div style={{ marginTop: "4px", marginLeft: "8px" }} >
                   <SearchIcon />
                 </div>
                 <input
@@ -389,10 +481,30 @@ const BatchListingGrid = () => {
                     borderRadius: "6px",
                     paddingInlineStart: "12px",
                   }}
+                  className="grid_searchInput"
                   onChange={(e) => handleSearch(e)}
                 />
               </div>
             </div>
+            {/* <div className="refressBtn">
+            <Button
+              variant="outlined"
+              onClick={handleRefresh}
+              startIcon={<RefreshIcon />}
+              sx={{
+                backgroundColor: 'white',
+                color: 'black',
+                borderColor: 'rgb(226, 226, 226)',
+                borderRadius: '8px',
+                '&:hover': {
+                  backgroundColor: '#fff',
+                  borderColor: 'rgb(226, 226, 226)',
+                },
+              }}
+            >
+              Refresh
+            </Button>
+            </div> */}
           </div>
 
           <div
@@ -424,7 +536,7 @@ const BatchListingGrid = () => {
           }}
         >
           <div style={{ width: "100%" }} className="DataGridTable">
-            <DataGrid
+            {/* <DataGrid
               rows={batchFilterList}
               columns={columns?.map((column) => ({
                 ...column,
@@ -438,6 +550,54 @@ const BatchListingGrid = () => {
               pageSizeOptions={[20, 30, 50, 100]}
               checkboxSelection={false}
               className="mui_DataGridCl"
+            /> */}
+
+            <DataGrid
+              rows={batchFilterList.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)}
+              columns={columns?.map((column) => ({
+                ...column,
+                headerClassName: "customHeaderCell",
+                disableColumnMenu: true,
+              }))}
+              checkboxSelection={false}
+              className="mui_DataGridCl"
+              components={{
+                Footer: () => (
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', margin: '0px 20px' }}>
+                    {/* <IconButton
+                      onClick={handleRefresh}
+                    >
+                      <RefreshIcon />
+                    </IconButton> */}
+                    <Button
+                      variant="outlined"
+                      onClick={handleRefresh}
+                      startIcon={<RefreshIcon />}
+                      sx={{
+                        backgroundColor: 'white',
+                        color: 'black',
+                        borderColor: 'rgb(226, 226, 226)',
+                        borderRadius: '8px',
+                        '&:hover': {
+                          backgroundColor: '#fff',
+                          borderColor: 'rgb(226, 226, 226)',
+                        },
+                      }}
+                    >
+                      Refresh
+                    </Button>
+                    <TablePagination
+                      component="div"
+                      count={batchFilterList?.length}
+                      page={page}
+                      onPageChange={handleChangePage}
+                      rowsPerPage={rowsPerPage}
+                      onRowsPerPageChange={handleChangeRowsPerPage}
+                      rowsPerPageOptions={[20, 30, 50, 100]}
+                    />
+                  </div>
+                ),
+              }}
             />
           </div>
         </div>
@@ -448,6 +608,12 @@ const BatchListingGrid = () => {
         rightJobs={selectedRowData}
         castuniqueno={selectedRowData?.['Batch#']?.match(/\((\d+)\)/)?.[1]}
       />
+
+      <InfoDialogModal
+        open={dialogOpen}
+        onClose={handleCloseDialog}
+        rightJobs={joblist} />
+
       <Drawer anchor="left" open={menuFlag} onClose={() => setMenuFlag(false)}>
         <div style={{ paddingLeft: '30px' }}>
           <h1>

@@ -20,6 +20,10 @@ import { CgProfile } from 'react-icons/cg';
 import ProfileMenu from '../../../Utils/ProfileMenu';
 import { fetchFlaskList } from '../../../Utils/API/GetFlaskList';
 import BackButton from '../../../Utils/BackButton';
+import { fetchTreeFlaskBindList } from '../../../Utils/API/TreeFlaskBindListApi';
+import GlobalHeader from '../../../Utils/HeaderLogoSection';
+import RemoveCircleRoundedIcon from "@mui/icons-material/RemoveCircleRounded";
+import DeleteTreeModal from '../../../Utils/DeleteTreeModal';
 
 
 export default function BurnOut() {
@@ -47,9 +51,14 @@ export default function BurnOut() {
     const [openMenu, setOpenMenu] = useState(false);
     const [anchorEl, setAnchorEl] = useState(null);
     const [burnOutStatusData, setBurnoutStatusData] = useState();
+    const [openDelete, setOpenDelete] = useState(false);
+    const [selectedIndex, setSelectedIndex] = useState(null);
+    const [saveData, setSaveData] = useState(false);
 
 
-    const handleClick = (event) => {
+
+
+    const handleProfileClick = (event) => {
         setAnchorEl(event.currentTarget);
         setOpenMenu(true);
     };
@@ -88,7 +97,6 @@ export default function BurnOut() {
         }
 
         await CommonAPI(body).then((res) => {
-            console.log("BURNOUTSTATUS", res)
             if (res) {
                 if (res?.Data?.rd[0]?.stat == 1) {
                     let resData = res?.Data?.rd
@@ -128,11 +136,11 @@ export default function BurnOut() {
         }
 
         await CommonAPI(body).then((res) => {
-            console.log("BURNOUTFLASKBIND", res)
             if (res) {
                 if (res?.Data?.rd[0]?.stat == 1) {
                     toast.success("Saved Successfully!");
                     // getBurnOutStatus();
+                    setSaveData(true);
                 } else {
                     toast.error(res?.Data?.rd[0]?.stat_msg)
                 }
@@ -205,32 +213,13 @@ export default function BurnOut() {
         await CommonAPI(body).then((res) => console.log("DELFLASKFROMBURNOUT", res)).catch((err) => console.log("err", err))
     }
 
+    // flask bind-list Api call
     const getTreeFalskBindList = async () => {
-
-        let empData = JSON.parse(localStorage.getItem("getemp"))
-        let deviceT = JSON.parse(localStorage.getItem("initmfg"))?.deviceToken
-
-        let bodyparam = {
-            "deviceToken": `${deviceT}`
+        const flaskbindlist = await fetchTreeFlaskBindList();
+        if (flaskbindlist?.Data?.rd) {
+            setTreeFlaskBindList(flaskbindlist?.Data?.rd);
         }
-
-        let ecodedbodyparam = btoa(JSON.stringify(bodyparam))
-
-        let body = {
-            "con": `{\"id\":\"\",\"mode\":\"GETTREEFLASKBINDLIST\",\"appuserid\":\"${empData?.empuserid}\"}`,
-            "p": `${ecodedbodyparam}`,
-            "f": "formname (album)"
-        }
-
-        await CommonAPI(body).then((res) => {
-            if (res?.Data.rd?.length) {
-                setTreeFlaskBindList(res?.Data.rd)
-            }
-        }).catch((err) => {
-            console.log("err", err)
-        })
-
-    }
+    };
 
     useEffect(() => {
         getTreeFalskBindList();
@@ -369,23 +358,20 @@ export default function BurnOut() {
                         if (FlaskImg?.length == 0) {
                             let initmfg = JSON?.parse(localStorage.getItem("initmfg"))
                             // let ImgPath = `${initmfg?.LibPath}${initmfg?.ukey}/procasting/`
-                             let ImgPath = `${initmfg?.LibPath}/procasting/`
-                            // console.log("ImgPath",ImgPath);
+                            let ImgPath = `${initmfg?.LibPath}/procasting/`
                             setFlaskImg(ImgPath)
                         }
                         setFlashCode(inputValue);
 
                         let TreeData = await GetTreeDataApi(bindTreeFlask[0]?.castuniqueno)
-                        console.log("TreeData", castingStatus)
 
-                        console.log('validateFlask: ', validateFlask);
 
                         investmentVal = { ...TreeData, ...FinalFlaskList, investmentid: bindTreeFlask[0]?.investmentid }
                         setEnteredValues([...enteredValues, investmentVal]);
                     } else {
-                        setEnteredValues([])
-                        setFlaskImg('');
-                        setFlashCode('');
+                        // setEnteredValues([])
+                        // setFlaskImg('');
+                        // setFlashCode('');
                     }
                 } else {
                     toast.error('Invalid Flask!')
@@ -417,7 +403,6 @@ export default function BurnOut() {
                         if (FlaskImg?.length == 0) {
                             let initmfg = JSON?.parse(localStorage.getItem("initmfg"))
                             let ImgPath = `${initmfg?.LibPath}/procasting/`
-                            // console.log("ImgPath",ImgPath);
                             setFlaskImg(ImgPath)
                         }
                         setFlashCode(scanInp)
@@ -442,11 +427,7 @@ export default function BurnOut() {
         }
     };
 
-    console.log("enteredValues", enteredValues);
-
-    const handleRefresh = () => {
-        window.location.reload();
-    };
+    console.log('enteredValues', enteredValues);
 
     const handleKeyDown = (event) => {
         if (event.key === 'Enter') {
@@ -460,6 +441,34 @@ export default function BurnOut() {
             event.preventDefault();
             handleGoButtonClickHidden();
         }
+    };
+
+
+    const handleRefresh = () => {
+        window.location.reload();
+    };
+
+    const handleRemoveItem = (indexToRemove) => {
+        setOpenDelete(true);
+        setSelectedIndex(indexToRemove);
+    };
+
+    const handleConfirmation = () => {
+        setEnteredValues(
+            enteredValues.filter((_, index) => index !== selectedIndex)
+        );
+        setOpenDelete(false);
+        if (enteredValues.length === 1) {
+            window.location.reload();
+        }
+    };
+
+    const handleClickOpenDelete = () => {
+        setOpenDelete(false);
+    };
+
+    const handleCloseDelete = () => {
+        setOpenDelete(false);
     };
 
     const handleIssueJob = () => {
@@ -503,16 +512,24 @@ export default function BurnOut() {
                         <Button onClick={handleClose}>SAVE</Button>
                     </div>
                 </Dialog>
+
+                <DeleteTreeModal
+                    open={openDelete}
+                    onClose={handleCloseDelete}
+                    title="ARE YOU SURE TO DELETE ?"
+                    onconfirm={handleConfirmation}
+                    onclickDelete={handleClickOpenDelete}
+                />
                 <div className="TopBtnDivMainOneV2">
                     <div style={{ display: 'flex', alignItems: 'center' }}>
                         <BackButton />
-                        <CgProfile style={{ height: '30px', width: '30px', marginLeft: '15px' }} onClick={handleClick} />
+                        {/* <CgProfile style={{ height: '30px', width: '30px', marginLeft: '15px' }} onClick={handleClick} /> */}
                         <p className='headerV2Title' style={{ textTransform: 'capitalize' }} >BURNOUT PROCESS</p>
                         {openMenu &&
                             <ProfileMenu open={openMenu} anchorEl={anchorEl} handleClose={handleMenuClose} />
                         }
                     </div>
-                    <div
+                    {/* <div
                         style={{ display: "flex", alignItems: "center", cursor: 'pointer' }}
                         onClick={() => navigation("/homeone")}
                     >
@@ -527,7 +544,8 @@ export default function BurnOut() {
                         >
                             <span style={{ color: "#00FFFF", opacity: "1" }}>Pro</span>Casting
                         </p>
-                    </div>
+                    </div> */}
+                    <GlobalHeader topLogo={topLogo} handleClick={handleProfileClick} />
                 </div>
                 <div className='burn_main_container' style={{ display: 'flex' }}>
                     <div className="left_container" style={{ width: '75%' }}>
@@ -567,6 +585,7 @@ export default function BurnOut() {
                                             top: "75px",
                                             zIndex: -1,
                                         }}
+                                        inputMode="none"
                                         ref={invProRef}
                                         onBlur={() => {
                                             setIsImageVisible(false);
@@ -610,12 +629,42 @@ export default function BurnOut() {
                                         height: "35px",
                                         width: "100px",
                                     }}
+                                    className="homeNoteTitleV2"
                                     onClick={handleRefresh}
                                 >
                                     Clear All
                                 </button>
                             </div>
-
+                            <div className="investTopBox22">
+                                <div
+                                    style={{
+                                        overflow: "auto",
+                                        height: "250px",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        flexDirection: "column",
+                                        marginTop: "30px",
+                                    }}
+                                >
+                                    {enteredValues?.map((value, index) => (
+                                        <div className="allScanInvestdataMain">
+                                            <p className="allInvestScanData" key={index}>
+                                                {value?.flaskbarcode}
+                                            </p>
+                                            {!saveData && (
+                                                <RemoveCircleRoundedIcon
+                                                    style={{
+                                                        color: "#FF0000",
+                                                        cursor: "pointer",
+                                                        fontSize: "30px",
+                                                    }}
+                                                    onClick={() => handleRemoveItem(index)}
+                                                />
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
                             <div>
                                 <div
                                     style={{
@@ -742,7 +791,7 @@ export default function BurnOut() {
                 >
                     {
                         // "furnace Program number > #D (Diamond)  |   #W (WAX) |   #R1 Resin1    |    #R2 Resin2"
-                        "furnace Program number > #R (Regular)  |   #D (WAX) |   #RPT (Plastic)"
+                        "furnace Program number > #R (Regular)  |   #W (WAX) |   #RPT (Plastic)"
                     }
                 </div>
                 {/* </>
