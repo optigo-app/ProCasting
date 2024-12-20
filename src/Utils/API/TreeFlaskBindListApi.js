@@ -1,6 +1,6 @@
 import { CommonAPI } from "./CommonApi";
 
-export const fetchFlaskList = async () => {
+export const fetchTreeFlaskBindList = async () => {
     let empData = JSON.parse(localStorage.getItem("getemp"));
 
     const getDeviceToken = () => {
@@ -16,21 +16,22 @@ export const fetchFlaskList = async () => {
 
     try {
         const deviceT = await getDeviceToken();
+        console.log('deviceT: ', deviceT);
 
         let bodyparam = { deviceToken: `${deviceT}` };
         let ecodedbodyparam = btoa(JSON.stringify(bodyparam));
         
         let body = {
-            "con": `{\"id\":\"\",\"mode\":\"GETFLASKLIST\",\"appuserid\":\"${empData?.empuserid}\"}`,
+            "con": `{\"id\":\"\",\"mode\":\"GETTREEFLASKBINDLIST\",\"appuserid\":\"${empData?.empuserid}\"}`,
             "p": `${ecodedbodyparam}`,
             "f": "formname (album)"
         };
 
         const response = await CommonAPI(body);
         if (response?.Data.rd) {
-            sessionStorage.setItem("flasklist", JSON.stringify(response?.Data.rd));
+            sessionStorage.setItem("TreeFlaskBindList", JSON.stringify(response?.Data.rd));
+            return response;
         }
-        return response;
     } catch (error) {
         console.error("Error fetching Flask List:", error);
         throw error;

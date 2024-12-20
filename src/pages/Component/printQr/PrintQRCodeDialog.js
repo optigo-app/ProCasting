@@ -67,9 +67,10 @@ function PrintQRCodeDialog({ open, onClose, castuniqueno }) {
                       (qrdata?.MetalColor ?? '')
                     }
                   </Typography>
-                  <Typography variant="body2"><strong>TREE WT :</strong>{' '}{qrdata?.TreeWeight}</Typography>
-                  <Typography variant="body2"><strong>DIA WT :</strong>{' '}{qrdata?.DiaWt}</Typography>
-                  <Typography variant="body2"><strong>CS WT :</strong>{' '}{qrdata?.CSWt}</Typography>
+                  <Typography variant="body2"><strong>TREE WT :</strong>{' '}{qrdata?.TreeWeight} gm</Typography>
+                  <Typography variant="body2"><strong>DIA WT :</strong>{' '}{qrdata?.DiaWt} ctw</Typography>
+                  <Typography variant="body2"><strong>CS WT :</strong>{' '}{qrdata?.CSWt} ctw</Typography>
+                  <Typography variant="body2"><strong>MISC WT :</strong>{' '}{qrdata?.MiscWt} gm</Typography>
                 </Box>
               </Grid>
               <Grid item xs={6} display="flex" justifyContent="center" alignItems="center">

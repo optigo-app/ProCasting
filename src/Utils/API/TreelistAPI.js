@@ -7,7 +7,6 @@ export const fetchTreeGridList = async (castuniqueno) => {
 
     try {
         const bodyparam = { deviceToken: deviceT };
-        console.log('bodyparam: ', bodyparam);
 
         let ecodedbodyparam = btoa(JSON.stringify(bodyparam))
         let body = {

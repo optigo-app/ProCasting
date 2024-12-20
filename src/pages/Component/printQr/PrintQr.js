@@ -42,7 +42,6 @@ export default function PrintQr() {
         if(res?.Data.rd[0].stat == 1){
             setQrData(res?.Data.rd[0])
         }
-            console.log("resTreeQr",res);
       }).catch((err)=>{
            console.log("err",err) 
       })

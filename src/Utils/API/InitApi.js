@@ -40,7 +40,6 @@ export const INITMFGAPI = async (decodedString, navigation, toast, APIURL) => {
         }
   
         const data = await response.json();
-        console.log("initmfgRes", data);
   
         if (data) {
           sessionStorage.setItem("token", JSON.stringify(decodedString));

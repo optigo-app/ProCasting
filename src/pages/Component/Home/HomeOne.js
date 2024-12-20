@@ -24,10 +24,11 @@ import { Carousel } from 'react-responsive-carousel'
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
 import { CommonAPI } from '../../../Utils/API/CommonApi'
 import { toast } from 'react-toastify'
-import { useSetRecoilState } from 'recoil'
-import { CurrentImageState } from '../../recoil/Recoil'
+import { useRecoilState, useSetRecoilState } from 'recoil'
+import { CurrentImageApi, CurrentImageState } from '../../recoil/Recoil'
 import { fetchTreeGridList } from '../../../Utils/API/TreelistAPI'
 import BatchDataJson from '../../../Utils/BatchData.json'
+import { fetchBatchList } from '../../../Utils/API/BatchValApi'
 
 const fullScreenStyle = {
     // minHeight: '100vh',
@@ -43,6 +44,8 @@ const fullScreenStyle = {
 export default function HomeOne() {
     const location = useLocation();
     const navigate = useNavigate();
+    const setCurrentImageValue = useSetRecoilState(CurrentImageState);
+    const setImageApiUrl = useSetRecoilState(CurrentImageApi);
     const [initMfg, setInitMfg] = useState();
     const [empInfo, setEmpInfo] = useState();
     const [treeList, setTreeList] = useState([]);
@@ -66,6 +69,8 @@ export default function HomeOne() {
     }, [])
 
     useEffect(() => {
+        setCurrentImageValue([]);
+        setImageApiUrl([]);
         const queryParams = new URLSearchParams(location.search);
         const openModal = queryParams.get('openModal') === 'true';
 
@@ -141,41 +146,87 @@ export default function HomeOne() {
 
     };
 
+    // useEffect(() => {
+    //     const getTreeQrData = async () => {
+    //         try {
+    //             const response = await fetchTreeGridList();
+    //             if (response?.Data?.rd[0]?.stat !== 0) {
+
+    //                 const ListData = response?.Data?.rd;
+
+    //                 const transformedData = ListData?.map(item => {
+    //                     const batchKey = item['Batch#'];
+    //                     const scanBatch = batchKey?.split(' ')[0];
+    //                     const castuniqueno = batchKey?.split(' ')[1]?.replace(/[()]/g, '');
+    //                     const status = item?.status;
+
+    //                     return {
+    //                         ScanBatch: scanBatch,
+    //                         castuniqueno: castuniqueno,
+    //                         status: status,
+    //                     };
+    //                 });
+
+    //                 setTreeList(transformedData);
+    //                 const commaSeparatedValues = transformedData?.map(item => item?.ScanBatch)?.join(', ');
+
+    //                 const filteredCombinations = BatchDataJson?.combinations?.filter(
+    //                     combo => !commaSeparatedValues?.includes(combo?.toUpperCase())
+    //                 );
+
+    //                 setScannedValue1(filteredCombinations[0])
+    //                 // let showSuggestion = [];
+    //                 // if (suggestionValue) {
+    //                 //     if (scannedValue1) {
+    //                 //         showSuggestion = filteredCombinations?.filter(val =>
+    //                 //             val.includes(scannedValue1)
+    //                 //         )?.slice(0, 5);
+    //                 //     }
+    //                 //     if (scannedValue1)
+    //                 //         setTreeList(showSuggestion);
+    //                 // }
+    //             } else {
+    //                 setTreeList([]);
+    //             }
+    //         } catch (error) {
+    //             console.error("Error:", error);
+    //         }
+    //     };
+    //     getTreeQrData();
+    // }, [scannedValue1])
+
+
     useEffect(() => {
         const getTreeQrData = async () => {
             try {
-                const response = await fetchTreeGridList();
+                const master = sessionStorage?.getItem('gridMaster')
+                const masterdata = JSON?.parse(master)?.Data?.rd2;
+                console.log('masterdata: ', masterdata);
+                const response = await fetchBatchList();
                 if (response?.Data?.rd[0]?.stat !== 0) {
 
                     const ListData = response?.Data?.rd;
 
                     const transformedData = ListData?.map(item => {
-                        const batchKey = item['Batch#'];
-                        const scanBatch = batchKey?.split(' ')[0];
-
+                        const scanBatch = item?.CastBatchNo;
+                        const castuniqueno = item?.CastUniqueno;
+                        const status = masterdata?.find(procastingid => procastingid?.id === item?.procasting_process_statusid)?.procasting_process_statusname || '';
                         return {
-                            ScanBatch: scanBatch
+                            ScanBatch: scanBatch,
+                            castuniqueno: castuniqueno,
+                            status: status,
                         };
                     });
+
+                    console.log('transformedData: ', transformedData);
+                    setTreeList(transformedData);
                     const commaSeparatedValues = transformedData?.map(item => item?.ScanBatch)?.join(', ');
-                    console.log('commaSeparatedValues: ', commaSeparatedValues);
 
                     const filteredCombinations = BatchDataJson?.combinations?.filter(
                         combo => !commaSeparatedValues?.includes(combo?.toUpperCase())
                     );
-                    console.log('filteredCombinations: ', filteredCombinations);
 
                     setScannedValue1(filteredCombinations[0])
-                    // let showSuggestion = [];
-                    // if (suggestionValue) {
-                    //     if (scannedValue1) {
-                    //         showSuggestion = filteredCombinations?.filter(val =>
-                    //             val.includes(scannedValue1)
-                    //         )?.slice(0, 5);
-                    //     }
-                    //     if (scannedValue1)
-                    //         setTreeList(showSuggestion);
-                    // }
                 } else {
                     setTreeList([]);
                 }
@@ -186,7 +237,6 @@ export default function HomeOne() {
         getTreeQrData();
     }, [scannedValue1])
 
-    console.log('scannedValue1', scannedValue1)
 
     const handleSuggestionClick = (suggestion) => {
         setScannedValue1(suggestion);
@@ -194,8 +244,6 @@ export default function HomeOne() {
         setsuggestionValue(true)
     };
 
-
-    console.log('treelsgjhshjdhjash', treeList)
 
     const handleCloseContiue1 = (e) => {
         if (e.key === 'Enter') {
@@ -224,30 +272,49 @@ export default function HomeOne() {
     }
 
     const handleCloseContiueedit = (e) => {
+        debugger
         if (e.key === 'Enter') {
             if (scannedValue === undefined || scannedValue === '') {
                 setScannedValueError(true)
             } else {
-                setScannedValueError(false)
-                // setScannedValue('AB')
-                navigation('/createTreeOneV2', { state: { mode: true, CastBatch: scannedValue?.toUpperCase() } })
-                // navigation(editTree === false ? '/createTreeOne' : '/createTreeOne', { state: { editTree: editTree ? 'true' : 'false' } })
+                treeList?.map((item) => {
+                    if (item?.castuniqueno == scannedValue) {
+                        if ((item?.status)?.toLowerCase() !== 'process in casting') {
+                            return toast.error("This Batch is already Processed");
+                        }
+                        setScannedValueError(false)
+                        navigation('/createTreeOneV2', { state: { mode: true, CastBatch: scannedValue?.toUpperCase() } })
+                    }
+                })
+                // setScannedValueError(false)
+                // // setScannedValue('AB')
+                // navigation('/createTreeOneV2', { state: { mode: true, CastBatch: scannedValue?.toUpperCase() } })
+                // // navigation(editTree === false ? '/createTreeOne' : '/createTreeOne', { state: { editTree: editTree ? 'true' : 'false' } })
             }
         }
     }
+
     const handleCloseContiueedit1 = (e) => {
+        debugger
         if (scannedValue === undefined || scannedValue === '') {
             setScannedValueError(true)
         } else {
-            setScannedValueError(false)
-            // setScannedValue('AB')
-            navigation('/createTreeOneV2', { state: { mode: true, CastBatch: scannedValue?.toUpperCase() } })
-            // navigation(editTree === false ? '/createTreeOne' : '/createTreeOne', { state: { editTree: editTree ? 'true' : 'false' } })
+            treeList?.map((item) => {
+                if (item?.castuniqueno == scannedValue) {
+                    if ((item?.status)?.toLowerCase() !== 'process in casting') {
+                        return toast.error("This Batch is already Processed");
+                    }
+                    setScannedValueError(false)
+                    navigation('/createTreeOneV2', { state: { mode: true, CastBatch: scannedValue?.toUpperCase() } })
+                }
+            })
+            // setScannedValueError(false)
+            // // setScannedValue('AB')
+            // navigation('/createTreeOneV2', { state: { mode: true, CastBatch: scannedValue?.toUpperCase() } })
+            // // navigation(editTree === false ? '/createTreeOne' : '/createTreeOne', { state: { editTree: editTree ? 'true' : 'false' } })
         }
 
     }
-
-
 
     const printQR = (url) => {
         window.open(url)
@@ -261,8 +328,6 @@ export default function HomeOne() {
         setOpenTree(false);
         navigate('/homeone', { replace: true });
     };
-
-    // console.log("navigator",navigator)
 
     useEffect(() => {
 
@@ -302,11 +367,12 @@ export default function HomeOne() {
 
     }, [])
 
+    // logic to user permision wise page access
     // const pages = [
     //     { id: 2, pagename: "Bind Flask" },
     //     { id: 3, pagename: "Investment" },
     //     { id: 4, pagename: "Burn Out" },
-    //     { id: 7, pagename: "List" }
+    //     { id: 7, pagename: "Show List" }
     // ];
 
     // const allTitles = [
@@ -498,29 +564,28 @@ export default function HomeOne() {
                             className='cao'
                         >
                             <div style={{ display: 'flex', width: '100%' }}>
-                                <img src={slider1} className='caurImg' alt='banner Images...' />
+                                <img src={slider1} className='caurImg' alt='banner Images...' priority />
+                            </div>
+                            <div style={{ display: 'flex', width: '100%' }}>
+                                <img src={slider2} className='caurImg' alt='banner Images...' />
                             </div>
                             <div style={{ display: 'flex', width: '100%' }}>
 
-                                <img src={slider2} alt='banner Images...' />
+                                <img src={slider3} className='caurImg' alt='banner Images...' />
                             </div>
                             <div style={{ display: 'flex', width: '100%' }}>
 
-                                <img src={slider3} alt='banner Images...' />
+                                <img src={slider4} className='caurImg' alt='banner Images...' />
                             </div>
                             <div style={{ display: 'flex', width: '100%' }}>
 
-                                <img src={slider4} alt='banner Images...' />
+                                <img src={slider5} className='caurImg' alt='banner Images...' />
                             </div>
                             <div style={{ display: 'flex', width: '100%' }}>
-
-                                <img src={slider5} alt='banner Images...' />
+                                <img src={slider6} className='caurImg' alt='banner Images...' />
                             </div>
                             <div style={{ display: 'flex', width: '100%' }}>
-                                <img src={slider6} alt='banner Images...' />
-                            </div>
-                            <div style={{ display: 'flex', width: '100%' }}>
-                                <img src={slider7} alt='banner Images...' />
+                                <img src={slider7} className='caurImg' alt='banner Images...' />
                             </div>
                         </Carousel>
                     </div>
