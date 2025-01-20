@@ -23,8 +23,14 @@ export const uploadPhotos = async (compressedFiles, treeBatch, mode, uploadName)
         formData.append("mode", mode ?? "savetreephoto");
         formData.append("UploadLogicalPath", init?.UploadLogicalPath ?? "");
         formData.append("ukey", init?.ukey ?? "");
-        formData.append("uploadname", uploadName ?? "castingtree");
-        formData.append("castbatchno", treeBatch ?? "XP");
+        formData.append(
+            "uploadname",
+            uploadName === 'castingtree' ? "castingtree" : "investmentreturn" ?? ''
+        );
+        formData.append(
+            uploadName === 'castingtree' ? "castbatchno" : "investmentno",
+            treeBatch ?? ""
+        );
     } catch (error) {
         return;
     }

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 import "./Activate.css";
 import optigoLogo from "../../assets/oraillogo.png";
 import BarcodeScannerComponent from "react-qr-barcode-scanner";
@@ -15,10 +15,9 @@ import {
   DialogTitle,
   TextField,
   IconButton,
-  Button,
-  Box,
 } from "@mui/material";
 import CloseIcon from '@mui/icons-material/Close';
+import debounce from "lodash.debounce";
 
 const Activate = () => {
   const scanner = useRef();
@@ -33,19 +32,10 @@ const Activate = () => {
 
   const APIURL = `https://api.optigoapps.com/test/store.aspx`;
 
-  const empCode = localStorage.getItem("empCode");
-  const initmfg = JSON?.parse(localStorage.getItem("initmfg"));
-
-  useEffect(() => {
-    if (empCode != '' && initmfg?.token) {
-      return navigation("/homeone");
-    }
-  }, [empCode, initmfg]);
-
-  const INITMFGAPI = async (decodedString) => {
+  const INITMFGAPI = async (decodedString, empCode) => {
     if (decodedString) {
       const bodyparam = {
-        deviceID: employeeCode || "E0018",
+        deviceID: empCode || "DeviceID_SMIT1",
         deviceName: "DeviceID_SMIT1",
         brand: "Brand1",
         model: "Model1",
@@ -86,14 +76,10 @@ const Activate = () => {
         const data = await response.json();
         console.log("initmfgRes", data);
 
-        if (data?.Data?.rd[0]?.stat != 0) {
-          setIsModalVisible(false)
+        if (data) {
           sessionStorage.setItem("token", JSON.stringify(decodedString));
           localStorage.setItem("initmfg", JSON.stringify(data?.Data?.rd[0]));
-          localStorage.setItem("empCode", JSON.stringify(employeeCode));
           navigation("/homeone");
-        } else {
-          toast.error(data?.Data?.rd[0]?.stat_msg);
         }
       } catch (error) {
         console.error("initmfgErr", error);
@@ -102,34 +88,35 @@ const Activate = () => {
     }
   };
 
-  const handleSave = () => {
-    if (!employeeCode.trim()) {
-      toast.error("Please enter employee code.");
-      return;
-    }
+  const debouncedAPI = useCallback(
+    debounce((empCode) => {
+      if (scannedResults) {
+        INITMFGAPI(scannedResults, empCode);
+        setIsModalVisible(false);
+      }
+    }, 1500),
+    [scannedResults]
+  );
 
-    INITMFGAPI(scannedResults, employeeCode);
-  };
-
-  const handleKeyDown = (event) => {
-    if (event.key === "Enter") {
-      if (!employeeCode.trim()) {
+  const debouncedSaveDeviceName = useCallback(
+    debounce((value) => {
+      if (!value.trim()) {
         toast.error("Please enter employee code.");
         return;
       }
+
       INITMFGAPI(scannedResults, employeeCode);
       setIsModalVisible(false);
-    }
-  };
+    }, 1500),
+    []
+  );
 
   const handleEmployeeCodeChange = (e) => {
-    setEmployeeCode(e.target.value);
+    let value = e.target.value;
+    debouncedSaveDeviceName(value);
+    setEmployeeCode(value);
+    debouncedAPI(value);
   };
-
-  const handleScanning = () => {
-    setEmployeeCode('E0018')
-    INITMFGAPI("8456510807569990")
-  }
 
   const onScanSuccess = (result) => {
     const newData = result?.data;
@@ -140,6 +127,11 @@ const Activate = () => {
       setIsModalVisible(true);
     }
   };
+
+  const handleScanning = () => {
+    setIsModalVisible(true);
+  };
+
 
   useEffect(() => {
     if (videoEl.current && !scanner.current) {
@@ -172,7 +164,7 @@ const Activate = () => {
         "Camera is blocked or not accessible. Please allow camera in your browser permissions and Reload."
       );
     }
-  }, [qrOn, isModalVisible]);
+  }, [qrOn]);
 
   const playAudio = () => {
     setPlayStatus(Sound.status.PLAYING);
@@ -192,18 +184,16 @@ const Activate = () => {
       <div className="main_container">
         <img src={optigoLogo} style={{ width: "150px" }} alt="Logo.." />
         <h1>Pro Casting</h1>
-        {/* {scannedResults?.length > 0 && <h4>{`DeviceToken:${scannedResults}`}</h4>} */}
-        {!isModalVisible &&
-          <div className="scaneBoxMain">
-            <video ref={videoEl} className="scanneBox"></video>
-          </div>
-        }
-        {<button className="Activate_btn" onClick={handleScanning}>Activate</button>}
+        {scannedResults?.length > 0 && <h4>{`DeviceToken:${scannedResults}`}</h4>}
+        <div className="scaneBoxMain">
+          <video ref={videoEl} className="scanneBox"></video>
+        </div>
+        <button className="Activate_btn" onClick={handleScanning}>Activate</button>
       </div>
 
       <Dialog
         open={isModalVisible}
-        // onClose={() => setIsModalVisible(false)}
+        onClose={() => setIsModalVisible(false)}
         PaperProps={{
           style: {
             borderRadius: '10px',
@@ -215,11 +205,7 @@ const Activate = () => {
           Enter Employee Code
           <IconButton
             aria-label="close"
-            onClick={() => {
-              setIsModalVisible(false);
-              window.location.href = '/';
-            }
-            }
+            onClick={() => setIsModalVisible(false)}
             sx={{
               position: 'absolute',
               right: 8,
@@ -238,7 +224,6 @@ const Activate = () => {
             variant="outlined"
             value={employeeCode}
             onChange={handleEmployeeCodeChange}
-            onKeyDown={handleKeyDown}
             sx={{
               minWidth: '300px',
               marginTop: '10px',
@@ -247,20 +232,6 @@ const Activate = () => {
               }
             }}
           />
-          <Box sx={{ display: 'flex', justifyContent: 'end', marginTop: '15px' }}>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={handleSave}
-              sx={{
-                background: '#000', color: '#fff', padding: '8px 30px',
-                borderRadius: '10px',
-                '&:hover': { background: '#000' }
-              }}
-            >
-              Save
-            </Button>
-          </Box>
         </DialogContent>
       </Dialog>
     </div>

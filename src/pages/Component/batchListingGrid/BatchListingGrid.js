@@ -3,7 +3,7 @@ import "./BatchListingGrid.css";
 import { DataGrid } from "@mui/x-data-grid";
 import SearchIcon from '@mui/icons-material/Search';
 import MenuRoundedIcon from '@mui/icons-material/MenuRounded';
-import { Button, Divider, Drawer, IconButton, TablePagination } from "@mui/material";
+import { Box, Button, Dialog, DialogContent, DialogTitle, Divider, Drawer, FormControl, IconButton, InputLabel, MenuItem, Pagination, Select, Skeleton, TablePagination } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import topLogo from '../../assets/oraillogo.png';
 import { CommonAPI } from '../../../Utils/API/CommonApi'
@@ -17,6 +17,7 @@ import RefreshIcon from '@mui/icons-material/Refresh';
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import InfoDialogModal from "../Info/InfoDialogModal";
 import { fetchTreeDetails } from "../../../Utils/API/GetTreeQrAPI";
+import CloseIcon from '@mui/icons-material/Close';
 
 const BatchListingGrid = () => {
   const navigate = useNavigate();
@@ -31,8 +32,8 @@ const BatchListingGrid = () => {
   const [showPrintDialog, setShowPrDialog] = useState(false);
   const [selectedRowData, setSelectedRowData] = useState(null);
   const today = new Date().toISOString().split("T")[0];
-  const [startDate, setStartDate] = useState(today); // Default to today's date
-  const [endDate, setEndDate] = useState(today); // Default to today's date
+  const [startDate, setStartDate] = useState(today);
+  const [endDate, setEndDate] = useState(today);
 
   const [metalColors, setMetalColors] = useState([]);
   const [metalTypes, setMetalTypes] = useState([]);
@@ -75,22 +76,24 @@ const BatchListingGrid = () => {
 
   // open joblist info dialog
   const handleOpenDialog = (row) => {
-    setSelectedRowData(row);
+    debugger
     getTreeQrData(row);
+    setDialogOpen(true);
+    setSelectedRowData(row);
   };
 
   // getTreeQr
-  const getTreeQrData = async () => {
+  const [infoloding, setInfoloding] = useState(false);
+  const getTreeQrData = async (row) => {
+    debugger
+    setInfoloding(true);
     try {
-      const batchKey = selectedRowData['Batch#'];
+      const batchKey = row['Batch#'];
       const castuniqueno = batchKey?.split(' ')[1]?.replace(/[()]/g, '');
-      console.log('castuniqueno: ', castuniqueno);
 
       const response = await fetchTreeDetails(castuniqueno);
 
       if (response?.Data?.rd[0]?.stat !== 0) {
-        console.log("qrdata", response?.Data.rd[0]);
-        setDialogOpen(true);
         const joblistArray = response?.Data.rd[0]?.joblist?.split(',');
         const data = joblistArray.map((job) => {
           const jobId = job?.split('/')[1];
@@ -101,15 +104,16 @@ const BatchListingGrid = () => {
             job: job,
             procastingstatusid: jobDetails?.job_procastingstatusid ?? null,
             metalColor: jobDetails?.MetalColor ?? "Default",
-            metaltype: `${selectedRowData?.MetalType}${selectedRowData?.MetalPurity ?? ''}`,
+            metaltype: `${row?.MetalType}${row?.MetalPurity ?? ''}`,
             Locationname: `${response?.Data.rd[0]?.Locationname ?? ''}`,
           };
         });
         setJobList(data);
-        console.log('data: ', data);
       }
     } catch (error) {
       console.error("Error:", error);
+    } finally {
+      setInfoloding(false);
     }
   };
 
@@ -223,6 +227,15 @@ const BatchListingGrid = () => {
   }, [startDate, endDate, selectedMetalColor, selectedMetalType, selectedStatus, batchList]);
 
 
+  const handleresetFilter = () => {
+    setSelectedMetalType('');
+    setSelectedMetalColor('');
+    setSelectedStatus('');
+    setStartDate('');
+    setEndDate('');
+  };
+
+
   const columns = [
     { field: "id", headerName: "Sr#", width: 80 },
     {
@@ -319,22 +332,29 @@ const BatchListingGrid = () => {
       }
     },
     {
-      field: "Image",
+      field: "View",
       headerName: "View",
       width: 100,
       renderCell: (params) => {
-        const { value, row } = params;
-        return value && (value.startsWith("http://") || value.startsWith("https://")) ? (
-          <button onClick={() => handleViewClick(row)}
+        const imageValue = params.row.Image;
+        const investmentPhotoValue = params.row.investmentphoto;
+        const validImageURL =
+          (imageValue && (imageValue.startsWith("http://") || imageValue.startsWith("https://"))) ||
+          (investmentPhotoValue &&
+            (investmentPhotoValue.startsWith("http://") || investmentPhotoValue.startsWith("https://")));
+
+        return validImageURL ? (
+          <button
+            onClick={() => handleViewClick(params.row)}
             className="button-print"
             style={{
-              color: 'blue',
-              textDecoration: 'underline',
-              textTransform: 'capitalize',
-              padding: '0px',
-              backgroundColor: 'transparent',
-              border: 'none',
-              cursor: 'pointer'
+              color: "blue",
+              textDecoration: "underline",
+              textTransform: "capitalize",
+              padding: "0px",
+              backgroundColor: "transparent",
+              border: "none",
+              cursor: "pointer",
             }}
           >
             View
@@ -342,8 +362,9 @@ const BatchListingGrid = () => {
         ) : (
           "-"
         );
-      }
+      },
     }
+
   ];
 
   const GridHeadDate = useCallback(() => (
@@ -427,6 +448,90 @@ const BatchListingGrid = () => {
     </>
   ), [selectedMetalColor, selectedMetalType, selectedStatus, metalColors, metalTypes, castingStatuses]);
 
+  /// info modal
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const [selectedMetalColors, setSelectedMetalColors] = useState('all');
+  const [selectedStatuss, setSelectedStatuss] = useState('all');
+  const itemsPerPage = 5;
+
+  // Filter the jobs based on the selected metal color and status
+  const filteredJobs = joblist?.filter((item) => {
+    const matchesMetalColor =
+      selectedMetalColors === 'all' || item?.metalColor === selectedMetalColors;
+    const matchesStatus =
+      selectedStatuss === 'all' || item?.procastingstatusid === parseInt(selectedStatuss);
+    return matchesMetalColor && matchesStatus;
+  });
+
+  const metalColorss = [...new Set(joblist?.map((item) => item?.metalColor))];
+
+  const totalPages = Math.ceil((filteredJobs?.length || 0) / itemsPerPage);
+  const currentJobs = filteredJobs?.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
+  const handlePageChange = (event, value) => {
+    setCurrentPage(value);
+  };
+
+  const handleMetalColorChange = (event) => {
+    setSelectedMetalColors(event.target.value);
+    setCurrentPage(1);
+  };
+
+  const handleStatusChange = (event) => {
+    setSelectedStatuss(event.target.value);
+    setCurrentPage(1);
+  };
+
+  const getStatusStyles = (statusId) => {
+    switch (statusId) {
+      case 1:
+        return { backgroundColor: '#cef6ce', color: '#000' };
+      case 2:
+        return { backgroundColor: '#a396c8', color: '#fff' };
+      default:
+        return { backgroundColor: 'white', color: '#000' };
+    }
+  };
+
+
+  const columnss = [
+    {
+      field: 'job',
+      headerName: 'Job ID',
+      flex: 1,
+      minWidth: 150,
+    },
+    {
+      field: 'metalColor',
+      headerName: 'Metal Color',
+      flex: 1,
+      minWidth: 150,
+    },
+    {
+      field: 'status',
+      headerName: 'Status',
+      flex: 1,
+      minWidth: 150,
+      renderCell: (params) => {
+        const styles = getStatusStyles(params.row.procastingstatusid);
+        const label = params.row.procastingstatusid === 1 ? 'Wax' : 'Regular';
+        return (
+          <div
+            style={{
+              ...styles,
+              padding: '5px 10px',
+              borderRadius: '4px',
+              textAlign: 'center',
+            }}
+          >
+            {label}
+          </div>
+        );
+      },
+    },
+  ];
+
   return (
     <>
       <div className="grid_head_container">
@@ -485,6 +590,25 @@ const BatchListingGrid = () => {
                   onChange={(e) => handleSearch(e)}
                 />
               </div>
+            </div>
+            <div className="resetBtn">
+              <Button
+                variant="outlined"
+                onClick={handleresetFilter}
+                // startIcon={<RefreshIcon />}
+                sx={{
+                  backgroundColor: 'white',
+                  color: 'black',
+                  borderColor: 'rgb(226, 226, 226)',
+                  borderRadius: '8px',
+                  '&:hover': {
+                    backgroundColor: '#fff',
+                    borderColor: 'rgb(226, 226, 226)',
+                  },
+                }}
+              >
+                All
+              </Button>
             </div>
             {/* <div className="refressBtn">
             <Button
@@ -609,10 +733,107 @@ const BatchListingGrid = () => {
         castuniqueno={selectedRowData?.['Batch#']?.match(/\((\d+)\)/)?.[1]}
       />
 
-      <InfoDialogModal
+      {/* <InfoDialogModal
         open={dialogOpen}
         onClose={handleCloseDialog}
-        rightJobs={joblist} />
+        rightJobs={joblist} /> */}
+
+      <Dialog open={dialogOpen} onClose={handleCloseDialog} maxWidth="sm" fullWidth
+        PaperProps={{
+          sx: {
+            boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
+            paddingBottom: '10px',
+            minWidth: '300px',
+            borderRadius: '10px',
+            minHeight: '310px',
+            // padding:'10px 20px 10px 20px'
+          },
+        }}
+      >
+        <>
+          {/* {joblist?.length !== 0 && */}
+          <>
+            <DialogTitle>
+              All Job Listings
+              <IconButton
+                aria-label="close"
+                onClick={handleCloseDialog}
+                style={{ position: 'absolute', right: 8, top: 8 }}
+              >
+                <CloseIcon />
+              </IconButton>
+              {infoloding ? <div style={{ padding: '26px 24px', display: 'flex', justifyContent: 'end' }}><Skeleton variant="rectangular" width='40%' height='30px' /> </div> :
+                <Box display="flex" justifyContent="flex-end">
+                  <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
+                    <InputLabel>Metal Color</InputLabel>
+                    <Select
+                      value={selectedMetalColors}
+                      onChange={handleMetalColorChange}
+                      label="Metal Color"
+                      size="small"
+                    >
+                      <MenuItem value="all">All</MenuItem>
+                      {metalColorss?.map((color, index) => (
+                        <MenuItem key={index} value={color}>
+                          {color}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                  <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
+                    <InputLabel>Status</InputLabel>
+                    <Select
+                      value={selectedStatuss}
+                      onChange={handleStatusChange}
+                      label="Status"
+                      size="small"
+                    >
+                      <MenuItem value="all">All</MenuItem>
+                      <MenuItem value="1">Wax</MenuItem>
+                      <MenuItem value="2">Regular</MenuItem>
+                    </Select>
+                  </FormControl>
+                </Box>
+              }
+            </DialogTitle>
+            {infoloding ? <div style={{ padding: '26px 24px' }}><Skeleton variant="rectangular" width='100%' height='140px' /> </div> :
+              <DialogContent sx={{ padding: '26px 24px' }}>
+                <div style={{ width: '100%' }}>
+                  <DataGrid
+                    rows={currentJobs || []}
+                    columns={columnss?.map((column) => ({
+                      ...column,
+                      headerClassName: 'customInfoHeaderCells',
+                      disableColumnMenu: true,
+                    }))}
+                    pageSize={itemsPerPage}
+                    rowsPerPageOptions={[itemsPerPage]}
+                    hideFooter
+                    disableColumnMenu
+                    getRowId={(row) => row?.job}
+                    sx={{
+                      '& .MuiDataGrid-virtualScroller': {
+                        minHeight: '50px',
+                      },
+                    }}
+                  />
+                </div>
+                <Box display="flex" justifyContent="center" mt={2}>
+                  <Pagination
+                    count={totalPages}
+                    page={currentPage}
+                    onChange={handlePageChange}
+                    variant="outlined"
+                    shape="rounded"
+                    color="primary"
+                  />
+                </Box>
+              </DialogContent>
+            }
+          </>
+          {/* } */}
+        </>
+      </Dialog>
 
       <Drawer anchor="left" open={menuFlag} onClose={() => setMenuFlag(false)}>
         <div style={{ paddingLeft: '30px' }}>
