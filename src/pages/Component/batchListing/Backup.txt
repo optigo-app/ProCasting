@@ -15,27 +15,13 @@ export default function BatchListing() {
     const [batchList, setBatchList] = useState([]);
     const [burnoutList, setBurnoutList] = useState([]);
     const [investmentList, setInvestmentList] = useState([]);
-    const [investmentIssue, setInvestmentIssue] = useState([]);
-    const [investmentReturn, setInvestmentReturn] = useState([]);
+    console.log('investmentList: ', investmentList);
     const [unlockList, setUnlockList] = useState([]);
     const [loading, setLoading] = useState(false);
     const [value, setValue] = useState(0);
-    const [subValue, setSubValue] = useState(0);
-    const [Completed, setCompleted] = useState(false);
-    const [mode, setMode] = useState('');
-    const [itemId, setItemId] = useState('');
-    const [isBlinking, setIsBlinking] = useState();
 
     const handleChange = (event, newValue) => {
-        setLoading(true);
         setValue(newValue);
-        setTimeout(() => {
-            setLoading(false);
-        }, 300);
-    };
-
-    const handleSubChange = (event, newValue) => {
-        setSubValue(newValue);
     };
 
     useEffect(() => {
@@ -53,7 +39,7 @@ export default function BatchListing() {
                 const bodyparam = { deviceToken: deviceT };
                 const encodedBodyParam = btoa(JSON.stringify(bodyparam));
                 const body = {
-                    con: `{"id":"","mode":"TREELIST","appuserid":""}`,
+                    con: `{\"id\":\"\",\"mode\":\"TREELIST\",\"appuserid\":\"\"}`,
                     p: encodedBodyParam,
                     f: "formname (album)"
                 };
@@ -63,9 +49,10 @@ export default function BatchListing() {
                     const ListData = res?.Data?.rd;
                     const transformedData = ListData?.map(item => ({
                         ...item,
-                        ScanBatch: item['Batch#']?.split(' ')[0],
+                        ScanBatch: item['Batch#']?.split(' ')[0]
                     }));
 
+                    // Sort issue-related data first
                     const sortedData = transformedData.sort((a, b) => {
                         const aHasIssue = a.status.toLowerCase().includes("issue");
                         const bHasIssue = b.status.toLowerCase().includes("issue");
@@ -74,25 +61,19 @@ export default function BatchListing() {
 
                     setBatchList(sortedData);
 
+                    // Categorize by status
                     const burnout = [];
                     const investment = [];
                     const unlock = [];
-                    const issue = [];
-                    const returns = [];
 
                     sortedData.forEach(item => {
                         if (item?.status?.toLowerCase().includes('burnout')) burnout.push(item);
-                        if (item?.status?.toLowerCase().includes('investment')) {
-                            investment.push(item);
-                            item.status.toLowerCase().includes('issue') ? issue.push(item) : returns.push(item);
-                        }
+                        if (item?.status?.toLowerCase().includes('investment')) investment.push(item);
                         if (item?.status?.toLowerCase().includes('unlock')) unlock.push(item);
                     });
 
                     setBurnoutList(burnout);
                     setInvestmentList(investment);
-                    setInvestmentIssue(issue);
-                    setInvestmentReturn(returns);
                     setUnlockList(unlock);
                 }
             } catch (err) {
@@ -103,10 +84,9 @@ export default function BatchListing() {
             }
         };
 
+
         fetchBatchData();
     }, []);
-
-    console.log(batchList, "kjdkskj");
 
     function formatDate(date) {
         return new Date(date).toLocaleString('en-US', {
@@ -115,71 +95,44 @@ export default function BatchListing() {
         });
     }
 
-    console.log('insbds', investmentReturn)
+    const [Completed, setCompleted] = useState(false);
+    const [mode, setMode] = useState('');
+    const [itemId, setItemId] = useState('');
+    console.log('Completed: ', Completed);
 
     useEffect(() => {
+        debugger
         if (Completed) {
             if (mode === 'investment') {
-                const filterData = investmentList?.find((investment, index) => index === itemId)?.["Batch#"];
-                const batchKey = filterData;
-                const castuniqueno = batchKey?.split(' ')[1]?.replace(/[()]/g, '');
-
-                // Update investmentList with status change
-                const updatedInvestment = investmentList?.map(investment =>
-                    investment["Batch#"]?.split(' ')[1]?.replace(/[()]/g, '') === castuniqueno
-                        ? { ...investment, status: "Investment Return" }
-                        : investment
+                let data = investmentList?.map(investment =>
+                    investment["Batch#"]?.split(' ')[1]?.replace(/[()]/g, '') == itemId ? { ...investment, status: "Investment Return" } : investment
                 );
-
-                const burnout = [];
-                const investment = [];
-                const unlock = [];
-                const issue = [];
-                const returns = [];
-
-                updatedInvestment?.forEach(item => {
-                    if (item?.status?.toLowerCase().includes('burnout')) burnout.push(item);
-                    if (item?.status?.toLowerCase().includes('investment')) {
-                        investment.push(item);
-                        item.status.toLowerCase().includes('issue') ? issue.push(item) : returns.push(item);
-                    }
-                    if (item?.status?.toLowerCase().includes('unlock')) unlock.push(item);
-                });
-
-                setBurnoutList(burnout);
-                setInvestmentList(investment);
-                setInvestmentIssue(issue);
-                setInvestmentReturn(returns);
-                setUnlockList(unlock);
+                const updatedInvestment = investmentList?.map(investment =>
+                    investment["Batch#"]?.split(' ')[1]?.replace(/[()]/g, '') == itemId ? { ...investment, status: "Investment Return" } : investment
+                );
                 console.log('updatedInvestment: ', updatedInvestment);
                 setInvestmentList(updatedInvestment);
-
             } else if (mode === 'burnout') {
-                const filterData = burnoutList?.find((investment, index) => index === itemId)?.["Batch#"];
-                const batchKey = filterData;
-                const castuniqueno = batchKey?.split(' ')[1]?.replace(/[()]/g, '');
-
-                // Update burnoutList with status change
                 const updatedBurnout = burnoutList?.map(burnout =>
-                    burnout["Batch#"]?.split(' ')[1]?.replace(/[()]/g, '') === castuniqueno
-                        ? { ...burnout, status: "Burnout Return" }
-                        : burnout
+                    burnout["Batch#"]?.split(' ')[1]?.replace(/[()]/g, '') == itemId ? { ...burnout, status: "Burnout Return" } : burnout
                 );
                 console.log('updatedBurnout: ', updatedBurnout);
                 setBurnoutList(updatedBurnout);
             }
         }
-    }, [mode, Completed]);
+    },[mode, Completed])
 
-    const TimerComponent = ({ startDate, mode, hours, minutes, seconds, onBlink, indexId, data }) => {
+ 
 
+    const TimerComponent = ({ startDate, mode, hours, minutes, seconds, onBlink, indexId, itemId }) => {
+        
         const { timeLeft, isCompleted } = useCountdownTimer(startDate, mode, hours, minutes, seconds);
 
         const hasBlinked = useRef(false);
         const hasStateUpdated = useRef(false);
 
         useEffect(() => {
-            if (!isCompleted && timeLeft.hours === 0 && timeLeft.minutes === 0 && timeLeft.seconds <= 10 && timeLeft.seconds > 0) {
+            if (!isCompleted && timeLeft.hours === 0 && timeLeft.minutes === 0 && timeLeft.seconds <= 20 && timeLeft.seconds > 0) {
                 if (!hasBlinked.current) {
                     onBlink(indexId);
                     hasBlinked.current = true;
@@ -187,10 +140,10 @@ export default function BatchListing() {
             }
 
             if (isCompleted && !hasStateUpdated.current) {
+                debugger
                 setCompleted(true);
                 setMode(mode);
                 setItemId(indexId);
-                onBlink(null);
                 hasStateUpdated.current = true;
             }
 
@@ -210,48 +163,17 @@ export default function BatchListing() {
                         <p style={{ fontSize: '15px', fontWeight: 600, width: '100px' }}>Minutes Remaining</p>
                     </div>
                 ) : (
-                    <div className="card-container">
-                        <p className={`${isBlinking === indexId ? 'blink_text' : ''}`} style={{ fontSize: '20px', fontWeight: 600, color: '#de0f3f', marginRight: '5px' }}>
-                            {(() => {
-                                const issueIds = data.map(item => item?.procasting_process_statusid);
-                                const priorityOrder = [3, 4, 6, 7];
-                                const matchedId = priorityOrder.find(id => issueIds.includes(id));
-
-                                let message = '';
-                                switch (matchedId) {
-                                    case 3:
-                                        message = 'Waiting for Investment Return';
-                                        break;
-                                    case 4:
-                                        message = 'Waiting for Burnout';
-                                        break;
-                                    case 6:
-                                        message = 'Waiting for Casting Unlock';
-                                        break;
-                                    case 7:
-                                        message = 'Waiting for Quanching';
-                                        break;
-                                    default:
-                                        message = '';
-                                }
-
-                                return message ? (
-                                    <span style={{ display: 'block', marginBottom: '10px' }}>
-                                        {message}
-                                    </span>
-                                ) : null;
-                            })()}
-                        </p>
-                    </div>
+                    <p className={`${isBlinking === indexId ? 'blink_text' : ''}`} style={{ fontSize: '25px', fontWeight: 600, color: '#de0f3f', marginRight: '5px' }}>
+                        Time Completed
+                    </p>
                 )}
             </div>
-
-
         );
     };
 
+
+    const [isBlinking, setIsBlinking] = useState();
     const renderBatchList = (backgroundColor, data, mode) => {
-        console.log('mode: ', mode);
         const Initmfg = JSON.parse(localStorage.getItem('initmfg')) || {};
         let hours = 0,
             minutes = 0,
@@ -272,7 +194,7 @@ export default function BatchListing() {
         }
 
         const handleBlink = (index) => {
-            setIsBlinking(index);
+            setIsBlinking(1);
         };
 
 
@@ -280,7 +202,7 @@ export default function BatchListing() {
             <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center' }}>
                 {!loading ? (
                     <>
-                        {data && data?.map((item, index) => (
+                        {data?.map((item, index) => (
                             <div
                                 className={`batchLsitBoxMain ${isBlinking === index ? 'blink' : ''}`}
                                 key={index}
@@ -297,34 +219,22 @@ export default function BatchListing() {
                                     </div>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
                                         <TimerComponent
-                                            startDate={mode === 'investment' ? item?.investmentDate : mode === 'burnout' ? item?.burnoutDate : item?.investmentstartdate}
+                                            startDate={mode === 'investment' ? '2024-12-26T16:35:13.99' : mode === 'burnout' ? item?.burnoutDate : item?.investmentstartdate}
                                             mode={mode}
                                             hours={hours}
                                             minutes={minutes}
                                             seconds={seconds}
                                             onBlink={handleBlink}
                                             indexId={index}
-                                            data={data}
+                                            itemId={item["Batch#"]}
+                                            setInvestmentList={setInvestmentList}
                                         />
                                     </div>
+                                    <div></div>
                                 </div>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                    <p className={`${isBlinking === index ? 'blink_text' : ''}`} style={{ color: '#6257e3', fontWeight: 500, margin: '0px', paddingLeft: '10px', textTransform: 'capitalize' }}>
-                                        {item?.status}
-                                    </p>
-                                    <p className={`${isBlinking === index ? 'blink_text' : ''}`}
-                                        style={{
-                                            color: item?.procastingstatusid == 1 ? '#39b44c' : 
-                                            item?.procastingstatusid == 2 ? '#5427df' : 
-                                            item?.procastingstatusid == 3 ? 'orange' : '#ff5757',
-                                            fontWeight: 500,
-                                            margin: '0px',
-                                            paddingRight: '10px',
-                                            textTransform: 'capitalize'
-                                        }}>
-                                        {item?.procastingstatus}
-                                    </p>
-                                </div>
+                                <p className={`${isBlinking === index ? 'blink_text' : ''}`} style={{ color: '#6257e3', fontWeight: 500, margin: '0px', paddingLeft: '10px', textTransform: 'capitalize' }}>
+                                    {item?.status}
+                                </p>
                                 <div style={{ display: 'flex', justifyContent: 'space-around' }}>
                                     <div style={{ display: 'flex', alignItems: 'center' }}>
                                         <p className={`${isBlinking === index ? 'blink_text' : ''}`} style={{ fontSize: '55px', color: '#ff5757', fontWeight: 700, margin: '0px' }}>
@@ -426,46 +336,7 @@ export default function BatchListing() {
             </div>
             <Box sx={{ width: '100%', }}>
                 <div role="tabpanel" hidden={value !== 0}>
-                    {value === 0 && (
-                        <>
-                            <Tabs
-                                value={subValue}
-                                onChange={handleSubChange}
-                                centered
-                                sx={{
-                                    borderRadius: '8px',
-                                    '& .MuiTabs-indicator': {
-                                        backgroundColor: '#5bafe3',
-                                    },
-                                }}
-                            >
-                                <Tab
-                                    label={`Investment Issue (${investmentIssue.length})`}
-                                    sx={{
-                                        fontWeight: 600,
-                                        color: '#7d7f85',
-                                        '&.Mui-selected': {
-                                            color: '#000',
-                                        },
-                                    }}
-                                />
-                                <Tab
-                                    label={`Investment Return (${investmentReturn.length})`}
-                                    sx={{
-                                        fontWeight: 600,
-                                        color: '#7d7f85',
-                                        '&.Mui-selected': {
-                                            color: '#000',
-                                        },
-                                    }}
-                                />
-                            </Tabs>
-
-
-                            {subValue === 0 && renderBatchList('#d1d3d83d', investmentIssue, 'investment')}
-                            {subValue === 1 && renderBatchList('#d1d3d83d', investmentReturn, 'investment')}
-                        </>
-                    )}
+                    {value === 0 && renderBatchList('#d1d3d83d', investmentList, 'investment')}
                 </div>
                 <div role="tabpanel" hidden={value !== 1}>
                     {value === 1 && renderBatchList('#ffb06b3d', burnoutList, 'burnout')}

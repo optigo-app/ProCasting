@@ -1,6 +1,7 @@
 .HomeOneMain {
     display: flex;
     height: 100%;
+    position: relative;
 }
 
 .homeSideBar1 {
@@ -16,10 +17,10 @@
 .homeOneSider1TitleMain {
     display: flex;
     flex-direction: column;
-    justify-content: space-around;
-    height: 60vh;
+    justify-content: start;
+    height: 60vh;   
     margin-top: 20px;
-    /* gap: 10px; */
+    gap: 40px;
 }
 
 .homeOneSider1Title {

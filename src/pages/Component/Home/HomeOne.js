@@ -8,7 +8,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import { Dialog } from '@mui/material';
+import { Box, Dialog, IconButton, Menu, MenuItem, Typography } from '@mui/material';
 import scaneCodeImage from '../../assets/scanBarcode.gif'
 import proLogo from '../../assets/proLogo.png'
 import BarcodeScanner from 'react-barcode-reader';
@@ -29,6 +29,8 @@ import { CurrentImageApi, CurrentImageState } from '../../recoil/Recoil'
 import { fetchTreeGridList } from '../../../Utils/API/TreelistAPI'
 import BatchDataJson from '../../../Utils/BatchData.json'
 import { fetchBatchList } from '../../../Utils/API/BatchValApi'
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import BadgeIcon from '@mui/icons-material/Badge';
 
 const fullScreenStyle = {
     // minHeight: '100vh',
@@ -60,7 +62,80 @@ export default function HomeOne() {
     const [editLocalVal, setEditLocalVal] = useState(false)
     const scanRef = useRef(null);
     const navigation = useNavigate();
-    const setInvestImage = useSetRecoilState(CurrentImageState)
+    const setInvestImage = useSetRecoilState(CurrentImageState);
+    const [anchorEl, setAnchorEl] = useState(null);
+    const openProfileMenu = Boolean(anchorEl);
+
+    const handleMenuOpen = (event) => {
+        setAnchorEl(event.currentTarget);
+    };
+
+    const handleMenuClose = () => {
+        setAnchorEl(null);
+    };
+
+    const handleLogout = () => {
+        // Remove specific keys from local storage
+        localStorage.removeItem('initmfg');
+        localStorage.removeItem('getemp');
+        localStorage.removeItem('empPage');
+        localStorage.removeItem('getprocastingstatus');
+        localStorage.removeItem('EditTreePage');
+        localStorage.removeItem('empCode');
+
+        // Remove specific keys from session storage
+        sessionStorage.removeItem('token');
+
+        // Close the menu
+        handleMenuClose();
+
+        // Redirect to the home page
+        navigate('/');
+    };
+
+
+    useEffect(() => {
+        const GET_EMP_PROCASTINGSTAUS = async (mode) => {
+
+            let deviceT = JSON.parse(localStorage.getItem("initmfg"))?.deviceToken
+
+            let bodyparam = { "deviceToken": `${deviceT}` }
+
+            let ecodedbodyparam = btoa(JSON.stringify(bodyparam))
+
+            let body = {
+                "con": `{\"id\":\"\",\"mode\":\"${mode}\",\"appuserid\":\"\"}`,
+                "p": `${ecodedbodyparam}`,
+                "f": "formname (album)"
+            }
+
+            await CommonAPI(body).then((res) => {
+                if (res) {
+                    if (mode === "GETEMP") {
+                        const empData = res?.Data?.rd[0] || [];
+                        const empPageData = res?.Data?.rd1 || [];
+
+                        localStorage.setItem("getemp", JSON.stringify(empData));
+                        localStorage.setItem("empPage", JSON.stringify(empPageData));
+
+                        setEmpInfo(empData);
+                    }
+                    if (mode === "GETPROCASTINGSTAUS") {
+                        const procastingstatus = res?.Data?.rd[0]
+                        localStorage.setItem("getprocastingstatus", JSON.stringify(procastingstatus))
+                    }
+                    // if(mode === "TREELIST"){
+                    //     localStorage.setItem("treelist",JSON.stringify(res?.Data?.rd))
+                    // }
+                }
+            }).catch((err) => console.log("GET_EMP_PROCASTINGSTAUS_CASTJOBLIST", err))
+
+        }
+
+        GET_EMP_PROCASTINGSTAUS("GETEMP")
+        GET_EMP_PROCASTINGSTAUS("GETPROCASTINGSTAUS")
+
+    }, [location])
 
     useEffect(() => {
         if (scanRef.current) {
@@ -201,7 +276,6 @@ export default function HomeOne() {
             try {
                 const master = sessionStorage?.getItem('gridMaster')
                 const masterdata = JSON?.parse(master)?.Data?.rd2;
-                console.log('masterdata: ', masterdata);
                 const response = await fetchBatchList();
                 if (response?.Data?.rd[0]?.stat !== 0) {
 
@@ -215,10 +289,10 @@ export default function HomeOne() {
                             ScanBatch: scanBatch,
                             castuniqueno: castuniqueno,
                             status: status,
+                            procasting_process_statusid: item?.procasting_process_statusid,
                         };
                     });
 
-                    console.log('transformedData: ', transformedData);
                     setTreeList(transformedData);
                     const commaSeparatedValues = transformedData?.map(item => item?.ScanBatch)?.join(', ');
 
@@ -279,7 +353,7 @@ export default function HomeOne() {
             } else {
                 treeList?.map((item) => {
                     if (item?.castuniqueno == scannedValue) {
-                        if ((item?.status)?.toLowerCase() !== 'process in casting') {
+                        if (item?.procasting_process_statusid != 1) {
                             return toast.error("This Batch is already Processed");
                         }
                         setScannedValueError(false)
@@ -301,7 +375,7 @@ export default function HomeOne() {
         } else {
             treeList?.map((item) => {
                 if (item?.castuniqueno == scannedValue) {
-                    if ((item?.status)?.toLowerCase() !== 'process in casting') {
+                    if (item?.procasting_process_statusid != 1) {
                         return toast.error("This Batch is already Processed");
                     }
                     setScannedValueError(false)
@@ -329,43 +403,6 @@ export default function HomeOne() {
         navigate('/homeone', { replace: true });
     };
 
-    useEffect(() => {
-
-        const GET_EMP_PROCASTINGSTAUS = async (mode) => {
-
-            let deviceT = JSON.parse(localStorage.getItem("initmfg"))?.deviceToken
-
-            let bodyparam = { "deviceToken": `${deviceT}` }
-
-            let ecodedbodyparam = btoa(JSON.stringify(bodyparam))
-
-            let body = {
-                "con": `{\"id\":\"\",\"mode\":\"${mode}\",\"appuserid\":\"\"}`,
-                "p": `${ecodedbodyparam}`,
-                "f": "formname (album)"
-            }
-
-            await CommonAPI(body).then((res) => {
-                if (res) {
-                    if (mode === "GETEMP") {
-                        localStorage.setItem("getemp", JSON.stringify(res?.Data?.rd[0]))
-                        setEmpInfo(res?.Data?.rd[0])
-                    }
-                    if (mode === "GETPROCASTINGSTAUS") {
-                        localStorage.setItem("getprocastingstatus", JSON.stringify(res?.Data?.rd))
-                    }
-                    // if(mode === "TREELIST"){
-                    //     localStorage.setItem("treelist",JSON.stringify(res?.Data?.rd))
-                    // }
-                }
-            }).catch((err) => console.log("GET_EMP_PROCASTINGSTAUS_CASTJOBLIST", err))
-
-        }
-
-        GET_EMP_PROCASTINGSTAUS("GETEMP")
-        GET_EMP_PROCASTINGSTAUS("GETPROCASTINGSTAUS")
-
-    }, [])
 
     // logic to user permision wise page access
     // const pages = [
@@ -375,19 +412,22 @@ export default function HomeOne() {
     //     { id: 7, pagename: "Show List" }
     // ];
 
-    // const allTitles = [
-    //     { title: "Tree", onClick: handleClickOpenTree },
-    //     { title: "Bind Flask", onClick: () => navigation('/addFlask') },
-    //     { title: "Investment", onClick: () => navigation('/investmentFirst') },
-    //     { title: "Burn Out", onClick: () => navigation('/burnOut') },
-    //     { title: "Unlock", onClick: () => navigation('/unlock') },
-    //     { title: "Show List", onClick: () => navigation('/batchListingGrid') },
-    //     { title: "DashBoard", onClick: () => navigation('/batchListing') }
-    // ];
+    const pages = JSON?.parse(localStorage.getItem("empPage"));
+    const allTitles = [
+        { id: 1, title: "Tree", onClick: handleClickOpenTree },
+        { id: 2, title: "Bind Flask", onClick: () => navigation('/addFlask') },
+        { id: 3, title: "Investment", onClick: () => navigation('/investmentFirst') },
+        { id: 4, title: "Burn Out", onClick: () => navigation('/burnOut') },
+        { id: 5, title: "Unlock", onClick: () => navigation('/unlock') },
+        { id: 6, title: "Show List", onClick: () => navigation('/batchListingGrid') },
+        { id: 7, title: "DashBoard", onClick: () => navigation('/batchListing') }
+    ];
 
-    // const filteredTitles = allTitles.filter(titleObj =>
-    //     pages.some(page => page.pagename === titleObj.title)
-    // );
+    const filteredTitles = allTitles?.filter(titleObj =>
+        pages?.some(page => page?.id === titleObj?.id)
+    );
+
+    console.log('empinfo', empInfo)
 
     return (
         <div>
@@ -529,21 +569,20 @@ export default function HomeOne() {
 
             </Dialog>
             <div className='HomeOneMain'>
-
                 <div className='homeSideBar1'>
                     <div className='homeOneSider1TitleMain'>
-                        {/* {filteredTitles.map((item, index) => (
+                        {filteredTitles.map((item, index) => (
                             <p key={index} className='homeOneSider1Title' onClick={item.onClick}>
                                 {item.title}
                             </p>
-                        ))} */}
-                        <p className='homeOneSider1Title' onClick={handleClickOpenTree}>Tree</p>
+                        ))}
+                        {/* <p className='homeOneSider1Title' onClick={handleClickOpenTree}>Tree</p>
                         <p className='homeOneSider1Title' onClick={() => navigation('/addFlask')}>Bind Flask</p>
                         <p className='homeOneSider1Title' onClick={() => navigation('/investmentFirst')}>Investment</p>
                         <p className='homeOneSider1Title' onClick={() => navigation('/burnOut')}>Burn Out</p>
                         <p className='homeOneSider1Title' onClick={() => navigation('/unlock')}>Unlock</p>
                         <p className='homeOneSider1Title' onClick={() => navigation('/batchListingGrid')}>Show List</p>
-                        <p className='homeOneSider1Title' onClick={() => navigation('/batchListing')}>DashBoard</p>
+                        <p className='homeOneSider1Title' onClick={() => navigation('/batchListing')}>DashBoard</p> */}
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'center', marginTop: '30px' }}>
                         <img src={proLogo} className='logoImgHomeOne' />
@@ -589,6 +628,78 @@ export default function HomeOne() {
                             </div>
                         </Carousel>
                     </div>
+                </div>
+                <div>
+                    <IconButton
+                        onClick={handleMenuOpen}
+                        sx={{
+                            position: "absolute",
+                            top: 10,
+                            right: 10,
+                            border:'2px solid yellow',
+                            borderRadius: '10px',
+                            backgroundColor: '#4e4e4e',
+                            padding: '5px 20px',
+                            boxShadow: 'rgba(149, 157, 165, 0.2) 0px 8px 24px',
+                            zIndex: 1000,
+                            overflow: 'hidden',
+                            '&:hover':{
+                                backgroundColor: '#838383',
+                                boxShadow: 'rgba(149, 157, 165, 0.2) 0px 8px 24px',
+                            }
+                        }}
+                    >
+                        <div style={{ display: 'flex', alignItems: 'center', gap:'5px' }}>
+                        <AccountCircleIcon fontSize="large" sx={{color:'#fff'}}/>
+                        {/* <Typography sx={{ color: '#444050', textTransform:'capitalize' }}>{empInfo?.firstname} {empInfo?.lastname}</Typography> */}
+                        </div>
+                    </IconButton>
+                    <Menu
+                        anchorEl={anchorEl}
+                        open={openProfileMenu}
+                        onClose={handleMenuClose}
+                        anchorOrigin={{
+                            vertical: "bottom",
+                            horizontal: "right",
+                        }}
+                        transformOrigin={{
+                            vertical: "top",
+                            horizontal: "right",
+                        }}
+                    >
+                        {empInfo?.firstname &&
+                            <MenuItem>
+                                <div style={{ display: 'flex', alignItems: 'center', marginBottom: '5px' }}>
+                                    <AccountCircleIcon style={{ fontSize: 20, marginRight: 10, color: '#aeaeae' }} />
+                                    <Typography sx={{ color: '#444050', textTransform:'capitalize' }}>{empInfo?.firstname} {empInfo?.lastname}</Typography>
+                                </div>
+                            </MenuItem>
+                        }
+                        {empInfo?.barcode &&
+                            <MenuItem>
+                                <div style={{ display: 'flex', alignItems: 'center' }}>
+                                    <BadgeIcon style={{ fontSize: 20, marginRight: 10, color: '#aeaeae' }} />
+                                    <Typography sx={{ color: '#444050' }}>{empInfo?.barcode}</Typography>
+                                </div>
+                            </MenuItem>
+                        }
+                        <Box sx={{ borderTop: '1px solid #dbdde4' }}>
+                            <MenuItem
+                                onClick={handleLogout}
+                                style={{
+                                    backgroundColor: '#f44336',
+                                    margin: '10px',
+                                    borderRadius: '5px',
+                                    padding: '8px 20px',
+                                    display: 'flex',
+                                    justifyContent: 'center',
+                                    alignItems: 'center',
+                                }}
+                            >
+                                <Typography style={{ color: '#fff', fontWeight: 'bold' }}>Logout</Typography>
+                            </MenuItem>
+                        </Box>
+                    </Menu>
                 </div>
             </div>
         </div>

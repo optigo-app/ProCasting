@@ -86,4 +86,19 @@ export function convertToMilliseconds(mode) {
 
 
 
+  export const getColorTimer = (color) => {
+    switch (color) {
+      case 'yellow':
+        return 40; // 40 seconds
+      case 'white':
+        return 24; // 24 seconds
+      case 'rose':
+        return 0; // 0 seconds
+      default:
+        return 22; 
+    }
+  };
+
+
+
     

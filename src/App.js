@@ -23,9 +23,10 @@ import ImageUploader from './pages/Component/imageTag/ImageUploadDemo';
 import ImageUploadInput from './pages/Component/imageTag/ImageUploadInput';
 import MyDataGridComponent from './pages/Component/batchListingGrid/Demogrid';
 import { fetchMaster } from './Utils/API/MasterGridApi';
+import TimerComponent from './pages/Component/batchListing/TimerComponent';
+import { generateAndStoreUUID } from './Utils/Uidgenrate';
 
 function App() {
-
   const toastStyle = {
     borderRadius: '30px',
     backgroundColor: '#333',
@@ -48,7 +49,11 @@ function App() {
         sessionStorage.setItem("token", JSON.stringify(initmfgData.token));
       }
     } else {
-      fetchMaster()
+      if (Token) {
+        setTimeout(() => {
+          fetchMaster()
+        }, 1000);
+      }
     }
   }, []);
 
@@ -79,7 +84,7 @@ function App() {
           <Route path='/printQr' element={<PrintQr />} />
           <Route path='/info' element={<InfoPage />} />
           <Route path='/input' element={<InputSuggestion />} />
-          <Route path='/im' element={<MyDataGridComponent />} />
+          <Route path='/im' element={<TimerComponent />} />
         </Routes>
       </BrowserRouter>
     </>

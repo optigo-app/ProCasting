@@ -22,11 +22,7 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import uploadcloud from "../../assets/uploadCloud.png";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
-import {
-  CurrentCamFlag,
-  CurrentImageApi,
-  CurrentImageState,
-} from "../../recoil/Recoil";
+import { CurrentCamFlag, CurrentImageApi, CurrentImageState } from "../../recoil/Recoil";
 import ImageWebCam from "../imageTag/ImageWebCam";
 import topLogo from "../../assets/oraillogo.png";
 import { json, useLocation, useNavigate } from "react-router-dom";
@@ -57,7 +53,6 @@ import ImageUploader from "../imageTag/ImageUploader";
 import BackButton from "../../../Utils/BackButton";
 import { fetchTreeFlaskBindList } from "../../../Utils/API/TreeFlaskBindListApi";
 import GlobalHeader from "../../../Utils/HeaderLogoSection";
-import { setTimerDetails } from "../../../Utils/API/TimerStoreApi";
 
 export default function InvestMentFirst() {
   const [inputValue, setInputValue] = useState("");
@@ -73,7 +68,7 @@ export default function InvestMentFirst() {
   const CurrentImageValue = useRecoilValue(CurrentImageState);
   const imageApiUrl = useRecoilValue(CurrentImageApi);
   const setCurrentImageValue = useSetRecoilState(CurrentImageState);
-  const setImageApiUrl = useSetRecoilState(CurrentImageApi);
+  const setImageApiUrl = useSetRecoilState(CurrentImageApi)
   // const [weight, setWeight] = useState(false);
   const [TDS, setTDS] = useState(undefined);
   const [phValue, setPhValue] = useState(undefined);
@@ -108,16 +103,11 @@ export default function InvestMentFirst() {
   const [isCompleted, setIsCompleted] = useState(false);
   const location = useLocation();
 
-  // const staticMilliseconds = 3000;
-  // const [timeLeft, setTimeLeft] = useState(staticMilliseconds);
-  const [timeLeft, setTimeLeft] = useState();
+  const staticMilliseconds = 3000;
+  const [timeLeft, setTimeLeft] = useState(staticMilliseconds);
   const [isActive, setIsActive] = useState(false);
   const [openMenu, setOpenMenu] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
-
-  // new timer
-  const [investStartDate, investStartDateSet] = useState(null);
-  const [investEndDate, investEndDateSet] = useState(null);
 
   const [longPressIndex, setLongPressIndex] = useState(null);
   const [timer, setTimer] = useState(null);
@@ -134,9 +124,7 @@ export default function InvestMentFirst() {
   };
 
   const handleDeleteImage = (indexToDelete) => {
-    setCurrentImageValue(
-      CurrentImageValue.filter((_, index) => index !== indexToDelete)
-    );
+    setCurrentImageValue(CurrentImageValue.filter((_, index) => index !== indexToDelete));
     setImageApiUrl(imageApiUrl?.filter((_, index) => index !== indexToDelete));
     setLongPressIndex(null);
   };
@@ -155,62 +143,6 @@ export default function InvestMentFirst() {
     setAnchorEl(null);
   };
 
-  const formatCurrentDate = () => {
-    const now = new Date();
-    const pad = (num) => String(num).padStart(2, '0');
-    const year = now.getFullYear();
-    const month = pad(now.getMonth() + 1);
-    const day = pad(now.getDate());
-    const hours = pad(now.getHours());
-    const minutes = pad(now.getMinutes());
-    const seconds = pad(now.getSeconds());
-    const milliseconds = String(now.getMilliseconds()).padStart(3, '0');
-
-    return `${month}/${day}/${year} ${hours}:${minutes}:${seconds}.${milliseconds}`;
-  };
-
-  const startTimer = async () => {
-    try {
-      let data = location?.state;
-      let investmentid = FlaskinvestId ?? data?.investmentid;
-      const investmentDate = formatCurrentDate();
-      const timerRes = await setTimerDetails(investmentid, investmentDate);
-
-      if (timerRes) {
-        let timerData = timerRes?.Data?.rd[0];
-        console.log('timerRes: ', timerData);
-        let endDate = new Date(timerData?.investmentenddate);
-        let startDate = new Date(timerData?.investmentstartdate);
-
-        if (startDate >= endDate) {
-          toast.info("Timer has already ended.");
-          return;
-        }
-
-        investEndDateSet(endDate);
-        investStartDateSet(startDate);
-        setIsActive(true);
-        setShowTimmer(true);
-
-        const timeDifferenceInMs = endDate - startDate;
-
-        // Set the time left state
-        setTimeLeft(timeDifferenceInMs);
-
-        localStorage.setItem(
-          "investmentTimer",
-          JSON.stringify({
-            startTime: startDate.toISOString(),
-            endTime: endDate.toISOString(),
-            isTimerRunning: true,
-          })
-        );
-      }
-    } catch (error) {
-      console.error("Error in startTimer: ", error);
-    }
-  };
-
   useEffect(() => {
     let timerInterval = null;
 
@@ -218,7 +150,7 @@ export default function InvestMentFirst() {
       timerInterval = setInterval(() => {
         setTimeLeft((prevTime) => prevTime - 1000);
       }, 1000);
-    } else if (timeLeft <= 0 && isActive) {
+    } else if (timeLeft === 0 && isActive) {
       clearInterval(timerInterval);
       if (isActive) {
         // toast.error("Your Time is over");
@@ -228,9 +160,12 @@ export default function InvestMentFirst() {
     }
 
     return () => clearInterval(timerInterval);
-  }, [isActive, timeLeft, location]);
+  }, [isActive, timeLeft]);
 
-
+  const startTimer = () => {
+    setIsActive(true);
+    setShowTimmer(true);
+  };
 
   const onComplete = useCallback(() => {
     setIsCompleted(true);
@@ -401,7 +336,6 @@ export default function InvestMentFirst() {
 
   const InvestInfoSave = async () => {
     try {
-      debugger
       let empData = JSON.parse(localStorage.getItem("getemp"));
       let deviceT = JSON.parse(localStorage.getItem("initmfg"))?.deviceToken;
 
@@ -409,7 +343,7 @@ export default function InvestMentFirst() {
       let data = location?.state;
 
       // alert('image url', JSON.stringify(imageApiUrl?.join(',')))
-      const imageArray = imageApiUrl.map(item => item?.investmentreturn);
+
       // Prepare body parameters
       let bodyparam = {
         investmentid: FlaskinvestId ?? data?.investmentid,
@@ -419,7 +353,7 @@ export default function InvestMentFirst() {
         //   fileBase64 !== ""
         //     ? fileBase64[0]
         //     : CurrentImageValue[0] ?? CurrentImageValue[0],
-        investmentphoto: imageArray?.join(","),
+        investmentphoto: imageApiUrl?.join(','),
         empid: `${empData?.empid}`,
         empuserid: `${empData?.empuserid}`,
         empcode: `${empData?.empcode}`,
@@ -560,10 +494,10 @@ export default function InvestMentFirst() {
     setInputValue(event.target.value);
   };
 
-  console.log("enterdvalue", enteredValues);
+  console.log('enterdvalue', enteredValues)
 
   const handleGoButtonClick = async () => {
-    debugger;
+    debugger
     if (inputValue === "" || inputValue === undefined) {
       setInputError(true);
     } else {
@@ -585,7 +519,8 @@ export default function InvestMentFirst() {
         return;
       }
 
-      console.log("FinalFlaskList: ", FinalFlaskList);
+      console.log('FinalFlaskList: ', FinalFlaskList);
+
 
       let investmentVal;
 
@@ -828,6 +763,25 @@ export default function InvestMentFirst() {
     );
   }, []);
 
+  const renderer = ({ minutes, seconds, completed }) => {
+    if (completed) {
+      return <Completionist />;
+    } else {
+      return (
+        <span style={{ textAlign: "center" }}>
+          Filling + Pouring Timer :{" "}
+          <span style={{ fontWeight: "bold" }}>
+            {minutes}:{seconds}
+          </span>
+        </span>
+      );
+    }
+  };
+
+  const handleStartTime = () => {
+    setShowTimmer(true);
+  };
+
   const handleRemoveItem = (indexToRemove) => {
     setOpenDelete(true);
     setSelectedIndex(indexToRemove);
@@ -886,7 +840,7 @@ export default function InvestMentFirst() {
   useEffect(() => {
     const fetchData = async () => {
       let data = location?.state;
-      console.log("data: ", data);
+      console.log('data: ', data);
       if (data) {
         setWeightInp(data?.powderwt);
         setWaterWeight(data?.waterwt);
@@ -926,34 +880,6 @@ export default function InvestMentFirst() {
 
     fetchData();
   }, [location]);
-
-  // useEffect(() => {
-  //   const data = location?.state;
-  //   if (data) {
-  //     setShowTime(true);
-  //     const castuniqueno = data["Batch#"]?.match(/\d+/)?.[0] ?? "";
-  //     const parsedCastUniqueno = castuniqueno
-  //       ? parseInt(castuniqueno, 10)
-  //       : null;
-  //     const bindTreeFlask = TreeFlaskBindList?.filter(
-  //       (ele) => ele?.castuniqueno === parsedCastUniqueno
-  //     );
-  //     if (bindTreeFlask?.length > 0) {
-  //       let inVStartTime = bindTreeFlask[0]?.investmentstartdate;
-  //       let inVEndTime = bindTreeFlask[0]?.investmentenddate;
-  //       // let date = '2024-10-14T13:55:25.373';
-  //       if (!inVStartTime && !inVEndTime) return;
-
-  //       let endDate = new Date(inVStartTime);
-  //       let startDate = new Date(inVEndTime);
-  //       const timeDifferenceInMs = endDate - startDate;
-
-  //       // Set the time left state
-  //       setTimeLeft(timeDifferenceInMs);
-  //       setIsActive(true);
-  //     }
-  //   }
-  // }, [location, TreeFlaskBindList]);
 
   useEffect(() => {
     const data = location?.state;
@@ -1428,20 +1354,19 @@ export default function InvestMentFirst() {
                 {errorMessage && (
                   <div className="errorMessage">All fields are required!</div>
                 )}
-                {!new URLSearchParams(window.location.search).has("flask") &&
-                  !showTimmer && (
-                    <div
-                      style={{
-                        display: "flex",
-                        flexDirection: "column",
-                        marginTop: "15px",
-                      }}
-                    >
-                      <button onClick={saveDataHandle} className="saveBtn">
-                        Save
-                      </button>
-                    </div>
-                  )}
+                {!new URLSearchParams(window.location.search).has('flask') && !showTimmer && (
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      marginTop: "15px",
+                    }}
+                  >
+                    <button onClick={saveDataHandle} className="saveBtn">
+                      Save
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -1487,59 +1412,51 @@ export default function InvestMentFirst() {
                       //   // onComplete={onComplete}
                       // />
                       <div>
-                        <h3
-                          style={{
-                            margin: "0px",
-                            padding: "0px",
-                            fontWeight: "500",
-                            fontSize: "22px",
-                          }}
-                        >
-                          {isActive ? (
-                            <>
-                              Filling + Pouring Timer :{" "}
-                              {Math.floor(timeLeft / 60000)}m{" "}
-                              {Math.floor((timeLeft % 60000) / 1000)}s
-                            </>
-                          ) : (
-                            <>
-                              {timeLeft !== undefined ? (
-                                <>
-                                  Filling + Pouring Timer :{" "}
-                                  {Math.floor(timeLeft / 60000)}m{" "}
-                                  {Math.floor((timeLeft % 60000) / 1000)}s
-                                </>
-                              ) : (
-                                <>
-                                  Filling + Pouring Timer:{" "}
-                                  {/* {flaskbinddate !== "" ? (
-                                    `${elapsedTime?.hours}h ${elapsedTime?.minutes}m ${elapsedTime?.seconds}s`
-                                  ) : (
-                                    new Date().toLocaleTimeString()
-                                  )} */}
-                                  {!showTime
-                                    ? elapsedTime?.hours > 0 ||
-                                      elapsedTime?.minutes > 0 ||
-                                      elapsedTime?.seconds > 0
-                                      ? `${elapsedTime.hours > 0
-                                        ? `${elapsedTime.hours}h `
-                                        : ""
-                                        }${elapsedTime.minutes > 0
-                                          ? `${elapsedTime.minutes}m `
-                                          : ""
-                                        }${elapsedTime.seconds > 0
-                                          ? `${elapsedTime.seconds}s`
-                                          : ""
-                                        }`.trim()
-                                      : new Date().toLocaleTimeString()
-                                    : ""}
-                                </>
-                              )}
-                            </>
-                          )}
-                        </h3>
+                        {isActive ? (
+                          <h3
+                            style={{
+                              margin: "0px",
+                              padding: "0px",
+                              fontWeight: "500",
+                              fontSize: "22px",
+                            }}
+                          >
+                            Filling + Pouring Timer :{" "}
+                            {Math.floor(timeLeft / 60000)}m{" "}
+                            {Math.floor((timeLeft % 60000) / 1000)}s
+                          </h3>
+                        ) : (
+                          // <h3 style={{ margin: '0px', padding: '0px', fontWeight: '500', fontSize: '22px' }}>
+                          //   {`Gloss of completion time: ${flaskbinddate !== '' ? `${elapsedTime?.hours}h ${elapsedTime?.minutes}m ${elapsedTime?.seconds}s` : new Date().toLocaleTimeString()}`}
+                          // </h3>
+                          <h3
+                            style={{
+                              margin: "0px",
+                              padding: "0px",
+                              fontWeight: "500",
+                              fontSize: "22px",
+                            }}
+                          >
+                            Gloss of completion time:{" "}
+                            {!showTime
+                              ? elapsedTime?.hours > 0 ||
+                                elapsedTime?.minutes > 0 ||
+                                elapsedTime?.seconds > 0
+                                ? `${elapsedTime.hours > 0
+                                  ? `${elapsedTime.hours}h `
+                                  : ""
+                                  }${elapsedTime.minutes > 0
+                                    ? `${elapsedTime.minutes}m `
+                                    : ""
+                                  }${elapsedTime.seconds > 0
+                                    ? `${elapsedTime.seconds}s`
+                                    : ""
+                                  }`.trim()
+                                : new Date().toLocaleTimeString()
+                              : ""}
+                          </h3>
+                        )}
                       </div>
-
                     )}
 
                     {!CurrentImageValue.length ? (
@@ -1585,9 +1502,7 @@ export default function InvestMentFirst() {
                       </tr>
                       <tr>
                         <th className="investTableRow">
-                          {value?.jobcount +
-                            " " +
-                            (value?.jobcount > 1 ? "Jobs" : "Job")}{" "}
+                          {value?.jobcount + ' ' + (value?.jobcount > 1 ? 'Jobs' : "Job")} {" "}
                         </th>
                       </tr>
                       <tr>
@@ -1640,14 +1555,14 @@ export default function InvestMentFirst() {
                   >
                     Upload Image
                   </button> */}
-                  {!isActive && (
+                  {toastShown &&
                     <ImageUploader
                       treeBatch={enteredValues[0]?.CastBatchNo}
-                      lableName={"Upload Image"}
+                      lableName={'Upload Image'}
                       mode="investmentreturnphoto"
                       uploadName="investmentreturn"
                     />
-                  )}
+                  }
                   {CurrentImageValue.length !== 0 && (
                     <div
                       style={{

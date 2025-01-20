@@ -1,18 +1,45 @@
-
-.batchLsitBoxMain{
+.batchLsitBoxMain {
     background-color: #f1f1f1;
     width: 47%;
     border-radius: 20px;
     margin: 10px;
 }
-.cardSkeltonCard{
+
+.cardSkeltonCard {
     width: 100%;
     margin: 10px;
 }
-.skeltonCard{
+
+.skeltonCard {
     box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px !important;
     border-radius: 20px !important;
 }
-.muiskelton{
+
+.muiskelton {
     background-color: #f1f1f1 !important;
 }
+
+.topMainHeader {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background-color: white;
+    padding-bottom: 6px;
+    /* box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); */
+}
+
+.blink {
+    animation: blinker 1s linear infinite !important;
+    background:red !important;
+    color:white !important;
+    font-weight:bold !important;
+  }
+  .blink_text{
+    color: #fff !important;
+  }
+  
+  @keyframes blinker {
+    50% {
+      opacity: 0;
+    }
+  }

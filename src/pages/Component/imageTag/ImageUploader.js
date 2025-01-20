@@ -7,6 +7,7 @@ import { uploadPhotos } from "../../../Utils/API/UploadPhotoApi";
 import { toast } from "react-toastify";
 
 const ImageUploader = ({ treeBatch, lableName, mode, uploadName }) => {
+    console.log('uploadName: ', uploadName);
     const setImage = useSetRecoilState(CurrentImageState);
     const image = useRecoilValue(CurrentImageState)
     console.log('image: ', image);

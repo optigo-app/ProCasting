@@ -10,10 +10,9 @@ import fallbackImage from "../../assets/castingtree.jpg";
 
 const ImageDialog = ({ open, onClose, images }) => {
     const imageUrls = [
-        ...(images?.Image && images.Image.trim() ? images.Image.split(",") : []),
-        ...(images?.investmentphoto && images.investmentphoto.trim() ? images.investmentphoto.split(",") : []),
+        ...(images?.Image && images.Image.trim() !== "-" ? images.Image.split(",") : []),
+        ...(images?.investmentphoto && images.investmentphoto.trim() !== "-" ? images.investmentphoto.split(",") : []),
     ];
-
 
     const handleImageError = (event) => {
         event.target.src = fallbackImage;

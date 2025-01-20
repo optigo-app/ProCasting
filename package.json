@@ -39,6 +39,7 @@
     "react-window": "^1.8.10",
     "recoil": "^0.7.7",
     "swiper": "^11.1.14",
+    "uuid": "^11.0.3",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
